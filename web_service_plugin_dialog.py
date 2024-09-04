@@ -23,6 +23,7 @@
 """
 
 import os
+import re
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -42,3 +43,64 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+ 
+        self.comboBox_gminy = self.comboBox_gminy
+        self.comboBox_powiaty = self.comboBox_powiaty
+        self.comboBox_wojewodztwa = self.comboBox_wojewodztwa
+
+
+
+        self.load_administrative_division('gminy.txt')   
+        self.comboBox_gminy.currentIndexChanged.connect(self.on_combobox_gminy_changed)
+        self.comboBox_powiaty.currentIndexChanged.connect(self.on_combobox_powiaty_changed)
+        self.comboBox_wojewodztwa.currentIndexChanged.connect(self.on_combobox_wojewodztwa_changed)
+
+
+    def load_administrative_division(self, path): 
+        self.devision_dict = {}
+        
+        with open(path, 'r', encoding='utf-8') as infile:
+            next(infile)
+            for line in infile:
+                info = line.split('\t')
+
+                if info[0] not in self.devision_dict:
+                    self.devision_dict[info[0]] = {info[1] : [info[2]]}
+                elif info[1] not in self.devision_dict[info[0] ]:
+                    self.devision_dict[info[0]][info[1]] = [info[2]]
+                else: 
+                    self.devision_dict[info[0]][info[1]].append(info[2])
+        
+        self.comboBox_wojewodztwa.addItems(['województwo'] + sorted(self.devision_dict.keys()))
+        self.comboBox_powiaty.addItems(['powiat'])
+        self.comboBox_gminy.addItems(['gmina'])
+        
+
+    def on_combobox_gminy_changed(self):
+        selected_option = self.comboBox_gminy.currentText()
+        #todo
+
+    def on_combobox_powiaty_changed(self):
+        selected_option = self.comboBox_powiaty.currentText()
+        if selected_option == 'powiat':
+            self.comboBox_gminy.clear()
+            self.comboBox_gminy.addItems(['gmina'])
+        else:
+            wojewodztwo = self.comboBox_wojewodztwa.currentText()
+            gminy = sorted(self.devision_dict[wojewodztwo][selected_option])
+            self.comboBox_gminy.clear()
+            self.comboBox_gminy.addItems(['gmina'] + gminy)
+
+
+    def on_combobox_wojewodztwa_changed(self):
+        selected_option = self.comboBox_wojewodztwa.currentText()
+        if selected_option == 'województwo':
+            self.comboBox_powiaty.clear()
+            self.comboBox_powiaty.addItems(['powiat'])
+        else:
+            powiaty = sorted(self.devision_dict[selected_option].keys())
+            self.comboBox_powiaty.clear()
+            self.comboBox_powiaty.addItems(['powiat'] + powiaty)
+        self.on_combobox_powiaty_changed()
+
+
