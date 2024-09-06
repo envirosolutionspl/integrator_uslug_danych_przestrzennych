@@ -23,13 +23,19 @@
 """
 
 import os
+import re
+import sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from api.devision_api import get_gminy, get_powiaty, get_wojewodztwa
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'web_service_plugin_dialog_base.ui'))
+
 
 
 class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -42,3 +48,64 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+ 
+        self.comboBox_gminy = self.comboBox_gminy
+        self.comboBox_powiaty = self.comboBox_powiaty
+        self.comboBox_wojewodztwa = self.comboBox_wojewodztwa
+
+
+
+        self.load_wojewodztwa()
+        self.comboBox_gminy.currentIndexChanged.connect(self.on_combobox_gminy_changed)
+        self.comboBox_powiaty.currentIndexChanged.connect(self.on_combobox_powiaty_changed)
+        self.comboBox_wojewodztwa.currentIndexChanged.connect(self.on_combobox_wojewodztwa_changed)
+
+
+    def load_wojewodztwa(self): 
+        self.devision_dict = get_wojewodztwa()
+        self.comboBox_wojewodztwa.addItems([''] + sorted(self.devision_dict.keys()))
+        self.comboBox_wojewodztwa.setCurrentIndex(0)
+
+    def on_combobox_gminy_changed(self):
+        selected_option = self.comboBox_gminy.currentText()
+        #todo
+
+    def on_combobox_powiaty_changed(self):
+        selected_option = self.comboBox_powiaty.currentText()
+        
+        if selected_option == '' or not selected_option:
+            self.comboBox_gminy.clear()
+            self.comboBox_gminy.addItems([''])
+        else:
+            wojewodztwo = self.comboBox_wojewodztwa.currentText()
+            if isinstance(self.devision_dict[wojewodztwo][selected_option], str):
+                powiat_id = self.devision_dict[wojewodztwo][selected_option]
+                self.devision_dict[wojewodztwo][selected_option] = get_gminy(powiat_id)
+                print(get_gminy(powiat_id))
+            gminy = self.devision_dict[wojewodztwo][selected_option]
+            self.comboBox_gminy.clear()
+            self.comboBox_gminy.addItems([''] + gminy)
+
+
+    def on_combobox_wojewodztwa_changed(self):
+        selected_option = self.comboBox_wojewodztwa.currentText()
+        if selected_option == '':
+            self.comboBox_powiaty.clear()
+            self.comboBox_powiaty.addItems([''])
+        else:
+            if isinstance(self.devision_dict[selected_option], str):
+                wojewodztwo_id = self.devision_dict[selected_option]
+                self.devision_dict[selected_option] = get_powiaty(wojewodztwo_id)
+            powiaty = sorted(self.devision_dict[selected_option].keys())
+            self.comboBox_powiaty.clear()
+            self.comboBox_powiaty.addItems([''] + powiaty)
+        self.on_combobox_powiaty_changed()
+
+    def onClosePlugin(self):
+        self.comboBox_wojewodztwa.setCurrentIndex(0)
+
+    def closeEvent(self, event):
+        self.onClosePlugin()
+        event.accept()
+
+
