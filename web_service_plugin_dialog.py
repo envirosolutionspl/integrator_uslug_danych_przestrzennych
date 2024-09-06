@@ -30,7 +30,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
-from devision_api import get_gminy, get_powiaty, get_wojewodztwa
+from api.devision_api import get_gminy, get_powiaty, get_wojewodztwa
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
