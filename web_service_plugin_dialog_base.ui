@@ -55,7 +55,7 @@
            <item>
             <widget class="QLabel" name="label_97">
              <property name="text">
-              <string>Wtyczka pozwala na doannie WFS do XYZ Tiles</string>
+              <string>Wtyczka pozwala na dodanie WFS</string>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
