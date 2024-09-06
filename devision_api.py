@@ -1,8 +1,12 @@
 import requests
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from constants import DICTIONARY_WOJ_URL, DICTIONARY_POW_URL, DICTIONARY_GM_URL
 
 def get_wojewodztwa():
-    url = "http://mapy.geoportal.gov.pl/wss/service/SLN/guest/sln/woj.json"
-    response = requests.get(url)
+    response = requests.get(DICTIONARY_WOJ_URL)
 
     if response.status_code == 200:
         wojewodztwa = response.json()
@@ -19,7 +23,7 @@ def get_wojewodztwa():
 
 
 def get_powiaty(woj_id):
-    url = f"http://mapy.geoportal.gov.pl/wss/service/SLN/guest/sln/pow/PL.PZGIK.200/{woj_id}/skr.json"
+    url = f"{DICTIONARY_POW_URL}{woj_id}/skr.json"
     response = requests.get(url)
  
     if response.status_code == 200:
@@ -36,7 +40,7 @@ def get_powiaty(woj_id):
         
     
 def get_gminy(pow_id):
-    url = f"http://mapy.geoportal.gov.pl/wss/service/SLN/guest/sln/gmi/PL.PZGIK.200/{pow_id}/pel.json"
+    url = f"{DICTIONARY_GM_URL}{pow_id}/pel.json"
     response = requests.get(url)
     if response.status_code == 200:
         gminy = response.json()
