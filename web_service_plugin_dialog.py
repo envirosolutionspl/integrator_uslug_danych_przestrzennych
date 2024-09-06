@@ -101,4 +101,11 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.comboBox_powiaty.addItems([''] + powiaty)
         self.on_combobox_powiaty_changed()
 
+    def onClosePlugin(self):
+        self.comboBox_wojewodztwa.setCurrentIndex(0)
+
+    def closeEvent(self, event):
+        self.onClosePlugin()
+        event.accept()
+
 
