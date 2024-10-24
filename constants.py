@@ -35,6 +35,8 @@ CHECKBOX_COMBOBOX_LINK = {
     'gmina_combo': 'gmi_check',
 }
 
+COMBOBOX_CHECKBOX_LINK = {CHECKBOX_COMBOBOX_LINK[x] : x for x in CHECKBOX_COMBOBOX_LINK}
+
 CHECKBOX_TYPES_LINK = {
     'woj_check': 'wojewodztwa',
     'pow_check': 'powiaty',

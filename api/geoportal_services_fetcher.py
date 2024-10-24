@@ -12,7 +12,7 @@ from ..constants import (
 
 class GeoportalServicesFetcher:
     @staticmethod
-    def get_services_dict(url: str) -> dict:
+    def get_services_dict(url: str) -> Dict:
         services = {}
         response = requests.get(url)
         if response.status_code != 200:

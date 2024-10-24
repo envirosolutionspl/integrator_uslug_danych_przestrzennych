@@ -8,7 +8,7 @@ from ..constants import EZIUDP_URL
 
 class EziudpServicesFetcher:
     @staticmethod
-    def get_services_dict(url: str, idx: int) -> dict:
+    def get_services_dict(url: str, idx: int) -> Dict:
         services = {}
         response = requests.get(url)
         if response.status_code != 200:

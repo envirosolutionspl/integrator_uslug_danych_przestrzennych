@@ -14,7 +14,7 @@ from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
     CHECKBOXES,
     RADIOBUTTONS,
-    CHECKBOX_COMBOBOX_LINK, CHECKBOX_TYPES_LINK
+    CHECKBOX_COMBOBOX_LINK, CHECKBOX_TYPES_LINK, COMBOBOX_CHECKBOX_LINK
 )
 from .api.region_fetch import RegionFetch
 
@@ -49,6 +49,8 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             getattr(self, obj).toggled.connect(self.setup_table)
         for combo_name in CHECKBOX_COMBOBOX_LINK.keys():
             getattr(self, combo_name).currentTextChanged.connect(self.reload_table_by_teryt)
+        for obj in CHECKBOXES:
+            getattr(self, obj).stateChanged.connect(self.enable_comboboxes)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
@@ -103,6 +105,22 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 child.setCurrentIndex(-1)
             elif isinstance(child, QWidget):
                 self.setup_comboboxes(child)
+
+    def enable_comboboxes(self) -> None:
+        pass
+        # comboboxes_to_hide = []
+        # for check, cmb in COMBOBOX_CHECKBOX_LINK.items():
+        #     combo_obj = getattr(self, cmb)
+        #     combo_obj.setStyleSheet("QComboBox { color: black }")
+        #     getattr(self, cmb).setEnabled(True)
+        #     if getattr(self, check).isChecked():
+        #         combo_idx = list(COMBOBOX_CHECKBOX_LINK).index(check) + 1
+        #         comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values())[combo_idx:])
+        #         break
+        # for combo in comboboxes_to_hide:
+        #     combo_obj = getattr(self, combo)
+        #     combo_obj.setStyleSheet("QComboBox { color: transparent }")
+        #     combo_obj.setEnabled(False)
 
     def get_services_dict(self) -> Dict[str, str]:
         if self.kraj_check.isChecked():
