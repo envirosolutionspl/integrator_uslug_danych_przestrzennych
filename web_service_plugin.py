@@ -82,7 +82,6 @@ class WebServicePlugin:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('WebServicePlugin', message)
 
-
     def add_action(
         self,
         icon_path,
@@ -170,7 +169,6 @@ class WebServicePlugin:
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -178,7 +176,6 @@ class WebServicePlugin:
                 self.tr(u'&web_service_plugin'),
                 action)
             self.iface.removeToolBarIcon(action)
-
 
     def run(self):
         """Run method that performs all the real work"""
