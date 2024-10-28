@@ -11,7 +11,6 @@ class AddOGCService:
     def detect_service_type(url: str) -> None or str:
         for service in ['WFS', 'WCS', 'WMTS', 'WMS']:
             capabilities_url = f'{url}?service={service}&request=GetCapabilities'
-            print(capabilities_url)
             try:
                 response = requests.get(capabilities_url)
                 if response.status_code == 200:

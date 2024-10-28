@@ -182,7 +182,6 @@ class WebServicePlugin:
         selected_urls = self.dlg.get_selected_services_urls()
         for url in selected_urls:
             service_type = AddOGCService.detect_service_type(url)
-            print(service_type)
             if not service_type:
                 return
             AddOGCService.add_service(url, service_type)
