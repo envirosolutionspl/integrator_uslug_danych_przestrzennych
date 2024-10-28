@@ -6,7 +6,7 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
@@ -37,6 +37,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def _setup_dialog(self) -> None:
         self.regionFetch = RegionFetch(teryt='')
         self.fill_voivodeships()
+        self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
         for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
@@ -154,6 +155,16 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             services = self.eziudp_fetcher.get_services_wfc_wcs_by_teryt(unit_type, teryt)
         return services
+
+    def get_selected_services_urls(self) -> List[str]:
+        model = self.services_table.model()
+        selected_indexes = self.services_table.selectionModel().selectedRows()
+        values = []
+        for index in selected_indexes:
+            value_index = model.index(index.row(), 1)
+            value = model.data(value_index)
+            values.append(value)
+        return values
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)

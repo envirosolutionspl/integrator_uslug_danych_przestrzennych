@@ -17,52 +17,112 @@
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="services_groupbox">
+   <property name="horizontalSpacing">
+    <number>-1</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>4</number>
+   </property>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QGroupBox" name="units_wdgt">
      <property name="title">
-      <string>Wybór usługi</string>
+      <string>Wybór obszaru usług</string>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="1">
-         <widget class="QRadioButton" name="wfs_rdbtn">
-          <property name="toolTip">
-           <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
-          </property>
-          <property name="text">
-           <string>WFS/WCS</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="woj_check">
+        <property name="text">
+         <string>Województwa</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="pow_check">
+        <property name="text">
+         <string>Powiatu</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="gmi_check">
+        <property name="text">
+         <string>Gminy</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QComboBox" name="wojewodztwo_combo">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="maxVisibleItems">
+         <number>10</number>
+        </property>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
         </item>
-        <item row="0" column="0">
-         <widget class="QRadioButton" name="wms_rdbtn">
-          <property name="toolTip">
-           <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
-          </property>
-          <property name="text">
-           <string>WMS/WMTS</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QComboBox" name="powiat_combo">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="maxVisibleItems">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QComboBox" name="gmina_combo">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="maxVisibleItems">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="kraj_check">
+        <property name="text">
+         <string>Krajowe</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QTableView" name="services_table"/>
-   </item>
-   <item row="6" column="0" colspan="2">
+   <item row="7" column="0" colspan="2">
     <layout class="QHBoxLayout" name="Stopka">
      <property name="spacing">
       <number>5</number>
@@ -203,6 +263,48 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="services_groupbox">
+     <property name="title">
+      <string>Wybór usługi</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="1">
+         <widget class="QRadioButton" name="wfs_rdbtn">
+          <property name="toolTip">
+           <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
+          </property>
+          <property name="text">
+           <string>WFS/WCS</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="wms_rdbtn">
+          <property name="toolTip">
+           <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
+          </property>
+          <property name="text">
+           <string>WMS/WMTS</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="coord_sys_groupbox">
      <property name="sizePolicy">
@@ -242,103 +344,64 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1" rowspan="2">
-    <widget class="QGroupBox" name="units_wdgt">
-     <property name="title">
-      <string>Wybór obszaru usług</string>
+   <item row="6" column="1">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="woj_check">
-        <property name="text">
-         <string>Województwa</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="pow_check">
-        <property name="text">
-         <string>Powiatu</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="gmi_check">
-        <property name="text">
-         <string>Gminy</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
-       <widget class="QComboBox" name="wojewodztwo_combo">
-        <property name="editable">
+      <item>
+       <widget class="QPushButton" name="add_btn">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-        <item>
-         <property name="text">
-          <string/>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QComboBox" name="powiat_combo">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QComboBox" name="gmina_combo">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="kraj_check">
         <property name="text">
-         <string>Krajowe</string>
+         <string>Dodaj</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="autoDefault">
+         <bool>false</bool>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="reject_btn">
+        <property name="text">
+         <string>Anuluj</string>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QTableView" name="services_table">
+     <property name="toolTip">
+      <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
     </widget>
    </item>
   </layout>
@@ -352,7 +415,24 @@
   <tabstop>gmina_combo</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>reject_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>services_table</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>768</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="buttonGroup">
    <property name="exclusive">
