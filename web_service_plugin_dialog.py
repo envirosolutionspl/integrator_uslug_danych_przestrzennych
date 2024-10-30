@@ -66,11 +66,13 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def fill_services_table(self) -> None:
         dataset_dict = self.get_services_dict()
         for service_name, service_url in dataset_dict.items():
-            row = [
-                QStandardItem(service_name),
-                QStandardItem(service_url),
-            ]
-            self.model.appendRow(row)
+            urls = service_url if isinstance(service_url, list) else [service_url]
+            for url in urls:
+                row = [
+                    QStandardItem(service_name),
+                    QStandardItem(url),
+                ]
+                self.model.appendRow(row)
         self.services_table.setModel(self.model)
 
     def reload_table_by_teryt(self) -> None:

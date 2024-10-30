@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union, List
 
 import requests
 from lxml import html
@@ -8,10 +8,12 @@ from ..constants import EZIUDP_URL
 
 class EziudpServicesFetcher:
     @staticmethod
-    def get_services_dict(url: str, idx: int) -> Dict:
+    def get_services_dict(url: str, idx: int) -> Dict[str, Union[str, List[str]]]:
         services = {}
-        response = requests.get(url)
-        if response.status_code != 200:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except requests.RequestException:
             return services
         tree = html.fromstring(response.content)
         table = tree.xpath('//table[contains(@class, "table sortable")]')
@@ -20,14 +22,13 @@ class EziudpServicesFetcher:
         rows = table[0].xpath('.//tr[position()>1]')
         for row in rows:
             columns = row.xpath('.//td')
-            if len(columns) >= 6:
-                dataset_name = columns[2].text_content().strip()
-                view_service = columns[idx]
-                link_tag = view_service.xpath('.//a')
-                if link_tag:
-                    link = link_tag[0].attrib.get('href')
-                    services[dataset_name] = link
-
+            if len(columns) < 6:
+                continue
+            dataset_name = columns[2].text_content().strip()
+            link_tag = columns[idx].xpath('.//a')
+            if link_tag:
+                links = [link.get('href') for link in link_tag if link.get('href')]
+                services[dataset_name] = links if len(links) > 1 else links[0]
         return services
 
     def get_wms_wmts_services(self, url: str) -> Dict:
