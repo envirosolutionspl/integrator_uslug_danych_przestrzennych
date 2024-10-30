@@ -9,15 +9,25 @@ import requests
 class AddOGCService:
     @staticmethod
     def detect_service_type(url: str) -> None or str:
-        for service in ['WFS', 'WCS', 'WMTS', 'WMS']:
-            capabilities_url = f'{url}?service={service}&request=GetCapabilities'
-            try:
-                response = requests.get(capabilities_url)
-                if response.status_code == 200:
+        services = ['WFS', 'WCS', 'WMTS', 'WMS']
+        for service in services:
+            if f"/{service}/".casefold() in url.casefold():
+                capabilities_url = f'{url}?service={service}&request=GetCapabilities'
+                if AddOGCService.check_service_response(capabilities_url):
                     return service
-            except requests.RequestException:
-                return None
+        for service in services:
+            capabilities_url = f'{url}?service={service}&request=GetCapabilities'
+            if AddOGCService.check_service_response(capabilities_url):
+                return service
         return None
+
+    @staticmethod
+    def check_service_response(url: str) -> bool:
+        try:
+            response = requests.get(url)
+            return response.status_code == 200
+        except requests.RequestException:
+            return False
 
     @staticmethod
     def add_service(url: str, service_type: str) -> None:
