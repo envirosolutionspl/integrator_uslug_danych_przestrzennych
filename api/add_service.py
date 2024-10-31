@@ -5,6 +5,9 @@ from typing import Dict
 from xml.etree import ElementTree as ET
 import requests
 
+from ..constants import SERVICES_NAMESPACES
+from ..https_adapter import get_legacy_session
+
 
 class AddOGCService:
     @staticmethod
@@ -24,8 +27,8 @@ class AddOGCService:
     @staticmethod
     def check_service_response(url: str) -> bool:
         try:
-            response = requests.get(url)
-            return response.status_code == 200
+            with get_legacy_session().get(url=url, verify=False) as resp:
+                return resp.status_code == 200
         except requests.RequestException:
             return False
 
@@ -45,11 +48,10 @@ class AddOGCService:
             capabilities_xml = reply.readAll().data().decode()
             reply.deleteLater()
         elif service_type == 'WMS':
-            response = requests.get(get_capabilities_url)
-            if response.status_code != 200:
-                return
-            capabilities_xml = response.content.decode()
-
+            with get_legacy_session().get(url=get_capabilities_url, verify=False) as resp:
+                if resp.status_code != 200:
+                    return
+                capabilities_xml = resp.content.decode()
         try:
             root = ET.fromstring(capabilities_xml)
             namespaces = AddOGCService._get_namespaces(service_type)
@@ -66,15 +68,7 @@ class AddOGCService:
 
     @staticmethod
     def _get_namespaces(service_type: str) -> Dict[str, str]:
-        if service_type == 'WCS':
-            return {'wcs': 'http://www.opengis.net/wcs/2.0', 'ows': 'http://www.opengis.net/ows/2.0'}
-        elif service_type == 'WFS':
-            return {'wfs': 'http://www.opengis.net/wfs/2.0', 'ows': 'http://www.opengis.net/ows/1.1'}
-        elif service_type == 'WMS':
-            return {'wms': 'http://www.opengis.net/wms'}
-        elif service_type == "WMTS":
-            return {'wmts': 'http://www.opengis.net/wmts/1.0', 'ows': 'http://www.opengis.net/ows/1.1'}
-        return {}
+        return SERVICES_NAMESPACES.get(service_type)
 
     @staticmethod
     def _process_wcs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> None:

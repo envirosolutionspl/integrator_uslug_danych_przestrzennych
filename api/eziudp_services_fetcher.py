@@ -3,6 +3,7 @@ from typing import Dict, Union, List
 import requests
 from lxml import html
 
+from ..https_adapter import get_legacy_session
 from ..constants import EZIUDP_URL
 
 
@@ -11,11 +12,11 @@ class EziudpServicesFetcher:
     def get_services_dict(url: str, idx: int) -> Dict[str, Union[str, List[str]]]:
         services = {}
         try:
-            response = requests.get(url)
-            response.raise_for_status()
+            with get_legacy_session().get(url=url, verify=False) as resp:
+                resp.raise_for_status()
         except requests.RequestException:
             return services
-        tree = html.fromstring(response.content)
+        tree = html.fromstring(resp.content)
         table = tree.xpath('//table[contains(@class, "table sortable")]')
         if not table:
             return services

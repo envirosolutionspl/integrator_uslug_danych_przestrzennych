@@ -4,6 +4,7 @@ import sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
@@ -62,6 +63,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setColumnWidth(0, 400)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
         self.services_table.setColumnWidth(1, 500)
+        self.services_table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.services_table.setSortingEnabled(True)
 
     def fill_services_table(self) -> None:
