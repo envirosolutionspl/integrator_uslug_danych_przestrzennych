@@ -4,9 +4,10 @@ import sys
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
@@ -37,6 +38,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def _setup_dialog(self) -> None:
         self.regionFetch = RegionFetch(teryt='')
         self.fill_voivodeships()
+        self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
         for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
@@ -61,15 +63,19 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setColumnWidth(0, 400)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
         self.services_table.setColumnWidth(1, 500)
+        self.services_table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
+        self.services_table.setSortingEnabled(True)
 
     def fill_services_table(self) -> None:
         dataset_dict = self.get_services_dict()
         for service_name, service_url in dataset_dict.items():
-            row = [
-                QStandardItem(service_name),
-                QStandardItem(service_url),
-            ]
-            self.model.appendRow(row)
+            urls = service_url if isinstance(service_url, list) else [service_url]
+            for url in urls:
+                row = [
+                    QStandardItem(service_name),
+                    QStandardItem(url),
+                ]
+                self.model.appendRow(row)
         self.services_table.setModel(self.model)
 
     def reload_table_by_teryt(self) -> None:
@@ -154,6 +160,16 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             services = self.eziudp_fetcher.get_services_wfc_wcs_by_teryt(unit_type, teryt)
         return services
+
+    def get_selected_services_urls(self) -> List[str]:
+        model = self.services_table.model()
+        selected_indexes = self.services_table.selectionModel().selectedRows()
+        values = []
+        for index in selected_indexes:
+            value_index = model.index(index.row(), 1)
+            value = model.data(value_index)
+            values.append(value)
+        return values
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)

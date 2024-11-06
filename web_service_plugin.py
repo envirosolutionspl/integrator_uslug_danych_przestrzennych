@@ -25,6 +25,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
+from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
@@ -177,21 +178,24 @@ class WebServicePlugin:
                 action)
             self.iface.removeToolBarIcon(action)
 
-    def run(self):
-        """Run method that performs all the real work"""
+    def add_service(self) -> None:
+        selected_urls = self.dlg.get_selected_services_urls()
+        for url in selected_urls:
+            service_type = AddOGCService.detect_service_type(url)
+            if not service_type:
+                return
+            AddOGCService.add_service(url, service_type)
 
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+    def setup_dialog(self) -> None:
+        self.dlg.add_btn.clicked.connect(self.add_service)
+
+    def run(self):
         if self.first_start == True:
             self.first_start = False
             self.dlg = WebServicePluginDialog()
+            self.setup_dialog()
 
-        # show the dialog
         self.dlg.show()
-        # Run the dialog event loop
         result = self.dlg.exec_()
-        # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
             pass
