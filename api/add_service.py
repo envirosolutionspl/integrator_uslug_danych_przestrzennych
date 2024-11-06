@@ -33,7 +33,8 @@ class AddOGCService:
             return False
 
     @staticmethod
-    def add_service(url: str, service_type: str) -> None:
+    def add_service(url: str, service_type: str) -> bool:
+        add_layer = False
         get_capabilities_url = f'{url}?service={service_type}&request=GetCapabilities'
         if service_type in ['WCS', 'WFS', 'WMTS']:
             network_manager = QgsNetworkAccessManager.instance()
@@ -44,34 +45,36 @@ class AddOGCService:
             event_loop.exec_()
             if reply.error() != reply.NoError:
                 reply.deleteLater()
-                return
+                return False
             capabilities_xml = reply.readAll().data().decode()
             reply.deleteLater()
         elif service_type == 'WMS':
             with get_legacy_session().get(url=get_capabilities_url, verify=False) as resp:
                 if resp.status_code != 200:
-                    return
+                    return False
                 capabilities_xml = resp.content.decode()
         try:
             root = ET.fromstring(capabilities_xml)
             namespaces = AddOGCService._get_namespaces(service_type)
             if service_type == 'WCS':
-                AddOGCService._process_wcs_layers(root, namespaces, url)
+                add_layer = AddOGCService._process_wcs_layers(root, namespaces, url)
             elif service_type == 'WFS':
-                AddOGCService._process_wfs_layers(root, namespaces, url)
+                add_layer = AddOGCService._process_wfs_layers(root, namespaces, url)
             elif service_type == 'WMS':
-                AddOGCService._process_wms_layers(root, namespaces, url)
+                add_layer = AddOGCService._process_wms_layers(root, namespaces, url)
             elif service_type == 'WMTS':
-                AddOGCService._process_wmts_layers(root, namespaces, url)
+                add_layer = AddOGCService._process_wmts_layers(root, namespaces, url)
+            return add_layer
         except ET.ParseError:
-            pass
+            return False
 
     @staticmethod
     def _get_namespaces(service_type: str) -> Dict[str, str]:
         return SERVICES_NAMESPACES.get(service_type)
 
     @staticmethod
-    def _process_wcs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> None:
+    def _process_wcs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        add_layer = False
         coverage_elements = root.findall('.//wcs:CoverageSummary', namespaces)
         for coverage in coverage_elements:
             coverage_id = coverage.find('wcs:CoverageId', namespaces).text
@@ -83,9 +86,12 @@ class AddOGCService:
             wcs_layer = QgsRasterLayer(uri, f'WCS Layer - {coverage_id}', 'wcs')
             if wcs_layer.isValid():
                 QgsProject.instance().addMapLayer(wcs_layer)
+                add_layer = True
+        return add_layer
 
     @staticmethod
-    def _process_wfs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> None:
+    def _process_wfs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        add_layer = False
         feature_types = root.findall('.//wfs:FeatureType', namespaces)
         for feature_type in feature_types:
             name_element = feature_type.find('wfs:Name', namespaces)
@@ -107,9 +113,12 @@ class AddOGCService:
             wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {layer_name}', 'WFS')
             if wfs_layer.isValid():
                 QgsProject.instance().addMapLayer(wfs_layer)
+                add_layer = True
+        return add_layer
 
     @staticmethod
-    def _process_wms_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> None:
+    def _process_wms_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        add_layer = False
         layers = root.findall(".//wms:Layer/wms:Name", namespaces)
         for layer_elem in layers:
             layer_name = layer_elem.text
@@ -117,8 +126,11 @@ class AddOGCService:
             wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {layer_name}', 'wms')
             if wms_layer.isValid():
                 QgsProject.instance().addMapLayer(wms_layer)
+                add_layer = True
+        return add_layer
 
-    def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> None:
+    def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        add_layer = False
         get_capabilities_url = f"{url}?service=WMTS&request=GetCapabilities"
         layers = root.findall('.//wmts:Layer', namespaces)
         for layer in layers:
@@ -138,4 +150,6 @@ class AddOGCService:
             wmts_layer = QgsRasterLayer(wmts_uri, f'WMTS Layer - {layer_identifier}', 'wms')
             if wmts_layer.isValid():
                 QgsProject.instance().addMapLayer(wmts_layer)
+                add_layer = True
+        return add_layer
 

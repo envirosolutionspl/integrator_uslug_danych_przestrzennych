@@ -161,14 +161,14 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             services = self.eziudp_fetcher.get_services_wfc_wcs_by_teryt(unit_type, teryt)
         return services
 
-    def get_selected_services_urls(self) -> List[str]:
+    def get_selected_services_urls(self) -> Dict[str, str]:
         model = self.services_table.model()
         selected_indexes = self.services_table.selectionModel().selectedRows()
-        values = []
+        values = {}
         for index in selected_indexes:
+            name_index = model.index(index.row(), 0)
             value_index = model.index(index.row(), 1)
-            value = model.data(value_index)
-            values.append(value)
+            values[model.data(name_index)] = model.data(value_index)
         return values
 
     def showEvent(self, event: QShowEvent) -> None:
