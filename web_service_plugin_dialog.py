@@ -15,9 +15,9 @@ from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
     CHECKBOXES,
     RADIOBUTTONS,
-    CHECKBOX_COMBOBOX_LINK, CHECKBOX_TYPES_LINK, COMBOBOX_CHECKBOX_LINK
+    CHECKBOX_COMBOBOX_LINK,
+    CHECKBOX_TYPES_LINK
 )
-from .api.region_fetch import RegionFetch
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
