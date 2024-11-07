@@ -26,17 +26,17 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, regionFetch, parent=None):
         super(WebServicePluginDialog, self).__init__(parent)
         self.setupUi(self)
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
+        self.regionFetch = regionFetch
         self._setup_dialog()
         self._setup_signals()
         self.setup_table()
 
     def _setup_dialog(self) -> None:
-        self.regionFetch = RegionFetch(teryt='')
         self.fill_voivodeships()
         self.coord_sys_groupbox.hide()
 
