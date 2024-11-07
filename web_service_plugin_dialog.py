@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+from functools import partial
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -16,7 +17,8 @@ from .constants import (
     CHECKBOXES,
     RADIOBUTTONS,
     CHECKBOX_COMBOBOX_LINK,
-    CHECKBOX_TYPES_LINK
+    CHECKBOX_TYPES_LINK,
+    COMBOBOX_CHECKBOX_LINK
 )
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -45,19 +47,26 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             fetch_func, dependent_combo = combo_items
             combo_obj = getattr(self, base_combo)
             combo_obj.currentTextChanged.connect(
-                lambda _, func=fetch_func, combo=dependent_combo: self.setup_administrative_unit_obj(func, combo)
+                partial(self.setup_administrative_unit_obj, fetch_func, dependent_combo)
             )
-        for obj in [*CHECKBOXES, *RADIOBUTTONS]:
-            getattr(self, obj).toggled.connect(self.setup_table)
+        widgets = [*CHECKBOXES, *RADIOBUTTONS]
+        for obj in widgets:
+            widget_obj = getattr(self, obj)
+            widget_obj.toggled.connect(self.setup_table)
         for combo_name in CHECKBOX_COMBOBOX_LINK.keys():
-            getattr(self, combo_name).currentTextChanged.connect(self.reload_table_by_teryt)
+            combo_obj = getattr(self, combo_name)
+            combo_obj.currentTextChanged.connect(self.reload_table_by_teryt)
         for obj in CHECKBOXES:
-            getattr(self, obj).stateChanged.connect(self.enable_comboboxes)
+            checkbox_obj = getattr(self, obj)
+            checkbox_obj.stateChanged.connect(self.enable_comboboxes)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nazwa usługi', 'Adres usługi'])
         self.fill_services_table()
+        self.configure_table_header()
+
+    def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Interactive)
         self.services_table.setColumnWidth(0, 400)
