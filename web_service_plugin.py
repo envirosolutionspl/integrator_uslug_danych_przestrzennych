@@ -25,6 +25,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
+from .api.region_fetch import RegionFetch
 from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -73,6 +74,7 @@ class WebServicePlugin:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.regionFetch = RegionFetch(teryt='')
 
 
     # noinspection PyMethodMayBeStatic
