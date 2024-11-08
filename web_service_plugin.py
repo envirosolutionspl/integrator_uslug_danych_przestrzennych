@@ -173,7 +173,7 @@ class WebServicePlugin:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        self.dlg = WebServicePluginDialog()
+        self.dlg = WebServicePluginDialog(self.regionFetch)
         self.setup_dialog()
 
         icon_path = ':/plugins/web_service_plugin/images/icon.png'
