@@ -36,7 +36,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setup_table()
 
     def _setup_dialog(self) -> None:
-        self.regionFetch = RegionFetch(teryt='')
+        self.regionFetch = RegionFetch()
         self.fill_voivodeships()
         self.coord_sys_groupbox.hide()
 
@@ -113,20 +113,20 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.setup_comboboxes(child)
 
     def enable_comboboxes(self) -> None:
-        pass
-        # comboboxes_to_hide = []
-        # for check, cmb in COMBOBOX_CHECKBOX_LINK.items():
-        #     combo_obj = getattr(self, cmb)
-        #     combo_obj.setStyleSheet("QComboBox { color: black }")
-        #     getattr(self, cmb).setEnabled(True)
-        #     if getattr(self, check).isChecked():
-        #         combo_idx = list(COMBOBOX_CHECKBOX_LINK).index(check) + 1
-        #         comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values())[combo_idx:])
-        #         break
-        # for combo in comboboxes_to_hide:
-        #     combo_obj = getattr(self, combo)
-        #     combo_obj.setStyleSheet("QComboBox { color: transparent }")
-        #     combo_obj.setEnabled(False)
+        comboboxes_to_hide = []
+        if self.sender().objectName() == 'kraj_check':
+            comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values()))
+        else:
+            for check, cmb in COMBOBOX_CHECKBOX_LINK.items():
+                combo_obj = getattr(self, cmb)
+                combo_obj.setEnabled(True)
+                if getattr(self, check).isChecked():
+                    combo_idx = list(COMBOBOX_CHECKBOX_LINK).index(check) + 1
+                    comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values())[combo_idx:])
+                    break
+        for combo in comboboxes_to_hide:
+            combo_obj = getattr(self, combo)
+            combo_obj.setEnabled(False)
 
     def get_services_dict(self) -> Dict[str, str]:
         if self.kraj_check.isChecked():
