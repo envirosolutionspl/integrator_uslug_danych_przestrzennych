@@ -32,6 +32,9 @@ from .resources import *
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
 
+"""Wersja wtyczki"""
+plugin_version = '0.1.0'
+plugin_name = 'Web Service Plugin'
 
 class WebServicePlugin:
     """QGIS Plugin Implementation."""
@@ -174,7 +177,7 @@ class WebServicePlugin:
         icon_path = ':/plugins/web_service_plugin/images/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'&Web Service Plugin'),
+            text=self.tr(plugin_name),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -215,6 +218,10 @@ class WebServicePlugin:
     def run(self):
         if self.first_start == True:
             self.first_start = False
+
+             # informacje o wersji
+            self.dlg.setWindowTitle('%s %s' % (plugin_name, plugin_version))
+            self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
         result = self.dlg.exec_()
