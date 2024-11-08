@@ -65,8 +65,6 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setColumnWidth(1, 500)
         self.services_table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.services_table.setSortingEnabled(True)
-        header = self.services_table.verticalHeader()
-        header.setDefaultAlignment(Qt.AlignCenter)
 
     def fill_services_table(self) -> None:
         dataset_dict = self.get_services_dict()

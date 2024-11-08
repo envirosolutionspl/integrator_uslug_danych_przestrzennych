@@ -397,7 +397,7 @@
       <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
