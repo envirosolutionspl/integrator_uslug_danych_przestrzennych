@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
 from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
@@ -179,12 +179,23 @@ class WebServicePlugin:
             self.iface.removeToolBarIcon(action)
 
     def add_service(self) -> None:
+        successfully_add = {}
         selected_urls = self.dlg.get_selected_services_urls()
-        for url in selected_urls:
+        for name, url in selected_urls.items():
             service_type = AddOGCService.detect_service_type(url)
             if not service_type:
                 return
-            AddOGCService.add_service(url, service_type)
+            add_layer = AddOGCService.add_service(url, service_type)
+            successfully_add[name] = add_layer
+        msgbox = QMessageBox(
+            QMessageBox.Information,
+            'Informacja',
+            '\n'.join(
+                f'Dodano usługę {key}' if value else f'Nie dodano usługi {key}'
+                for key, value in successfully_add.items()
+            )
+        )
+        msgbox.exec_()
 
     def setup_dialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.add_service)
