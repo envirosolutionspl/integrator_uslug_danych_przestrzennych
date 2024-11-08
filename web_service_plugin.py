@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QMessageBox
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
 from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
@@ -62,11 +62,18 @@ class WebServicePlugin:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&web_service_plugin')
+        self.menu = self.tr(u'&EnviroSolutions')
+
+        # toolbar
+        self.toolbar = self.iface.mainWindow().findChild(QToolBar, 'EnviroSolutions')
+        if not self.toolbar:
+            self.toolbar = self.iface.addToolBar(u'EnviroSolutions')
+            self.toolbar.setObjectName(u'EnviroSolutions')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -146,7 +153,8 @@ class WebServicePlugin:
 
         if add_to_toolbar:
             # Adds plugin icon to Plugins toolbar
-            self.iface.addToolBarIcon(action)
+            # self.iface.addToolBarIcon(action)
+            self.toolbar.addAction(action)
 
         if add_to_menu:
             self.iface.addPluginToMenu(
@@ -160,10 +168,13 @@ class WebServicePlugin:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
+        self.dlg = WebServicePluginDialog()
+        self.setup_dialog()
+
         icon_path = ':/plugins/web_service_plugin/images/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Web Service Plugin'),
+            text=self.tr(u'&Web Service Plugin'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -174,9 +185,10 @@ class WebServicePlugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&web_service_plugin'),
+                self.tr(u'&EnviroSolutions'),
                 action)
-            self.iface.removeToolBarIcon(action)
+            # self.iface.removeToolBarIcon(action)
+            self.toolbar.removeAction(action)
 
     def add_service(self) -> None:
         successfully_add = {}
@@ -203,8 +215,6 @@ class WebServicePlugin:
     def run(self):
         if self.first_start == True:
             self.first_start = False
-            self.dlg = WebServicePluginDialog()
-            self.setup_dialog()
 
         self.dlg.show()
         result = self.dlg.exec_()
