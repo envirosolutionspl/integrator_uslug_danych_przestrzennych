@@ -11,8 +11,7 @@ from ..https_adapter import get_legacy_session
 
 class AddOGCService:
     @staticmethod
-    def detect_service_type(url: str) -> None or str:
-        services = ['WFS', 'WCS', 'WMTS', 'WMS']
+    def detect_service_type(url: str, services: list [str]) -> None or str:    
         for service in services:
             if f"/{service}/".casefold() in url.casefold():
                 capabilities_url = f'{url}?service={service}&request=GetCapabilities'
@@ -28,7 +27,8 @@ class AddOGCService:
     def check_service_response(url: str) -> bool:
         try:
             with get_legacy_session().get(url=url, verify=False) as resp:
-                return resp.status_code == 200
+                if resp.status_code == 200 and "<Service>" in resp.text:
+                    return True
         except requests.RequestException:
             return False
 
@@ -36,6 +36,7 @@ class AddOGCService:
     def add_service(url: str, service_type: str) -> bool:
         add_layer = False
         get_capabilities_url = f'{url}?service={service_type}&request=GetCapabilities'
+        print('Service - ', service_type)
         if service_type in ['WCS', 'WFS', 'WMTS']:
             network_manager = QgsNetworkAccessManager.instance()
             request = QNetworkRequest(QUrl(get_capabilities_url))
@@ -83,6 +84,7 @@ class AddOGCService:
                 f"identifier={coverage_id}&"
                 f"url={url}"
             )
+            print('WCS uri', uri)
             wcs_layer = QgsRasterLayer(uri, f'WCS Layer - {coverage_id}', 'wcs')
             if wcs_layer.isValid():
                 QgsProject.instance().addMapLayer(wcs_layer)
@@ -110,6 +112,7 @@ class AddOGCService:
                 f"typename={feature_type_name}&"
                 f"outputFormat=GML3"
             )
+            print('WFS uri', uri)
             wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {layer_name}', 'WFS')
             if wfs_layer.isValid():
                 QgsProject.instance().addMapLayer(wfs_layer)
@@ -123,6 +126,7 @@ class AddOGCService:
         for layer_elem in layers:
             layer_name = layer_elem.text
             wms_uri = f"url={url}&layers={layer_name}&styles=&format=image/png"
+            print('WMS uri - ', wms_uri)
             wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {layer_name}', 'wms')
             if wms_layer.isValid():
                 QgsProject.instance().addMapLayer(wms_layer)
@@ -147,6 +151,7 @@ class AddOGCService:
                 "tilePixelRatio=0&"
                 f"url={get_capabilities_url.replace('&', '%26')}"
                 )
+            print('WMTS uri - ', wmts_uri)
             wmts_layer = QgsRasterLayer(wmts_uri, f'WMTS Layer - {layer_identifier}', 'wms')
             if wmts_layer.isValid():
                 QgsProject.instance().addMapLayer(wmts_layer)
