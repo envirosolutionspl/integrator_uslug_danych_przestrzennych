@@ -11,31 +11,36 @@ from ..https_adapter import get_legacy_session
 
 class AddOGCService:
     @staticmethod
-    def detect_service_type(url: str) -> None or str:
-        services = ['WFS', 'WCS', 'WMTS', 'WMS']
+    def detect_service_type(url: str, services: list [str]) -> None or str:    
         for service in services:
-            if f"/{service}/".casefold() in url.casefold():
-                capabilities_url = f'{url}?service={service}&request=GetCapabilities'
-                if AddOGCService.check_service_response(capabilities_url):
+            if service.casefold() in url.casefold():
+                suffix = '' if '?' in url else f'?service={service}&request=GetCapabilities'
+                capabilities_url = f'{url}{suffix}'
+                if AddOGCService.check_service_response(capabilities_url):  
                     return service
+
         for service in services:
-            capabilities_url = f'{url}?service={service}&request=GetCapabilities'
+            suffix = '' if '?' in url else f'?service={service}&request=GetCapabilities'
+            capabilities_url = f'{url}{suffix}'
             if AddOGCService.check_service_response(capabilities_url):
                 return service
+
         return None
 
     @staticmethod
     def check_service_response(url: str) -> bool:
         try:
             with get_legacy_session().get(url=url, verify=False) as resp:
-                return resp.status_code == 200
+                if resp.status_code == 200 and "Service" in resp.text:
+                    return True
         except requests.RequestException:
             return False
 
     @staticmethod
     def add_service(url: str, service_type: str) -> bool:
         add_layer = False
-        get_capabilities_url = f'{url}?service={service_type}&request=GetCapabilities'
+        formatURL = '' if '?' in url else f'?service={service_type}&request=GetCapabilities'
+        get_capabilities_url = f'{url}{formatURL}'
         if service_type in ['WCS', 'WFS', 'WMTS']:
             network_manager = QgsNetworkAccessManager.instance()
             request = QNetworkRequest(QUrl(get_capabilities_url))
@@ -49,10 +54,13 @@ class AddOGCService:
             capabilities_xml = reply.readAll().data().decode()
             reply.deleteLater()
         elif service_type == 'WMS':
-            with get_legacy_session().get(url=get_capabilities_url, verify=False) as resp:
-                if resp.status_code != 200:
-                    return False
-                capabilities_xml = resp.content.decode()
+            try:
+                with get_legacy_session().get(url=get_capabilities_url, verify=False) as resp:
+                    if resp.status_code != 200:
+                        return False
+                    capabilities_xml = resp.content.decode()
+            except:
+                return False
         try:
             root = ET.fromstring(capabilities_xml)
             namespaces = AddOGCService._get_namespaces(service_type)
