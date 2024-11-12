@@ -61,20 +61,20 @@ class AddOGCService:
                     capabilities_xml = resp.content.decode()
             except:
                 return False
-        # try:
-        root = ET.fromstring(capabilities_xml)
-        namespaces = AddOGCService._get_namespaces(service_type)
-        if service_type == 'WCS':
-            add_layer = AddOGCService._process_wcs_layers(root, namespaces, url)
-        elif service_type == 'WFS':
-            add_layer = AddOGCService._process_wfs_layers(root, namespaces, url)
-        elif service_type == 'WMS':
-            add_layer = AddOGCService._process_wms_layers(root, namespaces, url)
-        elif service_type == 'WMTS':
-            add_layer = AddOGCService._process_wmts_layers(root, namespaces, url)
-        return add_layer
-        # except ET.ParseError:
-        # return False
+        try:
+            root = ET.fromstring(capabilities_xml)
+            namespaces = AddOGCService._get_namespaces(service_type)
+            if service_type == 'WCS':
+                add_layer = AddOGCService._process_wcs_layers(root, namespaces, url)
+            elif service_type == 'WFS':
+                add_layer = AddOGCService._process_wfs_layers(root, namespaces, url)
+            elif service_type == 'WMS':
+                add_layer = AddOGCService._process_wms_layers(root, namespaces, url)
+            elif service_type == 'WMTS':
+                add_layer = AddOGCService._process_wmts_layers(root, namespaces, url)
+            return add_layer
+        except ET.ParseError:
+            return False
 
     @staticmethod
     def _get_namespaces(service_type: str) -> Dict[str, str]:
