@@ -10,6 +10,8 @@ from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
 
+from PyQt5.QtCore import QSortFilterProxyModel
+
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
 from .constants import (
@@ -37,10 +39,10 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self._setup_dialog()
         self._setup_signals()
         self.setup_table()
+        self.setup_search()
 
     def _setup_dialog(self) -> None:
         self.fill_voivodeships()
-        self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
         for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
@@ -59,6 +61,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         for obj in CHECKBOXES:
             checkbox_obj = getattr(self, obj)
             checkbox_obj.stateChanged.connect(self.enable_comboboxes)
+        self.search_lineedit.textChanged.connect(self.apply_search_filter)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
@@ -122,6 +125,16 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 child.setCurrentIndex(-1)
             elif isinstance(child, QWidget):
                 self.setup_comboboxes(child)
+
+    def setup_search(self) -> None:
+        self.proxy_model = QSortFilterProxyModel()
+        self.proxy_model.setSourceModel(self.model)
+        self.proxy_model.setFilterKeyColumn(0)
+        self.services_table.setModel(self.proxy_model)
+
+    def apply_search_filter(self, text: str) -> None:
+        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.proxy_model.setFilterFixedString(text)
 
     def enable_comboboxes(self) -> None:
         pass
