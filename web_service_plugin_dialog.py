@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+from functools import partial
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -15,9 +16,10 @@ from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
     CHECKBOXES,
     RADIOBUTTONS,
-    CHECKBOX_COMBOBOX_LINK, CHECKBOX_TYPES_LINK, COMBOBOX_CHECKBOX_LINK
+    CHECKBOX_COMBOBOX_LINK,
+    CHECKBOX_TYPES_LINK,
+    COMBOBOX_CHECKBOX_LINK
 )
-from .api.region_fetch import RegionFetch
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,17 +28,17 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, regionFetch, parent=None):
         super(WebServicePluginDialog, self).__init__(parent)
         self.setupUi(self)
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
+        self.regionFetch = regionFetch
         self._setup_dialog()
         self._setup_signals()
         self.setup_table()
 
     def _setup_dialog(self) -> None:
-        self.regionFetch = RegionFetch()
         self.fill_voivodeships()
         self.coord_sys_groupbox.hide()
 
@@ -45,19 +47,26 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             fetch_func, dependent_combo = combo_items
             combo_obj = getattr(self, base_combo)
             combo_obj.currentTextChanged.connect(
-                lambda _, func=fetch_func, combo=dependent_combo: self.setup_administrative_unit_obj(func, combo)
+                partial(self.setup_administrative_unit_obj, fetch_func, dependent_combo)
             )
-        for obj in [*CHECKBOXES, *RADIOBUTTONS]:
-            getattr(self, obj).toggled.connect(self.setup_table)
+        widgets = [*CHECKBOXES, *RADIOBUTTONS]
+        for obj in widgets:
+            widget_obj = getattr(self, obj)
+            widget_obj.toggled.connect(self.setup_table)
         for combo_name in CHECKBOX_COMBOBOX_LINK.keys():
-            getattr(self, combo_name).currentTextChanged.connect(self.reload_table_by_teryt)
+            combo_obj = getattr(self, combo_name)
+            combo_obj.currentTextChanged.connect(self.reload_table_by_teryt)
         for obj in CHECKBOXES:
-            getattr(self, obj).stateChanged.connect(self.enable_comboboxes)
+            checkbox_obj = getattr(self, obj)
+            checkbox_obj.stateChanged.connect(self.enable_comboboxes)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nazwa usługi', 'Adres usługi'])
         self.fill_services_table()
+        self.configure_table_header()
+
+    def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Interactive)
         self.services_table.setColumnWidth(0, 400)
@@ -65,6 +74,8 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setColumnWidth(1, 500)
         self.services_table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.services_table.setSortingEnabled(True)
+        header = self.services_table.verticalHeader()
+        header.setDefaultAlignment(Qt.AlignCenter)
 
     def fill_services_table(self) -> None:
         dataset_dict = self.get_services_dict()
@@ -161,14 +172,14 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             services = self.eziudp_fetcher.get_services_wfc_wcs_by_teryt(unit_type, teryt)
         return services
 
-    def get_selected_services_urls(self) -> List[str]:
+    def get_selected_services_urls(self) -> Dict[str, str]:
         model = self.services_table.model()
         selected_indexes = self.services_table.selectionModel().selectedRows()
-        values = []
+        values = {}
         for index in selected_indexes:
+            name_index = model.index(index.row(), 0)
             value_index = model.index(index.row(), 1)
-            value = model.data(value_index)
-            values.append(value)
+            values[model.data(name_index)] = model.data(value_index)
         return values
 
     def showEvent(self, event: QShowEvent) -> None:
