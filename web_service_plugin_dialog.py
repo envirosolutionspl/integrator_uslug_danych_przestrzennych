@@ -66,6 +66,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.model.setHorizontalHeaderLabels(['Nazwa usługi', 'Adres usługi'])
         self.fill_services_table()
         self.configure_table_header()
+        self.setup_search()
 
     def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
