@@ -126,7 +126,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def enable_comboboxes(self) -> None:
         comboboxes_to_hide = []
         if self.sender().objectName() == 'kraj_check':
-            comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values()))
+            comboboxes_to_hide = list(COMBOBOX_CHECKBOX_LINK.values())
         else:
             for check, cmb in COMBOBOX_CHECKBOX_LINK.items():
                 combo_obj = getattr(self, cmb)
