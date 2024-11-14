@@ -43,7 +43,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
-        self.kraj_check.clicked.connect(self.wojewodztwo_combo.clear)
+        self.kraj_check.clicked.connect(partial(self.wojewodztwo_combo.setCurrentIndex, -1))
         for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
             fetch_func, dependent_combo = combo_items
             combo_obj = getattr(self, base_combo)
