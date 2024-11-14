@@ -5,7 +5,7 @@ from functools import partial
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
-from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
@@ -37,10 +37,10 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self._setup_dialog()
         self._setup_signals()
         self.setup_table()
+        self.setup_search()
 
     def _setup_dialog(self) -> None:
         self.fill_voivodeships()
-        self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
         self.kraj_check.clicked.connect(partial(self.wojewodztwo_combo.setCurrentIndex, -1))
@@ -60,12 +60,14 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         for obj in CHECKBOXES:
             checkbox_obj = getattr(self, obj)
             checkbox_obj.stateChanged.connect(self.enable_comboboxes)
+        self.search_lineedit.textChanged.connect(self.apply_search_filter)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nazwa usługi', 'Adres usługi'])
         self.fill_services_table()
         self.configure_table_header()
+        self.setup_search()
 
     def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
@@ -123,6 +125,16 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 child.setCurrentIndex(-1)
             elif isinstance(child, QWidget):
                 self.setup_comboboxes(child)
+
+    def setup_search(self) -> None:
+        self.proxy_model = QSortFilterProxyModel()
+        self.proxy_model.setSourceModel(self.model)
+        self.proxy_model.setFilterKeyColumn(0)
+        self.services_table.setModel(self.proxy_model)
+
+    def apply_search_filter(self, text: str) -> None:
+        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.proxy_model.setFilterFixedString(text)
 
     def enable_comboboxes(self) -> None:
         comboboxes_to_hide = []

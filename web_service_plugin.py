@@ -199,7 +199,7 @@ class WebServicePlugin:
         successfully_add = {}
         selected_urls = self.dlg.get_selected_services_urls()
         for name, url in selected_urls.items():
-            services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS','WMS']
+            services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
             service_type = AddOGCService.detect_service_type(url, services)
             if not service_type:
                 return
