@@ -23,106 +23,7 @@
    <property name="verticalSpacing">
     <number>4</number>
    </property>
-   <item row="0" column="1" rowspan="2">
-    <widget class="QGroupBox" name="units_wdgt">
-     <property name="title">
-      <string>Wybór obszaru usług</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="woj_check">
-        <property name="text">
-         <string>Województwa</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="pow_check">
-        <property name="text">
-         <string>Powiatu</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="gmi_check">
-        <property name="text">
-         <string>Gminy</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
-       <widget class="QComboBox" name="wojewodztwo_combo">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-        <item>
-         <property name="text">
-          <string/>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QComboBox" name="powiat_combo">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QComboBox" name="gmina_combo">
-        <property name="editable">
-         <bool>true</bool>
-        </property>
-        <property name="maxVisibleItems">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="kraj_check">
-        <property name="text">
-         <string>Krajowe</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="2">
+   <item row="9" column="0" colspan="2">
     <layout class="QHBoxLayout" name="Stopka">
      <property name="spacing">
       <number>5</number>
@@ -272,9 +173,12 @@
       <set>Qt::AlignCenter</set>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="topMargin">
+       <number>6</number>
+      </property>
       <item>
        <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="1">
+        <item row="0" column="1" alignment="Qt::AlignHCenter">
          <widget class="QRadioButton" name="wfs_rdbtn">
           <property name="toolTip">
            <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
@@ -287,7 +191,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
+        <item row="0" column="0" alignment="Qt::AlignHCenter">
          <widget class="QRadioButton" name="wms_rdbtn">
           <property name="toolTip">
            <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
@@ -304,6 +208,209 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QTableView" name="services_table">
+     <property name="toolTip">
+      <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QGroupBox" name="units_wdgt">
+     <property name="title">
+      <string>Wybór obszaru usług</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="1">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="woj_check">
+          <property name="text">
+           <string>Województwa</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="kraj_check">
+          <property name="text">
+           <string>Krajowe</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="gmi_check">
+          <property name="text">
+           <string>Gminy</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="gmina_combo">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="wojewodztwo_combo">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>10</number>
+          </property>
+          <item>
+           <property name="text">
+            <string/>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="powiat_combo">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="maxVisibleItems">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="pow_check">
+          <property name="text">
+           <string>Powiatu</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="add_btn">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Dodaj</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="reject_btn">
+       <property name="text">
+        <string>Anuluj</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>60</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="4">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>60</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="coord_sys_groupbox">
@@ -344,75 +451,12 @@
      </layout>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="add_btn">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Dodaj</string>
-        </property>
-        <property name="autoDefault">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="reject_btn">
-        <property name="text">
-         <string>Anuluj</string>
-        </property>
-        <property name="autoDefault">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QTableView" name="services_table">
-     <property name="toolTip">
-      <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>wms_rdbtn</tabstop>
   <tabstop>wfs_rdbtn</tabstop>
   <tabstop>coord_sys_combo</tabstop>
-  <tabstop>wojewodztwo_combo</tabstop>
-  <tabstop>powiat_combo</tabstop>
-  <tabstop>gmina_combo</tabstop>
  </tabstops>
  <resources/>
  <connections>
