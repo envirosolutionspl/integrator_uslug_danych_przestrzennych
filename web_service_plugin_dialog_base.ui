@@ -98,21 +98,21 @@
       <item row="3" column="0">
        <widget class="QRadioButton" name="woj_rb">
         <property name="text">
-         <string>Województwo</string>
+         <string>Wojewódzkie</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0">
        <widget class="QRadioButton" name="pow_rb">
         <property name="text">
-         <string>Powiat</string>
+         <string>Powiatowe</string>
         </property>
        </widget>
       </item>
       <item row="5" column="0">
        <widget class="QRadioButton" name="gmi_rb">
         <property name="text">
-         <string>Gmina</string>
+         <string>Gminne</string>
         </property>
        </widget>
       </item>
