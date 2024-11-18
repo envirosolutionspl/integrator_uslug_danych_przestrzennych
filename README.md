@@ -1,6 +1,6 @@
 # Web Service Plugin
 
-# PL
+## PL
 
 **Web Service Plugin** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS/WMTS oraz WFS/WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
 
@@ -9,22 +9,24 @@
 * Wyświetlanie wykazu usług WMS/WMTS i WFS/WCS w czytelnej tabeli.
 * Wbudowana wyszukiwarka usług według nazwy.
 * Filtracja usług według jednostek administracyjnych:
-  * Usługi krajowe.
-  * Usługi dla województw, powiatów lub gmin.
+  * krajowe
+  * wojewódzkie
+  * powiatowe
+  * gminne
 * Możliwość dodawania wybranych usług bezpośrednio do projektu QGIS.
 
 ## Wymagania
 
-* Minimalna wersja QGIS:** ****3.22**.
+* Minimalna wersja QGIS: **3.22**.
 
 ## Instalacja
 
 Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 
-1. Otwórz QGIS.
-2. Przejdź do** ****Menedżera Wtyczek** (`Rozszerzenia > Zarządzaj i instaluj wtyczki`).
-3. Wyszukaj** ****Web Service Plugin** w sekcji dostępnych wtyczek.
-4. Kliknij** ****Zainstaluj** i poczekaj na zakończenie instalacji.
+1. Wtyczkę należy zainstalować w QGIS jako ZIP lub wgrać pliki wtyczki do lokalizacji `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
+2. Aby uruchomić wtyczkę, należy kliknąć na ikonę pomarańczowego drzewa.
+3. Jeżeli ikona wtyczki nie jest widoczna w panelu warstw, spróbuj zrestartować QGIS.
+4. Jeżeli wtyczka nadal nie jest widoczna, należy przejść w QGIS Desktop do `Wtyczki -> Zarządzanie wtyczkami -> Zainstalowane -> Web Service Plugin` -> Odinstalować wtyczkę i zainstalować ponownie.
 
 ## Jak używać
 
@@ -34,18 +36,17 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 
 ## Licencja
 
-Wtyczka jest dystrybuowana na licencji** ****Open Source**, co oznacza, że możesz jej używać, modyfikować i rozpowszechniać zgodnie z zasadami tej licencji.
+Wtyczka jest dystrybuowana na licencji **Open Source**, co oznacza, że możesz jej używać, modyfikować i rozpowszechniać zgodnie z zasadami tej licencji.
 
 ## Zgłaszanie problemów
 
-W przypadku problemów z wtyczką zgłaszaj błędy lub propozycje ulepszeń przez** ****[GitHub** **Issues](#)**.
+W przypadku problemów z wtyczką zgłaszaj błędy lub propozycje ulepszeń przez **[GitHub Issues](https://github.com/envirosolutionspl/web_service_plugin/issues)**.
 
 ## Kontakt
 
-Wtyczka została stworzona przez** ****EnviroSolutions**. W razie pytań lub potrzeby wsparcia skontaktuj się z nami przez e-mail:** ****[office@envirosolutions.pl]()**.
+Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrzeby wsparcia skontaktuj się z nami przez e-mail:** **[office@envirosolutions.pl](mailto:office@envirosolutions.pl)**.
 
-
-# EN
+## EN
 
 **Web Service Plugin** is a QGIS plugin that displays a list of WMS/WMTS and WFS/WCS services from the Geoportal and the spatial data sets and services registry in a table. Users can easily search and filter available services and add them directly to a QGIS project.
 
@@ -54,22 +55,24 @@ Wtyczka została stworzona przez** ****EnviroSolutions**. W razie pytań lub pot
 * Displays a list of WMS/WMTS and WFS/WCS services in a user-friendly table.
 * Built-in search tool to find services by name.
 * Filtering services by administrative units:
-  * National services.
-  * Services for specific provinces, counties, or municipalities.
+  * national
+  * provincial
+  * district
+  * municipal
 * Ability to add selected services directly to a QGIS project.
 
 ## Requirements
 
-* Minimum QGIS version:** ****3.22**.
+* Minimum QGIS version: **3.22**.
 
 ## Installation
 
 To install the plugin, follow these steps:
 
-1. Open QGIS.
-2. Navigate to the** ****Plugin Manager** (`Plugins > Manage and Install Plugins`).
-3. Search for** ****Web Service Plugin** in the available plugins section.
-4. Click** ****Install** and wait for the process to complete.
+1. The plugin should be installed in QGIS as a ZIP or by uploading the plugin files to the location `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
+2. To launch the plugin, click on the orange tree icon.
+3. If the plugin icon is not visible in the layer panel, try restarting QGIS.
+4. If the plugin is still not visible, go to QGIS Desktop -> `Plugins -> Manage and Install Plugins -> Installed -> Web Service Plugin` -> Uninstall the plugin and reinstall it.
 
 ## How to Use
 
@@ -79,12 +82,12 @@ To install the plugin, follow these steps:
 
 ## License
 
-The plugin is distributed under an** ****Open Source License**, allowing you to use, modify, and share it freely according to the license terms.
+The plugin is distributed under an **Open Source License**, allowing you to use, modify, and share it freely according to the license terms.
 
 ## Reporting Issues
 
-If you encounter any issues or have suggestions for improvements, please report them via** ****[GitHub** **Issues](#)**.
+If you encounter any issues or have suggestions for improvements, please report them via **[GitHub Issues](https://github.com/envirosolutionspl/web_service_plugin/issues)**.
 
 ## Contact
 
-The plugin was developed by** ****EnviroSolutions**. For questions or support, contact us at:** ****[office@envirosolutions.pl]()**.
+The plugin was developed by ****EnviroSolutions**. For questions or support, contact us at:** **[office@envirosolutions.pl](mailto:office@envirosolutions.pl)**.
