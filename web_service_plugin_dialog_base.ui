@@ -41,37 +41,17 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="woj_check">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="kraj_rb">
         <property name="text">
-         <string>Województwa</string>
+         <string>Krajowe</string>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="pow_check">
-        <property name="text">
-         <string>Powiatu</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="gmi_check">
-        <property name="text">
-         <string>Gminy</string>
-        </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
+      <item row="3" column="1" colspan="2">
        <widget class="QComboBox" name="wojewodztwo_combo">
         <property name="enabled">
          <bool>false</bool>
@@ -89,7 +69,7 @@
         </item>
        </widget>
       </item>
-      <item row="2" column="1" colspan="2">
+      <item row="4" column="1" colspan="2">
        <widget class="QComboBox" name="powiat_combo">
         <property name="enabled">
          <bool>false</bool>
@@ -102,7 +82,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QComboBox" name="gmina_combo">
         <property name="enabled">
          <bool>false</bool>
@@ -115,17 +95,25 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="kraj_check">
+      <item row="3" column="0">
+       <widget class="QRadioButton" name="woj_rb">
         <property name="text">
-         <string>Krajowe</string>
+         <string>Wojewódzkie</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QRadioButton" name="pow_rb">
+        <property name="text">
+         <string>Powiatowe</string>
         </property>
-        <attribute name="buttonGroup">
-         <string notr="true">buttonGroup</string>
-        </attribute>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QRadioButton" name="gmi_rb">
+        <property name="text">
+         <string>Gminne</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -465,11 +453,4 @@
    </hints>
   </connection>
  </connections>
- <buttongroups>
-  <buttongroup name="buttonGroup">
-   <property name="exclusive">
-    <bool>true</bool>
-   </property>
-  </buttongroup>
- </buttongroups>
 </ui>
