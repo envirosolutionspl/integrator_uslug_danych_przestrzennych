@@ -36,7 +36,7 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 
 ## Licencja
 
-Wtyczka jest dystrybuowana na licencji **Open Source**, co oznacza, że możesz jej używać, modyfikować i rozpowszechniać zgodnie z zasadami tej licencji.
+Wtyczka jest dystrybuowana na licencji **GPL-3.0**, co oznacza, że możesz jej używać, modyfikować i rozpowszechniać zgodnie z zasadami tej licencji.
 
 ## Zgłaszanie problemów
 
@@ -82,7 +82,7 @@ To install the plugin, follow these steps:
 
 ## License
 
-The plugin is distributed under an **Open Source License**, allowing you to use, modify, and share it freely according to the license terms.
+The plugin is distributed under an **GPL-3.0** license, allowing you to use, modify, and share it freely according to the license terms.
 
 ## Reporting Issues
 
