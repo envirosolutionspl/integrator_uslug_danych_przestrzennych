@@ -31,7 +31,7 @@ class WebServicePluginDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/WebServicePlugin/icon.png'
+        path = ':/plugins/WebServicePlugin/icon.svg'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 

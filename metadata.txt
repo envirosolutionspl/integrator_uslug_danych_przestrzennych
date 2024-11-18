@@ -27,7 +27,7 @@ tags=python,wms,wmts,wfs,wcs,gugik,eziudp
 
 homepage=https://github.com/envirosolutionspl/web_service_plugin
 category=Plugins
-icon=icon.png
+icon=icon.svg
 # experimental flag
 experimental=True
 
