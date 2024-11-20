@@ -1,7 +1,7 @@
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer, QgsNetworkAccessManager
 from qgis.PyQt.QtCore import QEventLoop, QUrl
 from qgis.PyQt.QtNetwork import QNetworkRequest
-from typing import Dict
+from typing import Dict, List
 from xml.etree import ElementTree as ET
 import requests
 
@@ -11,20 +11,16 @@ from ..https_adapter import get_legacy_session
 
 class AddOGCService:
     @staticmethod
-    def detect_service_type(url: str, services: list [str]) -> None or str:    
+    def detect_service_type(url: str, services: List[str]) -> None or str:
         for service in services:
             if service.casefold() in url.casefold():
-                suffix = '' if '?' in url else f'?service={service}&request=GetCapabilities'
-                capabilities_url = f'{url}{suffix}'
+                capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
                 if AddOGCService.check_service_response(capabilities_url):  
                     return service
-
         for service in services:
-            suffix = '' if '?' in url else f'?service={service}&request=GetCapabilities'
-            capabilities_url = f'{url}{suffix}'
+            capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
             if AddOGCService.check_service_response(capabilities_url):
                 return service
-
         return None
 
     @staticmethod
@@ -37,42 +33,54 @@ class AddOGCService:
             return False
 
     @staticmethod
-    def add_service(url: str, service_type: str) -> bool:
-        add_layer = False
-        formatURL = '' if '?' in url else f'?service={service_type}&request=GetCapabilities'
-        get_capabilities_url = f'{url}{formatURL}'
-        if service_type in ['WCS', 'WFS', 'WMTS']:
-            network_manager = QgsNetworkAccessManager.instance()
-            request = QNetworkRequest(QUrl(get_capabilities_url))
-            reply = network_manager.get(request)
-            event_loop = QEventLoop()
-            reply.finished.connect(event_loop.quit)
-            event_loop.exec_()
-            if reply.error() != reply.NoError:
-                reply.deleteLater()
-                return False
-            capabilities_xml = reply.readAll().data().decode()
+    def process_service(service_type, capabilities_xml, url):
+        root = ET.fromstring(capabilities_xml)
+        namespaces = AddOGCService._get_namespaces(service_type)
+        if service_type == 'WCS':
+            return AddOGCService._process_wcs_layers(root, namespaces, url)
+        elif service_type == 'WFS':
+            return AddOGCService._process_wfs_layers(root, namespaces, url)
+        elif service_type == 'WMS':
+            return AddOGCService._process_wms_layers(root, namespaces, url)
+        elif service_type == 'WMTS':
+            return AddOGCService._process_wmts_layers(root, namespaces, url)
+        return False
+
+    @staticmethod
+    def fetch_capabilities(url: str) -> str or None:
+        network_manager = QgsNetworkAccessManager.instance()
+        request = QNetworkRequest(QUrl(url))
+        reply = network_manager.get(request)
+        event_loop = QEventLoop()
+        reply.finished.connect(event_loop.quit)
+        event_loop.exec_()
+        if reply.error() != reply.NoError:
             reply.deleteLater()
+            return None
+        redirect_url = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
+        if redirect_url:
+            return AddOGCService.fetch_capabilities(redirect_url.toString())
+        capabilities_xml = reply.readAll().data().decode()
+        reply.deleteLater()
+        return capabilities_xml
+
+    @staticmethod
+    def add_service(url: str, service_type: str) -> bool:
+        get_capabilities = f"{url}{'' if '?' in url else f'?service={service_type}&request=GetCapabilities'}"
+        if service_type in ['WCS', 'WFS', 'WMTS']:
+            capabilities_xml = AddOGCService.fetch_capabilities(get_capabilities)
+            if not capabilities_xml:
+                return False
         elif service_type == 'WMS':
             try:
-                with get_legacy_session().get(url=get_capabilities_url, verify=False) as resp:
+                with get_legacy_session().get(url=get_capabilities, verify=False) as resp:
                     if resp.status_code != 200:
                         return False
                     capabilities_xml = resp.content.decode()
-            except:
+            except requests.exceptions.ConnectionError:
                 return False
         try:
-            root = ET.fromstring(capabilities_xml)
-            namespaces = AddOGCService._get_namespaces(service_type)
-            if service_type == 'WCS':
-                add_layer = AddOGCService._process_wcs_layers(root, namespaces, url)
-            elif service_type == 'WFS':
-                add_layer = AddOGCService._process_wfs_layers(root, namespaces, url)
-            elif service_type == 'WMS':
-                add_layer = AddOGCService._process_wms_layers(root, namespaces, url)
-            elif service_type == 'WMTS':
-                add_layer = AddOGCService._process_wmts_layers(root, namespaces, url)
-            return add_layer
+            return AddOGCService.process_service(service_type, capabilities_xml, url)
         except ET.ParseError:
             return False
 
@@ -114,9 +122,10 @@ class AddOGCService:
                 layer_name = feature_type_name
 
             uri = (
-                f"{url}?service=WFS&"
-                f"typename={feature_type_name}&"
-                f"outputFormat=GML3"
+                f"url='{url.replace('?service=WFS&request=GetCapabilities', '')}' "
+                f"typename='{feature_type_name}' "
+                f"pagingEnabled='true' "
+                f"version='auto'"
             )
             wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {layer_name}', 'WFS')
             if wfs_layer.isValid():
@@ -130,7 +139,18 @@ class AddOGCService:
         layers = root.findall(".//wms:Layer/wms:Name", namespaces)
         for layer_elem in layers:
             layer_name = layer_elem.text
-            wms_uri = f"url={url}&layers={layer_name}&styles=&format=image/png"
+            if 'arcgis' in url:
+                wms_uri = (
+                    "contextualWMSLegend=0&"
+                    "dpiMode=7&"
+                    "featureCount=10&"
+                    "format=image/png&"
+                    "layers=0&styles&"
+                    "tilePixelRatio=0&"
+                    f"url={url}"
+                )
+            else:
+                wms_uri = f"url={url}&layers={layer_name}&styles=&format=image/png"
             wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {layer_name}', 'wms')
             if wms_layer.isValid():
                 QgsProject.instance().addMapLayer(wms_layer)
@@ -139,7 +159,7 @@ class AddOGCService:
 
     def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
         add_layer = False
-        get_capabilities_url = f"{url}?service=WMTS&request=GetCapabilities"
+        url = f"{url}{'' if '?' in url else f'?service=WMTS&request=GetCapabilities'}"
         layers = root.findall('.//wmts:Layer', namespaces)
         for layer in layers:
             layer_identifier = layer.find('ows:Identifier', namespaces).text
@@ -153,7 +173,7 @@ class AddOGCService:
                 "styles=default&"
                 f"tileMatrixSet={tile_matrix_set}&"
                 "tilePixelRatio=0&"
-                f"url={get_capabilities_url.replace('&', '%26')}"
+                f"url={url.replace('&', '%26')}"
                 )
             wmts_layer = QgsRasterLayer(wmts_uri, f'WMTS Layer - {layer_identifier}', 'wms')
             if wmts_layer.isValid():
