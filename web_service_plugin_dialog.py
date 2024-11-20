@@ -40,6 +40,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setup_search()
 
     def _setup_dialog(self) -> None:
+        self.img_main.setMargin(9)
         self.fill_voivodeships()
 
     def _setup_signals(self) -> None:
