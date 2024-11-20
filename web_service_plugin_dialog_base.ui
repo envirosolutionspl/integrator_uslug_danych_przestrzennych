@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Web Service Plugin</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>images/icon.svg</normaloff>images/icon.svg</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
@@ -158,6 +162,9 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap>images/icon.svg</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
