@@ -176,7 +176,7 @@ class WebServicePlugin:
         self.dlg = WebServicePluginDialog(self.regionFetch)
         self.setup_dialog()
 
-        icon_path = ':/plugins/web_service_plugin/images/icon.png'
+        icon_path = ':/plugins/web_service_plugin/images/icon.svg'
         self.add_action(
             icon_path,
             text=self.tr(plugin_name),
