@@ -5,7 +5,7 @@ from functools import partial
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
-from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
+from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
@@ -14,11 +14,11 @@ from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
 from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
-    RADIOBUTTONS_UNITS,
-    RADIOBUTTONS_SERVICES,
-    COMBOBOX_RADIOBUTTON_LINK,
-    RADIOBUTTONS_TYPES_LINK,
-    RADIOBUTTON_COMBOBOX_LINK
+    CHECKBOXES,
+    RADIOBUTTONS,
+    CHECKBOX_COMBOBOX_LINK,
+    CHECKBOX_TYPES_LINK,
+    COMBOBOX_CHECKBOX_LINK
 )
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -37,38 +37,34 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self._setup_dialog()
         self._setup_signals()
         self.setup_table()
-        self.setup_search()
 
     def _setup_dialog(self) -> None:
-        self.img_main.setMargin(9)
         self.fill_voivodeships()
+        self.coord_sys_groupbox.hide()
 
     def _setup_signals(self) -> None:
-        self.kraj_rb.toggled.connect(partial(self.wojewodztwo_combo.setCurrentIndex, -1))
         for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
             fetch_func, dependent_combo = combo_items
             combo_obj = getattr(self, base_combo)
             combo_obj.currentTextChanged.connect(
                 partial(self.setup_administrative_unit_obj, fetch_func, dependent_combo)
             )
-        widgets = [*RADIOBUTTONS_UNITS, *RADIOBUTTONS_SERVICES]
+        widgets = [*CHECKBOXES, *RADIOBUTTONS]
         for obj in widgets:
             widget_obj = getattr(self, obj)
             widget_obj.toggled.connect(self.setup_table)
-        for combo_name in COMBOBOX_RADIOBUTTON_LINK.keys():
+        for combo_name in CHECKBOX_COMBOBOX_LINK.keys():
             combo_obj = getattr(self, combo_name)
             combo_obj.currentTextChanged.connect(self.reload_table_by_teryt)
-        for obj in RADIOBUTTONS_UNITS:
-            rdbtn_obj = getattr(self, obj)
-            rdbtn_obj.toggled.connect(self.enable_comboboxes)
-        self.search_lineedit.textChanged.connect(self.apply_search_filter)
+        for obj in CHECKBOXES:
+            checkbox_obj = getattr(self, obj)
+            checkbox_obj.stateChanged.connect(self.enable_comboboxes)
 
     def setup_table(self) -> None:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Nazwa usługi', 'Adres usługi'])
         self.fill_services_table()
         self.configure_table_header()
-        self.setup_search()
 
     def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
@@ -95,7 +91,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def reload_table_by_teryt(self) -> None:
         sender_name = self.sender().objectName()
-        if getattr(self, COMBOBOX_RADIOBUTTON_LINK.get(sender_name)).isChecked():
+        if getattr(self, CHECKBOX_COMBOBOX_LINK.get(sender_name)).isChecked():
             self.setup_table()
 
     def fill_voivodeships(self) -> None:
@@ -127,34 +123,24 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             elif isinstance(child, QWidget):
                 self.setup_comboboxes(child)
 
-    def setup_search(self) -> None:
-        self.proxy_model = QSortFilterProxyModel()
-        self.proxy_model.setSourceModel(self.model)
-        self.proxy_model.setFilterKeyColumn(0)
-        self.services_table.setModel(self.proxy_model)
-
-    def apply_search_filter(self, text: str) -> None:
-        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
-        self.proxy_model.setFilterFixedString(text)
-
     def enable_comboboxes(self) -> None:
-        comboboxes_to_hide = []
-        if self.sender().objectName() == 'kraj_check':
-            comboboxes_to_hide = list(RADIOBUTTON_COMBOBOX_LINK.values())
-        else:
-            for check, cmb in RADIOBUTTON_COMBOBOX_LINK.items():
-                combo_obj = getattr(self, cmb)
-                combo_obj.setEnabled(True)
-                if getattr(self, check).isChecked():
-                    combo_idx = list(RADIOBUTTON_COMBOBOX_LINK).index(check) + 1
-                    comboboxes_to_hide = list(list(RADIOBUTTON_COMBOBOX_LINK.values())[combo_idx:])
-                    break
-        for combo in comboboxes_to_hide:
-            combo_obj = getattr(self, combo)
-            combo_obj.setEnabled(False)
+        pass
+        # comboboxes_to_hide = []
+        # for check, cmb in COMBOBOX_CHECKBOX_LINK.items():
+        #     combo_obj = getattr(self, cmb)
+        #     combo_obj.setStyleSheet("QComboBox { color: black }")
+        #     getattr(self, cmb).setEnabled(True)
+        #     if getattr(self, check).isChecked():
+        #         combo_idx = list(COMBOBOX_CHECKBOX_LINK).index(check) + 1
+        #         comboboxes_to_hide = list(list(COMBOBOX_CHECKBOX_LINK.values())[combo_idx:])
+        #         break
+        # for combo in comboboxes_to_hide:
+        #     combo_obj = getattr(self, combo)
+        #     combo_obj.setStyleSheet("QComboBox { color: transparent }")
+        #     combo_obj.setEnabled(False)
 
     def get_services_dict(self) -> Dict[str, str]:
-        if self.kraj_rb.isChecked():
+        if self.kraj_check.isChecked():
             return self.get_servives_dict_for_pl()
         else:
             return self.get_servives_dict_by_teryt()
@@ -173,10 +159,10 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         return services
 
     def get_current_type_and_teryt(self) -> Tuple[str, str]:
-        for combo_name, rdbtn_name in COMBOBOX_RADIOBUTTON_LINK.items():
-            rdbtn_obj = getattr(self, rdbtn_name)
-            if rdbtn_obj.isChecked():
-                return RADIOBUTTONS_TYPES_LINK.get(rdbtn_name), getattr(self, combo_name).currentData()
+        for combo_name, checkbox_name in CHECKBOX_COMBOBOX_LINK.items():
+            check_obj = getattr(self, checkbox_name)
+            if check_obj.isChecked():
+                return CHECKBOX_TYPES_LINK.get(checkbox_name), getattr(self, combo_name).currentData()
 
     def get_servives_dict_by_teryt(self) -> Dict[str, str]:
         unit_type, teryt = self.get_current_type_and_teryt()

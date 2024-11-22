@@ -29,9 +29,9 @@ class WebServicePluginDialogTest(unittest.TestCase):
         """Runs after each test."""
         pass
 
-    def test_icon(self):
+    def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/WebServicePlugin/images/icon.svg'
+        path = ':/plugins/WebServicePlugin/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 

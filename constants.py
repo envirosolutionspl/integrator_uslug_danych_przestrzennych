@@ -17,30 +17,30 @@ ADMINISTRATIVE_UNITS_OBJECTS = {
     'powiat_combo': ('get_gmina_by_teryt', 'gmina_combo'),
 }
 
-RADIOBUTTONS_UNITS = [
-    'kraj_rb',
-    'woj_rb',
-    'pow_rb',
-    'gmi_rb',
+CHECKBOXES = [
+    'kraj_check',
+    'woj_check',
+    'pow_check',
+    'gmi_check',
 ]
 
-RADIOBUTTONS_SERVICES = [
+RADIOBUTTONS = [
     'wms_rdbtn',
     'wfs_rdbtn',
 ]
 
-COMBOBOX_RADIOBUTTON_LINK = {
-    'wojewodztwo_combo': 'woj_rb',
-    'powiat_combo': 'pow_rb',
-    'gmina_combo': 'gmi_rb',
+CHECKBOX_COMBOBOX_LINK = {
+    'wojewodztwo_combo': 'woj_check',
+    'powiat_combo': 'pow_check',
+    'gmina_combo': 'gmi_check',
 }
 
-RADIOBUTTON_COMBOBOX_LINK = {COMBOBOX_RADIOBUTTON_LINK[x]: x for x in COMBOBOX_RADIOBUTTON_LINK}
+COMBOBOX_CHECKBOX_LINK = {CHECKBOX_COMBOBOX_LINK[x] : x for x in CHECKBOX_COMBOBOX_LINK}
 
-RADIOBUTTONS_TYPES_LINK = {
-    'woj_rb': 'wojewodztwa',
-    'pow_rb': 'powiaty',
-    'gmi_rb': 'gminy',
+CHECKBOX_TYPES_LINK = {
+    'woj_check': 'wojewodztwa',
+    'pow_check': 'powiaty',
+    'gmi_check': 'gminy',
 }
 
 SERVICES_NAMESPACES = {
