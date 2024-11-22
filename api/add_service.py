@@ -15,7 +15,7 @@ class AddOGCService:
         for service in services:
             if service.casefold() in url.casefold():
                 capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-                if AddOGCService.check_service_response(capabilities_url):  
+                if AddOGCService.check_service_response(capabilities_url):
                     return service
         for service in services:
             capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
@@ -136,7 +136,7 @@ class AddOGCService:
     @staticmethod
     def _process_wms_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
         add_layer = False
-        layers = root.findall(".//wms:Layer/wms:Name", namespaces)
+        layers = root.findall(".//wms:Layer/wms:Tile", namespaces)
         for layer_elem in layers:
             layer_name = layer_elem.text
             if 'arcgis' in url:

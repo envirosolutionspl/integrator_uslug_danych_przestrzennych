@@ -201,10 +201,11 @@ class WebServicePlugin:
         for name, url in selected_urls.items():
             services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
             service_type = AddOGCService.detect_service_type(url, services)
-            if not service_type:
-                return
-            add_layer = AddOGCService.add_service(url, service_type)
-            successfully_add[name] = add_layer
+            if service_type:
+                add_layer = AddOGCService.add_service(url, service_type)
+                successfully_add[name] = add_layer
+            else:
+                successfully_add[name] = False
         msgbox = QMessageBox(
             QMessageBox.Information,
             'Informacja',
