@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/plugins/web_service_plugin" >
-        <file>images/icon.png</file>
+        <file>images/icon.svg</file>
         <file>images/es_logo.svg</file>
     </qresource>
 </RCC>
