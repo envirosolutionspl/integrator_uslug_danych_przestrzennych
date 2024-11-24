@@ -136,9 +136,12 @@ class AddOGCService:
     @staticmethod
     def _process_wms_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
         add_layer = False
-        layers = root.findall(".//wms:Layer/wms:Tile", namespaces)
-        for layer_elem in layers:
-            layer_name = layer_elem.text
+        layers_name = root.findall(".//wms:Layer/wms:Name", namespaces)
+        layers_title = root.findall(".//wms:Layer/wms:Title", namespaces)
+
+        for name, title in zip(layers_name, layers_title):
+            wms_name = name.text
+            wms_title = title.text
             if 'arcgis' in url:
                 wms_uri = (
                     "contextualWMSLegend=0&"
@@ -150,11 +153,13 @@ class AddOGCService:
                     f"url={url}"
                 )
             else:
-                wms_uri = f"url={url}&layers={layer_name}&styles=&format=image/png"
-            wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {layer_name}', 'wms')
+                wms_uri = f"url={url}&layers={wms_name}&styles=&format=image/png"
+            
+            wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {wms_title}', 'wms')
             if wms_layer.isValid():
                 QgsProject.instance().addMapLayer(wms_layer)
                 add_layer = True
+
         return add_layer
 
     def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
