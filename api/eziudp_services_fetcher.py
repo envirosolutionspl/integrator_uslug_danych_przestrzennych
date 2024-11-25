@@ -28,7 +28,7 @@ class EziudpServicesFetcher:
             dataset_name = columns[2].text_content().strip()
             link_tag = columns[idx].xpath('.//a')
             if link_tag:
-                links = [link.get('href') for link in link_tag if link.get('href')]
+                links = [link.get('href').strip() for link in link_tag if link.get('href')]
                 services[dataset_name] = links if len(links) > 1 else links[0]
         return services
 

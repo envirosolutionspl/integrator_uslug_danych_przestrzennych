@@ -27,7 +27,7 @@ class GeoportalServicesFetcher:
                         link_tag = columns[3].xpath('.//a')
                         if link_tag and 'href' in link_tag[0].attrib:
                             service_url = link_tag[0].attrib['href']
-                            services[re.sub(r"\s+", " ", service_name)] = service_url
+                            services[re.sub(r"\s+", " ", service_name)] = service_url.strip()
         return services
 
     def get_wms_wmts_services(self) -> Dict:
