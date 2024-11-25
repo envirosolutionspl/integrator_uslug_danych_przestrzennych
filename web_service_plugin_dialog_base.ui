@@ -193,6 +193,9 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="toolTip">
+        <string>Dodaje usługę do projektu</string>
+       </property>
        <property name="text">
         <string>Dodaj</string>
        </property>
@@ -219,6 +222,9 @@
      </item>
      <item row="0" column="3">
       <widget class="QPushButton" name="reject_btn">
+       <property name="toolTip">
+        <string>Czyści zaznaczone wiersze tabeli</string>
+       </property>
        <property name="text">
         <string>Anuluj</string>
        </property>
