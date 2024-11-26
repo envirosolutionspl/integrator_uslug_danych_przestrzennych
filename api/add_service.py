@@ -60,7 +60,7 @@ class AddOGCService:
         redirect_url = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
         if redirect_url:
             return AddOGCService.fetch_capabilities(redirect_url.toString())
-        capabilities_xml = reply.readAll().data().decode()
+        capabilities_xml = reply.readAll().data().decode('utf-8')
         reply.deleteLater()
         return capabilities_xml
 
@@ -76,8 +76,9 @@ class AddOGCService:
                 with get_legacy_session().get(url=get_capabilities, verify=False) as resp:
                     if resp.status_code != 200:
                         return False
-                    capabilities_xml = resp.content.decode()
-            except requests.exceptions.ConnectionError:
+                    capabilities_xml = resp.content.decode('utf-8')
+            except:
+                # Fragment niezgodny ze standardem
                 return False
         try:
             return AddOGCService.process_service(service_type, capabilities_xml, url)
