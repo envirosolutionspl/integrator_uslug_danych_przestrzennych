@@ -112,8 +112,11 @@ class AddOGCService:
         feature_types = root.findall('.//wfs:FeatureType', namespaces)
         for feature_type in feature_types:
             name_element = feature_type.find('wfs:Name', namespaces)
-            if name_element is not None:
+            title_element = feature_type.find('wfs:Title', namespaces)
+            
+            if name_element is not None and title_element is not None :
                 feature_type_name = name_element.text
+                feature_title_name = title_element.text
             else:
                 continue
             title_element = feature_type.find('ows:Title', namespaces)
@@ -128,7 +131,7 @@ class AddOGCService:
                 f"pagingEnabled='true' "
                 f"version='auto'"
             )
-            wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {layer_name}', 'WFS')
+            wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {feature_title_name}', 'WFS')
             if wfs_layer.isValid():
                 QgsProject.instance().addMapLayer(wfs_layer)
                 add_layer = True
