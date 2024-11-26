@@ -41,26 +41,29 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def _setup_dialog(self) -> None:
         self.img_main.setMargin(9)
-        self.fill_voivodeships()
+        # self.fill_voivodeships()
 
     def _setup_signals(self) -> None:
-        self.kraj_rb.toggled.connect(partial(self.wojewodztwo_combo.setCurrentIndex, -1))
-        for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
-            fetch_func, dependent_combo = combo_items
-            combo_obj = getattr(self, base_combo)
-            combo_obj.currentTextChanged.connect(
-                partial(self.setup_administrative_unit_obj, fetch_func, dependent_combo)
-            )
-        widgets = [*RADIOBUTTONS_UNITS, *RADIOBUTTONS_SERVICES]
+        # TODO do naprawy działanie usług wojewódzkich, powiatowych i gminnnych 
+
+        # self.kraj_rb.toggled.connect(partial(self.wojewodztwo_combo.setCurrentIndex, -1))
+        # for base_combo, combo_items in ADMINISTRATIVE_UNITS_OBJECTS.items():
+        #     fetch_func, dependent_combo = combo_items
+        #     combo_obj = getattr(self, base_combo)
+        #     combo_obj.currentTextChanged.connect(
+        #         partial(self.setup_administrative_unit_obj, fetch_func, dependent_combo)
+        #     )
+        # widgets = [*RADIOBUTTONS_UNITS, *RADIOBUTTONS_SERVICES]
+        widgets = [*RADIOBUTTONS_SERVICES]
         for obj in widgets:
             widget_obj = getattr(self, obj)
             widget_obj.toggled.connect(self.setup_table)
-        for combo_name in COMBOBOX_RADIOBUTTON_LINK.keys():
-            combo_obj = getattr(self, combo_name)
-            combo_obj.currentTextChanged.connect(self.reload_table_by_teryt)
-        for obj in RADIOBUTTONS_UNITS:
-            rdbtn_obj = getattr(self, obj)
-            rdbtn_obj.toggled.connect(self.enable_comboboxes)
+        # for combo_name in COMBOBOX_RADIOBUTTON_LINK.keys():
+        #     combo_obj = getattr(self, combo_name)
+        #     combo_obj.currentTextChanged.connect(self.reload_table_by_teryt)
+        # for obj in RADIOBUTTONS_UNITS:
+        #     rdbtn_obj = getattr(self, obj)
+        #     rdbtn_obj.toggled.connect(self.enable_comboboxes)
         self.search_lineedit.textChanged.connect(self.apply_search_filter)
 
     def setup_table(self) -> None:
@@ -154,10 +157,12 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             combo_obj.setEnabled(False)
 
     def get_services_dict(self) -> Dict[str, str]:
-        if self.kraj_rb.isChecked():
-            return self.get_servives_dict_for_pl()
-        else:
-            return self.get_servives_dict_by_teryt()
+        # TODO obsługa kodu w tym miejscu pod obsługę usług dla innych jednostek niż krajowe 
+
+        # if self.kraj_rb.isChecked():
+        return self.get_servives_dict_for_pl()
+        # else:
+        #     return self.get_servives_dict_by_teryt()
 
     def get_servives_dict_for_pl(self) -> Dict[str, str]:
         if self.wms_rdbtn.isChecked():

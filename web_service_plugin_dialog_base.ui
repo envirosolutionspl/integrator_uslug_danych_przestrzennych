@@ -36,138 +36,7 @@
    <property name="verticalSpacing">
     <number>4</number>
    </property>
-   <item row="0" column="1" rowspan="2">
-    <widget class="QGroupBox" name="units_wdgt">
-     <property name="title">
-      <string>Wybór obszaru usług</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="1">
-       <layout class="QGridLayout" name="gridLayout_4">
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <item row="1" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="woj_rb">
-          <property name="text">
-           <string>Wojewódzkie</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="kraj_rb">
-          <property name="text">
-           <string>Krajowe</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="gmi_rb">
-          <property name="text">
-           <string>Gminne</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="gmina_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="wojewodztwo_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-          <property name="duplicatesEnabled">
-           <bool>false</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string/>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="powiat_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="pow_rb">
-          <property name="text">
-           <string>Powiatowe</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="1">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <widget class="QTableView" name="services_table">
      <property name="toolTip">
       <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
@@ -180,7 +49,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout_3">
      <property name="topMargin">
       <number>5</number>
@@ -267,7 +136,7 @@
      </item>
     </layout>
    </item>
-   <item row="7" column="0" colspan="2">
+   <item row="8" column="0" colspan="2">
     <layout class="QHBoxLayout" name="Stopka">
      <property name="spacing">
       <number>5</number>
@@ -417,97 +286,142 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="services_groupbox">
-     <property name="title">
-      <string>Wybór usługi</string>
+   <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="topMargin">
+      <number>5</number>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QRadioButton" name="wfs_rdbtn">
-          <property name="toolTip">
-           <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
-          </property>
-          <property name="text">
-           <string>WFS/WCS</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
+     <item row="0" column="2">
+      <widget class="QGroupBox" name="services_groupbox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Wybór usługi</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="1" alignment="Qt::AlignHCenter">
+           <widget class="QRadioButton" name="wfs_rdbtn">
+            <property name="toolTip">
+             <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
+            </property>
+            <property name="text">
+             <string>WFS/WCS</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" alignment="Qt::AlignHCenter">
+           <widget class="QRadioButton" name="wms_rdbtn">
+            <property name="toolTip">
+             <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
+            </property>
+            <property name="text">
+             <string>WMS/WMTS</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QRadioButton" name="wms_rdbtn">
-          <property name="toolTip">
-           <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="inputMethodHints">
+           <set>Qt::ImhFormattedNumbersOnly</set>
           </property>
-          <property name="text">
-           <string>WMS/WMTS</string>
+          <property name="title">
+           <string>Wyszukaj po nazwie usługi</string>
           </property>
-          <property name="checked">
-           <bool>true</bool>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLineEdit" name="search_lineedit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="placeholderText">
+              <string>Wyszukaj...</string>
+             </property>
+             <property name="clearButtonEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Minimum</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>5</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="inputMethodHints">
-      <set>Qt::ImhFormattedNumbersOnly</set>
-     </property>
-     <property name="title">
-      <string>Wyszukaj po nazwie usługi</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLineEdit" name="search_lineedit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="placeholderText">
-         <string>Wyszukaj...</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>100</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="3">
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>100</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
