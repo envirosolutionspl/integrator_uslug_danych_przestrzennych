@@ -32,9 +32,16 @@ from .resources import *
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
+import Adrianopaczka
+
+
+Adrianopaczka.test_polaczenia()
+
+
+
 
 """Wersja wtyczki"""
-plugin_version = '0.1.0'
+plugin_version = '1.2.3'
 plugin_name = 'Web Service Plugin'
 
 class WebServicePlugin:
@@ -204,7 +211,9 @@ class WebServicePlugin:
             if service_type:
                 add_layer = AddOGCService.add_service(url, service_type)
                 successfully_add[name] = add_layer
+                Adrianopaczka.test_polaczenia()
             else:
+                Adrianopaczka.test_polaczenia()
                 successfully_add[name] = False
         msgbox = QMessageBox(
             QMessageBox.Information,
@@ -220,6 +229,7 @@ class WebServicePlugin:
         self.dlg.add_btn.clicked.connect(self.add_service)
 
     def run(self):
+        
         if self.first_start == True:
             self.first_start = False
 
