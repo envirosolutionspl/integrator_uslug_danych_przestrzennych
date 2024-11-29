@@ -23,14 +23,19 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
+from .api.region_fetch import RegionFetch
+from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
 
+"""Wersja wtyczki"""
+plugin_version = '0.1.0'
+plugin_name = 'Web Service Plugin'
 
 class WebServicePlugin:
     """QGIS Plugin Implementation."""
@@ -61,11 +66,19 @@ class WebServicePlugin:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&web_service_plugin')
+        self.menu = self.tr(u'&EnviroSolutions')
+
+        # toolbar
+        self.toolbar = self.iface.mainWindow().findChild(QToolBar, 'EnviroSolutions')
+        if not self.toolbar:
+            self.toolbar = self.iface.addToolBar(u'EnviroSolutions')
+            self.toolbar.setObjectName(u'EnviroSolutions')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.regionFetch = RegionFetch(teryt='')
+
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -81,7 +94,6 @@ class WebServicePlugin:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('WebServicePlugin', message)
-
 
     def add_action(
         self,
@@ -146,7 +158,8 @@ class WebServicePlugin:
 
         if add_to_toolbar:
             # Adds plugin icon to Plugins toolbar
-            self.iface.addToolBarIcon(action)
+            # self.iface.addToolBarIcon(action)
+            self.toolbar.addAction(action)
 
         if add_to_menu:
             self.iface.addPluginToMenu(
@@ -160,41 +173,61 @@ class WebServicePlugin:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/web_service_plugin/icon.png'
+        self.dlg = WebServicePluginDialog(self.regionFetch)
+        self.setup_dialog()
+
+        icon_path = ':/plugins/web_service_plugin/images/icon.svg'
         self.add_action(
             icon_path,
-            text=self.tr(u'Web Service Plugin'),
+            text=self.tr(plugin_name),
             callback=self.run,
             parent=self.iface.mainWindow())
 
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&web_service_plugin'),
+                self.tr(u'&EnviroSolutions'),
                 action)
-            self.iface.removeToolBarIcon(action)
+            # self.iface.removeToolBarIcon(action)
+            self.toolbar.removeAction(action)
 
+    def add_service(self) -> None:
+        successfully_add = {}
+        selected_urls = self.dlg.get_selected_services_urls()
+        for name, url in selected_urls.items():
+            services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
+            service_type = AddOGCService.detect_service_type(url, services)
+            if service_type:
+                add_layer = AddOGCService.add_service(url, service_type)
+                successfully_add[name] = add_layer
+            else:
+                successfully_add[name] = False
+        msgbox = QMessageBox(
+            QMessageBox.Information,
+            'Informacja',
+            '\n'.join(
+                f'Dodano usługę {key}' if value else f'Nie dodano usługi {key}'
+                for key, value in successfully_add.items()
+            )
+        )
+        msgbox.exec_()
+
+    def setup_dialog(self) -> None:
+        self.dlg.add_btn.clicked.connect(self.add_service)
 
     def run(self):
-        """Run method that performs all the real work"""
-
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
             self.first_start = False
-            self.dlg = WebServicePluginDialog()
 
-        # show the dialog
+             # informacje o wersji
+            self.dlg.setWindowTitle('%s %s' % (plugin_name, plugin_version))
+            self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
+
         self.dlg.show()
-        # Run the dialog event loop
         result = self.dlg.exec_()
-        # See if OK was pressed
         if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
             pass
