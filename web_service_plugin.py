@@ -306,10 +306,10 @@ class WebServicePlugin:
             pass
     
     
-        if self.dlg.wfs_rdbtn.isChecked():
-            print("Option 2 is selected")
-        else:
-            print("Option 1 is selected")
+        # if self.dlg.wfs_rdbtn.isChecked():
+        #     print("Option 2 is selected")
+        # else:
+        #     print("Option 1 is selected")
 
         
 
