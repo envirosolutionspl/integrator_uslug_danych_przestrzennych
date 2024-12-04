@@ -25,16 +25,70 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
-from .api.region_fetch import RegionFetch
+from .api.region_fetch import RegionFetch 
 from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
+import warnings
+import requests
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+import ssl
+
+
+class CustomHttpAdapter (requests.adapters.HTTPAdapter):
+    # "Transport adapter" that allows us to use custom ssl_context.
+
+    def __init__(self, ssl_context=None, **kwargs):
+        self.ssl_context = ssl_context
+        super().__init__(**kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = urllib3.poolmanager.PoolManager(
+            num_pools=connections, maxsize=maxsize,
+            block=block, ssl_context=self.ssl_context)
+        
+def get_legacy_session():
+    warnings.filterwarnings("ignore", category=ResourceWarning)
+    warnings.filterwarnings("ignore", category=InsecureRequestWarning)
+    ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+    ctx.options |= 0x4
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    session = requests.session()
+    session.mount('https://', CustomHttpAdapter(ctx))
+    session.verify = False
+    return session
+
+connection = False
+
+def check_internet_connection():
+    try:
+        resp = get_legacy_session().get(url='https://uldk.gugik.gov.pl/', verify=False)
+        print("posiadasz polaczenie z internetem")
+        return resp.status_code == 200
+    except requests.exceptions.Timeout:
+        return False
+    except ConnectionError:
+        return False
+
+
+
+
+
+
+
+get_legacy_session()
+check_internet_connection()
+
+
+
 
 """Wersja wtyczki"""
-plugin_version = '0.1.0'
+plugin_version = '1.2.3'
 plugin_name = 'Web Service Plugin'
 
 class WebServicePlugin:
@@ -175,6 +229,7 @@ class WebServicePlugin:
 
         self.dlg = WebServicePluginDialog(self.regionFetch)
         self.setup_dialog()
+        self.check_current_units()
 
         icon_path = ':/plugins/web_service_plugin/images/icon.svg'
         self.add_action(
@@ -204,8 +259,12 @@ class WebServicePlugin:
             if service_type:
                 add_layer = AddOGCService.add_service(url, service_type)
                 successfully_add[name] = add_layer
+                check_internet_connection()
+                success = 1
             else:
+                check_internet_connection()
                 successfully_add[name] = False
+                success = 0
         msgbox = QMessageBox(
             QMessageBox.Information,
             'Informacja',
@@ -215,11 +274,26 @@ class WebServicePlugin:
             )
         )
         msgbox.exec_()
+        return success
 
     def setup_dialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.add_service)
 
+    def check_current_units(self) -> None:
+        self.dlg.wfs_rdbtn.toggled.connect(check_internet_connection)
+        print("dziala")
+
+    
+    
+
+
+
+    
+
+
+        
     def run(self):
+
         if self.first_start == True:
             self.first_start = False
 
@@ -231,3 +305,17 @@ class WebServicePlugin:
         result = self.dlg.exec_()
         if result:
             pass
+    
+    
+        # if self.dlg.wfs_rdbtn.isChecked():
+        #     print("Option 2 is selected")
+        # else:
+        #     print("Option 1 is selected")
+
+
+
+
+        
+
+
+        

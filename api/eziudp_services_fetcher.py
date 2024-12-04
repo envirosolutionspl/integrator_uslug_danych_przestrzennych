@@ -4,7 +4,8 @@ import requests
 from lxml import html
 
 from ..https_adapter import get_legacy_session
-from ..constants import EZIUDP_URL
+
+EZIUDP_URL = 'https://integracja.gugik.gov.pl/eziudp/index.php'
 
 
 class EziudpServicesFetcher:
