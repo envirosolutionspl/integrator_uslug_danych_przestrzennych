@@ -8,7 +8,6 @@ import requests
 from ..constants import SERVICES_NAMESPACES
 from ..https_adapter import get_legacy_session
 
-
 class AddOGCService:
     @staticmethod
     def detect_service_type(url: str, services: List[str]) -> None or str:
