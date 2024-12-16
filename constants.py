@@ -12,6 +12,25 @@ GEOPORTAL_WCS_URL = 'https://www.geoportal.gov.pl/pl/usluga/uslugi-pobierania-wc
 
 EZIUDP_URL = 'https://integracja.gugik.gov.pl/eziudp/index.php'
 
+FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
+
+INDUSTRIES = {
+    "999": 'Nie wybrano',
+    "e": 'Energetyka/OZE',
+    "u": 'Urząd',
+    "td": 'Transport/Drogi',
+    "pg": 'Planowanie/Geodezja',
+    "wk": 'WodKan',
+    "s": 'Środowisko',
+    "rl": 'Rolnictwo/Leśnictwo',
+    "tk": 'Telkom',
+    "edu": 'Edukacja',
+    "i": 'Inne',
+    "it": 'IT',
+    "n": 'Nieruchomości'
+}
+
+
 ADMINISTRATIVE_UNITS_OBJECTS = {
     'wojewodztwo_combo': ('get_powiat_by_teryt', 'powiat_combo'),
     'powiat_combo': ('get_gmina_by_teryt', 'gmina_combo'),
