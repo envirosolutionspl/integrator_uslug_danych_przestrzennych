@@ -3,14 +3,25 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Web Service Plugin
+name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
-description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
-version=0.1.0
+description=Narzędzie stworzone dla użytkowników QGIS, które umożliwia szybki i bezpośredni dostęp do danych przestrzennych pochodzących z oficjalnej ewidencji zbiorów i usług danych przestrzennych kraju (EZiUDP). To najlepszy sposób pracy z polskimi danymi przestrzennymi, jeśli na co dzień z nich korzystasz.
+Wtyczka wykorzystuje, prowadzoną zgodnie z art.13 ust. 2 ustawy z dnia 4 marca 2010r. o infrastrukturze informacji przestrzennej (IIP) oraz §4 ust.1 Rozporządzenia Ministra Inwestycji i Rozwoju z dnia 28 listopada 2018 r. zmieniającego rozporządzenie w sprawie ewidencji zbiorów i usług danych przestrzennych objętych infrastrukturą informacji przestrzennej, publicznie dostępną ewidencje zbiorów oraz usług danych przestrzennych objętych infrastrukturą prowadzoną przez Głównego Geodetę Kraju.
+Dzięki tej wtyczce użytkownicy mogą łatwo, z poziomu QGIS, dodawać dane z państwowych jednostek administracyjnych, bez konieczności przeszukiwania dzięsiątek i setek stron internetowych (m. in. BIP) i lokalnych geoportali. Wtyczka zapewnia dostęp do zawsze aktualnych usług, obejmujących całą Polskę – od poziomu krajowego, przez wojewódzki i powiatowy, aż po gminny.
+
+version=0.1.1
 author=EnviroSolutions Sp. z o.o.
 email=office@envirosolutions.pl
 
-about=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
+about=Najważniejsze właściwości:
+• 	Zawsze aktualne dane: Dane pobierane są bezpośrednio z oficjalnych usług IIP, dzięki czemu użytkownicy mają dostęp do najnowszych zasobów przestrzennych.
+• 	Łatwość użytkowania: Wszystkie dane dostępne są z poziomu QGIS, eliminując potrzebę odwiedzania wielu stron internetowych czy geoportali.
+• 	Szeroki zakres danych: Wtyczka obsługuje dane na różnych poziomach administracyjnych – od krajowego po gminny.
+• 	Automatyczne pobieranie: Dzięki mechanizmowi „na żywo”, dane są aktualizowane natychmiast po ich udostępnieniu przez właściwe jednostki administracyjne.
+• 	Obsługuje następujące rodzaje usług IIP: WMS, WMTS, WFS i WCS
+**Ważna informacja!**
+Wtyczka przetwarza duże ilości zapytań do serwerów usług, odpytując tysiące z nich (aktualnie ponad 11 000) dostępnych w ramach IIP. Proces ten może chwilę potrwać, więc prosimy o cierpliwość. Jeśli "kółeczko" się kręci, to nie znaczy, że wtyczka się zawiesiła. To znaczy, że wtyczka intensywnie pracuje, aby dostarczyć najbardziej aktualne dane.
+
 
 tracker=https://github.com/envirosolutionspl/web_service_plugin/issues
 repository=https://github.com/envirosolutionspl/web_service_plugin
@@ -20,16 +31,20 @@ repository=https://github.com/envirosolutionspl/web_service_plugin
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=
+  Wersja 0.1.1
+  * Zmiana nazwy wtyczki i jej logo
+  * Dodanie rozbudowanego opisu wtyczki
+  * Dodanie QGIS-feed
 
 # Tags are comma separated with spaces allowed
-tags=python,wms,wmts,wfs,wcs,gugik,eziudp
+tags=Polska polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WMTS,WFS,WCS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,,GIS w Polsce,GUGiK,GGK
 
 homepage=https://github.com/envirosolutionspl/web_service_plugin
 category=Plugins
 icon=images/icon.svg
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
