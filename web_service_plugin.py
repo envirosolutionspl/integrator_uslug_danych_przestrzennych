@@ -25,10 +25,10 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 from qgis.core import QgsSettings, Qgis
-
 from qgis.PyQt.QtWidgets import QDialog
 
 from .qgis_feed import QgisFeedDialog
+
 from .api.region_fetch import RegionFetch
 from .api.add_service import AddOGCService
 # Initialize Qt resources from file resources.py
