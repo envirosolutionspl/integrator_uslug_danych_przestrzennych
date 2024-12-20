@@ -26,8 +26,8 @@ about=
   Ważna informacja!
   Wtyczka przetwarza duże ilości zapytań do serwerów usług, odpytując tysiące z nich (na dzień 20.12.2024 r. ponad 11 000) dostępnych w ramach IIP. Proces ten może chwilę potrwać, więc prosimy o cierpliwość. Jeśli "kółeczko" się kręci, to nie znaczy, że wtyczka się zawiesiła. To znaczy, że wtyczka intensywnie pracuje, aby dostarczyć najbardziej aktualne dane.
 
-tracker=https://github.com/envirosolutionspl/web_service_plugin/issues
-repository=https://github.com/envirosolutionspl/web_service_plugin
+tracker=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues
+repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 # End of mandatory metadata
 
 # Recommended items:
@@ -43,7 +43,7 @@ changelog=
 # Tags are comma separated with spaces allowed
 #tags=Polska,polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WMTS,WFS,WCS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,GIS w Polsce,GUGiK,GGK
 
-homepage=https://github.com/envirosolutionspl/web_service_plugin
+homepage=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 category=Plugins
 icon=images/icon.svg
 # experimental flag
