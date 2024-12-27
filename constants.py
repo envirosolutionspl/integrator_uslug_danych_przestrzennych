@@ -30,7 +30,6 @@ INDUSTRIES = {
     "n": 'Nieruchomości'
 }
 
-
 ADMINISTRATIVE_UNITS_OBJECTS = {
     'wojewodztwo_combo': ('get_powiat_by_teryt', 'powiat_combo'),
     'powiat_combo': ('get_gmina_by_teryt', 'gmina_combo'),
