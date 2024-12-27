@@ -17,7 +17,7 @@
 
 ## Wymagania
 
-* Minimalna wersja QGIS: **3.22**.
+* Minimalna wersja QGIS: **3.28**.
 
 ## Instalacja
 

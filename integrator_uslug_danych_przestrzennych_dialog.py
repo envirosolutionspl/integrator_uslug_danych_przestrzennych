@@ -24,12 +24,12 @@ from .constants import (
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'web_service_plugin_dialog_base.ui'))
+    os.path.dirname(__file__), 'integrator_uslug_danych_przestrzennych_dialog_base.ui'))
 
 
-class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
+class IntegratorPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, regionFetch, parent=None):
-        super(WebServicePluginDialog, self).__init__(parent)
+        super(IntegratorPluginDialog, self).__init__(parent)
         self.setupUi(self)
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
