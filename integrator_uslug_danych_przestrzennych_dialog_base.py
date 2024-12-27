@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Wojtek\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\integrator_uslug_danych_przestrzennych\integrator_uslug_danych_przestrzennych_dialog_base.ui'
-#
 # Created by: PyQt5 UI code generator 5.15.4
 #
 # WARNING: Any manual changes made to this file will be lost when pyuic5 is
