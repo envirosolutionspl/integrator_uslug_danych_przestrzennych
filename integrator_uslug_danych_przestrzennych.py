@@ -38,7 +38,7 @@ from .integrator_uslug_danych_przestrzennych_dialog import IntegratorPluginDialo
 import os.path
 
 """Wersja wtyczki"""
-plugin_version = '0.1.1'
+plugin_version = '0.1.2'
 plugin_name = 'Integrator usług danych przestrzennych'
 
 class IntegratorPlugin:
