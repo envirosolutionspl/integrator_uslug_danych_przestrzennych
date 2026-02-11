@@ -1,8 +1,8 @@
-# Web Service Plugin
+# Integrator usług danych przestrzennych
 
 ## PL
 
-**Web Service Plugin** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS/WMTS oraz WFS/WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
+**Integrator usług danych przestrzennych** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS/WMTS oraz WFS/WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
 
 ## Funkcjonalności
 
@@ -26,7 +26,7 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 1. Wtyczkę należy zainstalować w QGIS jako ZIP lub wgrać pliki wtyczki do lokalizacji `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
 2. Aby uruchomić wtyczkę, należy kliknąć na ikonę pomarańczowego drzewa.
 3. Jeżeli ikona wtyczki nie jest widoczna w panelu warstw, spróbuj zrestartować QGIS.
-4. Jeżeli wtyczka nadal nie jest widoczna, należy przejść w QGIS Desktop do `Wtyczki -> Zarządzanie wtyczkami -> Zainstalowane -> Web Service Plugin` -> Odinstalować wtyczkę i zainstalować ponownie.
+4. Jeżeli wtyczka nadal nie jest widoczna, należy przejść w QGIS Desktop do `Wtyczki -> Zarządzanie wtyczkami -> Zainstalowane -> Integrator usług danych przestrzennych` -> Odinstalować wtyczkę i zainstalować ponownie.
 
 ## Jak używać
 
@@ -40,7 +40,7 @@ Wtyczka jest dystrybuowana na licencji **GPL-3.0**, co oznacza, że możesz jej 
 
 ## Zgłaszanie problemów
 
-W przypadku problemów z wtyczką zgłaszaj błędy lub propozycje ulepszeń przez **[GitHub Issues](https://github.com/envirosolutionspl/web_service_plugin/issues)**.
+W przypadku problemów z wtyczką zgłaszaj błędy lub propozycje ulepszeń przez **[GitHub Issues](https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues)**.
 
 ## Kontakt
 
@@ -48,7 +48,7 @@ Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrz
 
 ## EN
 
-**Web Service Plugin** is a QGIS plugin that displays a list of WMS/WMTS and WFS/WCS services from the Geoportal and the spatial data sets and services registry in a table. Users can easily search and filter available services and add them directly to a QGIS project.
+**Spatial Data Services Integrator** is a QGIS plugin that displays a list of WMS/WMTS and WFS/WCS services from the Geoportal and the spatial data sets and services registry in a table. Users can easily search and filter available services and add them directly to a QGIS project.
 
 ## Features
 
@@ -72,7 +72,7 @@ To install the plugin, follow these steps:
 1. The plugin should be installed in QGIS as a ZIP or by uploading the plugin files to the location `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
 2. To launch the plugin, click on the orange tree icon.
 3. If the plugin icon is not visible in the layer panel, try restarting QGIS.
-4. If the plugin is still not visible, go to QGIS Desktop -> `Plugins -> Manage and Install Plugins -> Installed -> Web Service Plugin` -> Uninstall the plugin and reinstall it.
+4. If the plugin is still not visible, go to QGIS Desktop -> `Plugins -> Manage and Install Plugins -> Installed -> Integrator usług danych przestrzennych` -> Uninstall the plugin and reinstall it.
 
 ## How to Use
 
@@ -86,7 +86,7 @@ The plugin is distributed under an **GPL-3.0** license, allowing you to use, mod
 
 ## Reporting Issues
 
-If you encounter any issues or have suggestions for improvements, please report them via **[GitHub Issues](https://github.com/envirosolutionspl/web_service_plugin/issues)**.
+If you encounter any issues or have suggestions for improvements, please report them via **[GitHub Issues](https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues)**.
 
 ## Contact
 
