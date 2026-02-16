@@ -6,7 +6,7 @@ from functools import partial
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
-from qgis.PyQt.QtWidgets import QComboBox, QWidget
+from qgis.PyQt.QtWidgets import QComboBox, QWidget, QMessageBox
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
 
@@ -82,7 +82,21 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         header.setDefaultAlignment(Qt.AlignCenter)
 
     def fill_services_table(self) -> None:
-        dataset_dict = self.get_services_dict()
+        if not self.kraj_rb.isChecked():
+            result = self.get_current_type_and_teryt()
+            if result is None or result[1] is None:
+                return
+        try:
+            dataset_dict = self.get_services_dict()
+        except Exception:
+            dataset_dict = {}
+        if not dataset_dict:
+            QMessageBox(
+                QMessageBox.Warning,
+                'Ostrzeżenie',
+                'Brak danych dla zaznaczonego regionu - nie zgłoszono usługi pobierania'
+            ).exec_()
+            return
         for service_name, service_url in dataset_dict.items():
             urls = service_url if isinstance(service_url, list) else [service_url]
             for url in urls:
@@ -139,7 +153,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def enable_comboboxes(self) -> None:
         comboboxes_to_hide = []
-        if self.sender().objectName() == 'kraj_check':
+        if self.sender().objectName() == 'kraj_rb':
             comboboxes_to_hide = list(RADIOBUTTON_COMBOBOX_LINK.values())
         else:
             for check, cmb in RADIOBUTTON_COMBOBOX_LINK.items():
