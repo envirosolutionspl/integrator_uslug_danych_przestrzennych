@@ -72,14 +72,26 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def configure_table_header(self) -> None:
         header = self.services_table.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Interactive)
+        if hasattr(QtWidgets.QHeaderView, 'ResizeMode'):
+            interactive = QtWidgets.QHeaderView.ResizeMode.Interactive  # Qt6
+        else:
+            interactive = QtWidgets.QHeaderView.Interactive  # Qt5
+        header.setSectionResizeMode(0, interactive)
         self.services_table.setColumnWidth(0, 400)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
+        header.setSectionResizeMode(1, interactive)
         self.services_table.setColumnWidth(1, 500)
-        self.services_table.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
+        if hasattr(Qt, 'SortOrder'):
+            ascending = Qt.SortOrder.AscendingOrder  # Qt6
+        else:
+            ascending = Qt.AscendingOrder  # Qt5
+        self.services_table.horizontalHeader().setSortIndicator(0, ascending)
         self.services_table.setSortingEnabled(True)
         header = self.services_table.verticalHeader()
-        header.setDefaultAlignment(Qt.AlignCenter)
+        if hasattr(Qt, 'AlignmentFlag'):
+            align_center = Qt.AlignmentFlag.AlignCenter  # Qt6
+        else:
+            align_center = Qt.AlignCenter  # Qt5
+        header.setDefaultAlignment(align_center)
 
     def fill_services_table(self) -> None:
         dataset_dict = self.get_services_dict()
@@ -134,7 +146,11 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setModel(self.proxy_model)
 
     def apply_search_filter(self, text: str) -> None:
-        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        if hasattr(Qt, 'CaseSensitivity'):
+            case_insensitive = Qt.CaseSensitivity.CaseInsensitive  # Qt6
+        else:
+            case_insensitive = Qt.CaseInsensitive  # Qt5
+        self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
     def enable_comboboxes(self) -> None:

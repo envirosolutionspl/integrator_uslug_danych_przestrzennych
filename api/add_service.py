@@ -1,12 +1,9 @@
-from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer, QgsNetworkAccessManager
-from qgis.PyQt.QtCore import QEventLoop, QUrl
-from qgis.PyQt.QtNetwork import QNetworkRequest
+from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 from typing import Dict, List
 from xml.etree import ElementTree as ET
-import requests
 
 from ..constants import SERVICES_NAMESPACES
-from ..https_adapter import get_legacy_session
+from ..https_adapter import NetworkManager
 
 
 class AddOGCService:
@@ -26,10 +23,10 @@ class AddOGCService:
     @staticmethod
     def check_service_response(url: str) -> bool:
         try:
-            with get_legacy_session().get(url=url, verify=False) as resp:
-                if resp.status_code == 200 and "Service" in resp.text:
-                    return True
-        except requests.RequestException:
+            result = NetworkManager().getSync(url)
+            if result and "Service" in result:
+                return True
+        except Exception:
             return False
 
     @staticmethod
@@ -47,36 +44,17 @@ class AddOGCService:
         return False
 
     @staticmethod
-    def fetch_capabilities(url: str) -> str or None:
-        network_manager = QgsNetworkAccessManager.instance()
-        request = QNetworkRequest(QUrl(url))
-        reply = network_manager.get(request)
-        event_loop = QEventLoop()
-        reply.finished.connect(event_loop.quit)
-        event_loop.exec_()
-        if reply.error() != reply.NoError:
-            reply.deleteLater()
-            return None
-        redirect_url = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
-        if redirect_url:
-            return AddOGCService.fetch_capabilities(redirect_url.toString())
-        capabilities_xml = reply.readAll().data().decode('utf-8')
-        reply.deleteLater()
-        return capabilities_xml
-
-    @staticmethod
     def add_service(url: str, service_type: str) -> bool:
         get_capabilities = f"{url}{'' if '?' in url else f'?service={service_type}&request=GetCapabilities'}"
         if service_type in ['WCS', 'WFS', 'WMTS']:
-            capabilities_xml = AddOGCService.fetch_capabilities(get_capabilities)
+            capabilities_xml = NetworkManager().getSync(get_capabilities)
             if not capabilities_xml:
                 return False
         elif service_type == 'WMS':
             try:
-                with get_legacy_session().get(url=get_capabilities, verify=False) as resp:
-                    if resp.status_code != 200:
-                        return False
-                    capabilities_xml = resp.content.decode('utf-8')
+                capabilities_xml = NetworkManager().getSync(get_capabilities)
+                if not capabilities_xml:
+                    return False
             except:
                 # Fragment niezgodny ze standardem
                 return False
@@ -143,6 +121,12 @@ class AddOGCService:
         layers_name = root.findall(".//wms:Layer/wms:Name", namespaces)
         layers_title = root.findall(".//wms:Layer/wms:Title", namespaces)
 
+        # WMS 1.1.1 does not use XML namespaces unlike WMS 1.3.0,
+        # without this fallback layers from such services would not be found
+        if not layers_name:
+            layers_name = root.findall(".//Layer/Name")
+            layers_title = root.findall(".//Layer/Title")
+
         for name, title in zip(layers_name, layers_title):
             wms_name = name.text
             wms_title = title.text
@@ -189,4 +173,3 @@ class AddOGCService:
                 QgsProject.instance().addMapLayer(wmts_layer)
                 add_layer = True
         return add_layer
-

@@ -1,22 +1,24 @@
 from typing import Dict, Union, List
 
-import requests
 from lxml import html
 
-from ..https_adapter import get_legacy_session
+from ..https_adapter import NetworkManager
 from ..constants import EZIUDP_URL
 
 
 class EziudpServicesFetcher:
-    @staticmethod
-    def get_services_dict(url: str, idx: int) -> Dict[str, Union[str, List[str]]]:
+    def __init__(self):
+        self.manager = NetworkManager()
+
+    def get_services_dict(self,url: str, idx: int) -> Dict[str, Union[str, List[str]]]:
         services = {}
         try:
-            with get_legacy_session().get(url=url, verify=False) as resp:
-                resp.raise_for_status()
-        except requests.RequestException:
+            result = self.manager.getSync(url)
+            if not result:
+                return services
+        except Exception:
             return services
-        tree = html.fromstring(resp.content)
+        tree = html.fromstring(result)
         table = tree.xpath('//table[contains(@class, "table sortable")]')
         if not table:
             return services

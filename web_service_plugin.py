@@ -206,15 +206,16 @@ class WebServicePlugin:
                 successfully_add[name] = add_layer
             else:
                 successfully_add[name] = False
+        info_icon = QMessageBox.Icon.Information if hasattr(QMessageBox, 'Icon') else QMessageBox.Information
         msgbox = QMessageBox(
-            QMessageBox.Information,
+            info_icon,
             'Informacja',
             '\n'.join(
                 f'Dodano usługę {key}' if value else f'Nie dodano usługi {key}'
                 for key, value in successfully_add.items()
             )
         )
-        msgbox.exec_()
+        (msgbox.exec if hasattr(msgbox, 'exec') else msgbox.exec_)()
 
     def setup_dialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.add_service)
@@ -228,6 +229,6 @@ class WebServicePlugin:
             self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
-        result = self.dlg.exec_()
+        result = (self.dlg.exec if hasattr(self.dlg, 'exec') else self.dlg.exec_)()
         if result:
             pass
