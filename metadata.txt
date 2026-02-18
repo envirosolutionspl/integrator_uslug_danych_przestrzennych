@@ -9,6 +9,7 @@ description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i 
 version=0.1
 author=EnviroSolutions Sp. z o.o.
 email=office@envirosolutions.pl
+supportsQt6=true
 
 about=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
 
