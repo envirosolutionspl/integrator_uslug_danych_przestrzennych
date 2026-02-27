@@ -20,6 +20,7 @@ from .constants import (
     RADIOBUTTONS_TYPES_LINK,
     RADIOBUTTON_COMBOBOX_LINK
 )
+from .utils import QtCompat
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,6 +32,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, regionFetch, parent=None):
         super(WebServicePluginDialog, self).__init__(parent)
         self.setupUi(self)
+        self.qt_compat = QtCompat()
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
         self.regionFetch = regionFetch
@@ -71,26 +73,17 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setup_search()
 
     def configure_table_header(self) -> None:
+        resize_interactive = self.qt_compat.get_enum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
         header = self.services_table.horizontalHeader()
-        if hasattr(QtWidgets.QHeaderView, 'ResizeMode'):
-            interactive = QtWidgets.QHeaderView.ResizeMode.Interactive  # Qt6
-        else:
-            interactive = QtWidgets.QHeaderView.Interactive  # Qt5
-        header.setSectionResizeMode(0, interactive)
+        header.setSectionResizeMode(0, resize_interactive)
         self.services_table.setColumnWidth(0, 400)
-        header.setSectionResizeMode(1, interactive)
+        header.setSectionResizeMode(1, resize_interactive)
         self.services_table.setColumnWidth(1, 500)
-        if hasattr(Qt, 'SortOrder'):
-            ascending = Qt.SortOrder.AscendingOrder  # Qt6
-        else:
-            ascending = Qt.AscendingOrder  # Qt5
+        ascending = self.qt_compat.get_enum(Qt, 'SortOrder', 'AscendingOrder')
         self.services_table.horizontalHeader().setSortIndicator(0, ascending)
         self.services_table.setSortingEnabled(True)
         header = self.services_table.verticalHeader()
-        if hasattr(Qt, 'AlignmentFlag'):
-            align_center = Qt.AlignmentFlag.AlignCenter  # Qt6
-        else:
-            align_center = Qt.AlignCenter  # Qt5
+        align_center = self.qt_compat.get_enum(Qt, 'AlignmentFlag', 'AlignCenter')
         header.setDefaultAlignment(align_center)
 
     def fill_services_table(self) -> None:
@@ -146,10 +139,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setModel(self.proxy_model)
 
     def apply_search_filter(self, text: str) -> None:
-        if hasattr(Qt, 'CaseSensitivity'):
-            case_insensitive = Qt.CaseSensitivity.CaseInsensitive  # Qt6
-        else:
-            case_insensitive = Qt.CaseInsensitive  # Qt5
+        case_insensitive = self.qt_compat.get_enum(Qt, 'CaseSensitivity', 'CaseInsensitive')
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 

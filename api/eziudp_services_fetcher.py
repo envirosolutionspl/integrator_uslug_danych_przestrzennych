@@ -12,11 +12,8 @@ class EziudpServicesFetcher:
 
     def get_services_dict(self,url: str, idx: int) -> Dict[str, Union[str, List[str]]]:
         services = {}
-        try:
-            result = self.manager.getSync(url)
-            if not result:
-                return services
-        except Exception:
+        result = self.manager.getRequest(url)
+        if not result:
             return services
         tree = html.fromstring(result)
         table = tree.xpath('//table[contains(@class, "table sortable")]')

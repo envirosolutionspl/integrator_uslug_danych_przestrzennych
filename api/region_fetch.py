@@ -13,7 +13,7 @@ class RegionFetch:
         unit_dict = {}
         if teryt:
             url = url+teryt
-        result = self.manager.getSync(url)
+        result = self.manager.getRequest(url)
         if not result:
             return unit_dict
         resp_text = result.strip().split('\n')

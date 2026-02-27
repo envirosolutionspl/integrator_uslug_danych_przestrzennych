@@ -17,7 +17,7 @@ class GeoportalServicesFetcher:
 
     def get_services_dict(self, url: str) -> Dict:
         services = {}
-        result = self.manager.getSync(url)
+        result = self.manager.getRequest(url)
         if not result:
             return services
         tree = html.fromstring(result)

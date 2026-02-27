@@ -22,12 +22,10 @@ class AddOGCService:
 
     @staticmethod
     def check_service_response(url: str) -> bool:
-        try:
-            result = NetworkManager().getSync(url)
-            if result and "Service" in result:
-                return True
-        except Exception:
-            return False
+        result = NetworkManager().getRequest(url)
+        if result and "Service" in result:
+            return True
+        return False
 
     @staticmethod
     def process_service(service_type, capabilities_xml, url):
@@ -46,18 +44,9 @@ class AddOGCService:
     @staticmethod
     def add_service(url: str, service_type: str) -> bool:
         get_capabilities = f"{url}{'' if '?' in url else f'?service={service_type}&request=GetCapabilities'}"
-        if service_type in ['WCS', 'WFS', 'WMTS']:
-            capabilities_xml = NetworkManager().getSync(get_capabilities)
-            if not capabilities_xml:
-                return False
-        elif service_type == 'WMS':
-            try:
-                capabilities_xml = NetworkManager().getSync(get_capabilities)
-                if not capabilities_xml:
-                    return False
-            except:
-                # Fragment niezgodny ze standardem
-                return False
+        capabilities_xml = NetworkManager().getRequest(get_capabilities)
+        if not capabilities_xml:
+            return False
         try:
             return AddOGCService.process_service(service_type, capabilities_xml, url)
         except ET.ParseError:

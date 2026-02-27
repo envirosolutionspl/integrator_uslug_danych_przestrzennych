@@ -27,15 +27,15 @@ from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
 from .api.region_fetch import RegionFetch
 from .api.add_service import AddOGCService
+from .utils import QtCompat
 # Initialize Qt resources from file resources.py
 from .resources import *
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
 
-"""Wersja wtyczki"""
-plugin_version = '0.1.0'
-plugin_name = 'Web Service Plugin'
+from . import PLUGIN_VERSION as plugin_version
+from . import PLUGIN_NAME as plugin_name
 
 class WebServicePlugin:
     """QGIS Plugin Implementation."""
@@ -77,6 +77,7 @@ class WebServicePlugin:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.qt_compat = QtCompat()
         self.regionFetch = RegionFetch(teryt='')
 
 
@@ -206,7 +207,7 @@ class WebServicePlugin:
                 successfully_add[name] = add_layer
             else:
                 successfully_add[name] = False
-        info_icon = QMessageBox.Icon.Information if hasattr(QMessageBox, 'Icon') else QMessageBox.Information
+        info_icon = self.qt_compat.get_enum(QMessageBox, 'Icon', 'Information')
         msgbox = QMessageBox(
             info_icon,
             'Informacja',
@@ -215,7 +216,7 @@ class WebServicePlugin:
                 for key, value in successfully_add.items()
             )
         )
-        (msgbox.exec if hasattr(msgbox, 'exec') else msgbox.exec_)()
+        self.qt_compat.exec_dialog(msgbox)
 
     def setup_dialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.add_service)
@@ -229,6 +230,6 @@ class WebServicePlugin:
             self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
-        result = (self.dlg.exec if hasattr(self.dlg, 'exec') else self.dlg.exec_)()
+        result = self.qt_compat.exec_dialog(self.dlg)
         if result:
             pass

@@ -6,10 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-try:
-    from PyQt5 import QtCore
-except ImportError:
-    from PyQt6 import QtCore
+from qgis.PyQt import QtCore
 
 qt_resource_data = b"\
 \x00\x00\x2a\x6f\
