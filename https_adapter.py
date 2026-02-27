@@ -1,7 +1,7 @@
 from qgis.core import QgsNetworkAccessManager, QgsBlockingNetworkRequest
 from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkAccessManager
 from qgis.PyQt.QtCore import QUrl
-
+from .constants import ENCODING_SYSTEM
 
 class NetworkManager:
 
@@ -10,7 +10,7 @@ class NetworkManager:
         self.manager.setProxy(QgsNetworkAccessManager.instance().proxy())
 
     def getRequest(self, url):
-        """Synchronous GET request. Returns decoded string or None on error."""
+        """Synchroniczna odpowiedź requestu. Zwraca string lub None w przypadku błędu."""
         if isinstance(url, str):
             url = QUrl(url)
         request = QNetworkRequest(url)
@@ -26,4 +26,4 @@ class NetworkManager:
         if len(raw_data) == 0:
             return None
 
-        return bytes(raw_data).decode('utf-8')
+        return bytes(raw_data).decode(ENCODING_SYSTEM)

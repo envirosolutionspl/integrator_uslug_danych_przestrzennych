@@ -29,7 +29,7 @@ from .api.region_fetch import RegionFetch
 from .api.add_service import AddOGCService
 from .utils import QtCompat
 # Initialize Qt resources from file resources.py
-from .resources import *
+from .resources import *  # noqa: F403
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
 import os.path
@@ -38,21 +38,21 @@ from . import PLUGIN_VERSION as plugin_version
 from . import PLUGIN_NAME as plugin_name
 
 class WebServicePlugin:
-    """QGIS Plugin Implementation."""
+    """Wtyczka WebServicePlugin - implementacja."""
 
     def __init__(self, iface):
         """Constructor.
 
-        :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
+        :param iface: Interfejs QGIS, który będzie przekazywany do tej klasy.
+        Umożliwia manipulację aplikacją QGIS w czasie rzeczywistym.
+        Pozwala na dostęp do głównego okna QGIS i interakcję z jego elementami.
         :type iface: QgsInterface
         """
-        # Save reference to the QGIS interface
+        # Zapisanie referencji do interfejsu QGIS
         self.iface = iface
-        # initialize plugin directory
+        # Inicjalizacja katalogu wtyczki
         self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
+        # Inicjalizacja języka
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
@@ -64,33 +64,33 @@ class WebServicePlugin:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
-        # Declare instance attributes
+        # Deklaracja atrybutów instancji
         self.actions = []
         self.menu = self.tr(u'&EnviroSolutions')
 
-        # toolbar
+        # Toolbar
         self.toolbar = self.iface.mainWindow().findChild(QToolBar, 'EnviroSolutions')
         if not self.toolbar:
             self.toolbar = self.iface.addToolBar(u'EnviroSolutions')
             self.toolbar.setObjectName(u'EnviroSolutions')
 
-        # Check if plugin was started the first time in current QGIS session
-        # Must be set in initGui() to survive plugin reloads
+        # Sprawdzenie, czy wtyczka została uruchomiona po raz pierwszy w bieżącej sesji QGIS
+        # Musi być ustawione w initGui() aby przetrwać ponowne ładowanie wtyczki
         self.first_start = None
         self.qt_compat = QtCompat()
         self.regionFetch = RegionFetch(teryt='')
 
 
-    # noinspection PyMethodMayBeStatic
+    # noinspection PyMethodMayBeStatic - wyłączenie sprawdzania statycznych metod
     def tr(self, message):
-        """Get the translation for a string using Qt translation API.
+        """Pobranie tłumaczenia dla stringa za pomocą API Qt.
 
-        We implement this ourselves since we do not inherit QObject.
+        Implementujemy to sami, ponieważ nie dziedziczymy z QObject.
 
-        :param message: String for translation.
+        :param message: String do tłumaczenia.
         :type message: str, QString
 
-        :returns: Translated version of message.
+        :returns: Tłumaczona wersja wiadomości.
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
@@ -109,41 +109,35 @@ class WebServicePlugin:
         parent=None):
         """Add a toolbar icon to the toolbar.
 
-        :param icon_path: Path to the icon for this action. Can be a resource
+        :param icon_path: Ścieżka do ikony dla tej akcji. Może być ścieżką zasobu
             path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
         :type icon_path: str
 
-        :param text: Text that should be shown in menu items for this action.
+        :param text: Tekst, który powinien być wyświetlany w elementach menu dla tej akcji.
         :type text: str
 
-        :param callback: Function to be called when the action is triggered.
+        :param callback: Funkcja do wywołania, gdy akcja jest wyzwolona.
         :type callback: function
 
-        :param enabled_flag: A flag indicating if the action should be enabled
-            by default. Defaults to True.
+        :param enabled_flag: Flaga wskazująca, czy akcja powinna być domyślnie włączona
+            by default. Domyślnie True.
         :type enabled_flag: bool
 
-        :param add_to_menu: Flag indicating whether the action should also
-            be added to the menu. Defaults to True.
+        :param add_to_menu: Flaga wskazująca, czy akcja powinna również
+            być dodana do menu. Domyślnie True.
         :type add_to_menu: bool
 
-        :param add_to_toolbar: Flag indicating whether the action should also
-            be added to the toolbar. Defaults to True.
+        :param add_to_toolbar: Flaga wskazująca, czy akcja powinna również
+            być dodana do paska narzędzi. Domyślnie True.
         :type add_to_toolbar: bool
 
-        :param status_tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
+        :param status_tip: Opcjonalny tekst do wyświetlenia w popupie, gdy wskaźnik myszy znajduje się nad akcją.
         :type status_tip: str
 
-        :param parent: Parent widget for the new action. Defaults None.
+        :param parent: Rodzic widgetu dla nowej akcji. Domyślnie None.
         :type parent: QWidget
 
-        :param whats_this: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
-
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
-        :rtype: QAction
+        :param whats_this: Opcjonalny tekst do wyświetlenia w pasku stanu, gdy wskaźnik myszy znajduje się nad akcją.
         """
 
         icon = QIcon(icon_path)
@@ -172,7 +166,7 @@ class WebServicePlugin:
         return action
 
     def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        """Utworzenie elementów menu i ikon paska narzędzi w GUI QGIS."""
 
         self.dlg = WebServicePluginDialog(self.regionFetch)
         self.setup_dialog()
@@ -207,7 +201,7 @@ class WebServicePlugin:
                 successfully_add[name] = add_layer
             else:
                 successfully_add[name] = False
-        info_icon = self.qt_compat.get_enum(QMessageBox, 'Icon', 'Information')
+        info_icon = self.qt_compat.getMessageBoxIcon('Information')
         msgbox = QMessageBox(
             info_icon,
             'Informacja',
@@ -216,13 +210,13 @@ class WebServicePlugin:
                 for key, value in successfully_add.items()
             )
         )
-        self.qt_compat.exec_dialog(msgbox)
+        self.qt_compat.execDialog(msgbox)
 
     def setup_dialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.add_service)
 
     def run(self):
-        if self.first_start == True:
+        if self.first_start:
             self.first_start = False
 
              # informacje o wersji
@@ -230,6 +224,6 @@ class WebServicePlugin:
             self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
-        result = self.qt_compat.exec_dialog(self.dlg)
+        result = self.qt_compat.execDialog(self.dlg)
         if result:
             pass

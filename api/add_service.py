@@ -2,7 +2,7 @@ from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 from typing import Dict, List
 from xml.etree import ElementTree as ET
 
-from ..constants import SERVICES_NAMESPACES
+from ..constants import SERVICES_NAMESPACES, RESULT_SERVICE_TAG
 from ..https_adapter import NetworkManager
 
 
@@ -23,7 +23,7 @@ class AddOGCService:
     @staticmethod
     def check_service_response(url: str) -> bool:
         result = NetworkManager().getRequest(url)
-        if result and "Service" in result:
+        if result and RESULT_SERVICE_TAG in result:
             return True
         return False
 
@@ -81,16 +81,11 @@ class AddOGCService:
             name_element = feature_type.find('wfs:Name', namespaces)
             title_element = feature_type.find('wfs:Title', namespaces)
             
-            if name_element is not None and title_element is not None :
+            if name_element is not None and title_element is not None:
                 feature_type_name = name_element.text
                 feature_title_name = title_element.text
             else:
                 continue
-            title_element = feature_type.find('ows:Title', namespaces)
-            if title_element is not None:
-                layer_name = title_element.text
-            else:
-                layer_name = feature_type_name
 
             uri = (
                 f"url='{url.replace('?service=WFS&request=GetCapabilities', '')}' "
@@ -141,7 +136,7 @@ class AddOGCService:
 
     def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
         add_layer = False
-        url = f"{url}{'' if '?' in url else f'?service=WMTS&request=GetCapabilities'}"
+        url = f"{url}{'' if '?' in url else '?service=WMTS&request=GetCapabilities'}"
         layers = root.findall('.//wmts:Layer', namespaces)
         for layer in layers:
             layer_identifier = layer.find('ows:Identifier', namespaces).text

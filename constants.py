@@ -12,6 +12,10 @@ GEOPORTAL_WCS_URL = 'https://www.geoportal.gov.pl/pl/usluga/uslugi-pobierania-wc
 
 EZIUDP_URL = 'https://integracja.gugik.gov.pl/eziudp/index.php'
 
+RESULT_SERVICE_TAG = 'Service'
+
+ENCODING_SYSTEM = "utf-8"
+
 ADMINISTRATIVE_UNITS_OBJECTS = {
     'wojewodztwo_combo': ('get_powiat_by_teryt', 'powiat_combo'),
     'powiat_combo': ('get_gmina_by_teryt', 'gmina_combo'),

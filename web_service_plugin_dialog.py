@@ -8,7 +8,7 @@ from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
 from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, Tuple
 
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
@@ -73,17 +73,17 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setup_search()
 
     def configure_table_header(self) -> None:
-        resize_interactive = self.qt_compat.get_enum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
+        resize_interactive = self.qt_compat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
         header = self.services_table.horizontalHeader()
         header.setSectionResizeMode(0, resize_interactive)
         self.services_table.setColumnWidth(0, 400)
         header.setSectionResizeMode(1, resize_interactive)
         self.services_table.setColumnWidth(1, 500)
-        ascending = self.qt_compat.get_enum(Qt, 'SortOrder', 'AscendingOrder')
+        ascending = self.qt_compat.getEnum(Qt, 'SortOrder', 'AscendingOrder')
         self.services_table.horizontalHeader().setSortIndicator(0, ascending)
         self.services_table.setSortingEnabled(True)
         header = self.services_table.verticalHeader()
-        align_center = self.qt_compat.get_enum(Qt, 'AlignmentFlag', 'AlignCenter')
+        align_center = self.qt_compat.getEnum(Qt, 'AlignmentFlag', 'AlignCenter')
         header.setDefaultAlignment(align_center)
 
     def fill_services_table(self) -> None:
@@ -139,7 +139,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setModel(self.proxy_model)
 
     def apply_search_filter(self, text: str) -> None:
-        case_insensitive = self.qt_compat.get_enum(Qt, 'CaseSensitivity', 'CaseInsensitive')
+        case_insensitive = self.qt_compat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 

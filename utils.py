@@ -5,19 +5,25 @@ from . import PLUGIN_NAME
 
 class QtCompat:
     @staticmethod
-    def get_enum(parent, enum_class, value):
-        """Resolve Qt enum - tries Qt6-style scoped enum first, falls back to Qt5."""
+    def getEnum(parent, enum_class, value):
+        """Rozwiązanie enumu Qt - próbuje najpierw scoped enum Qt6, a potem Qt5."""
         scoped = getattr(parent, enum_class, None)
         if scoped is not None:
             return getattr(scoped, value)
         return getattr(parent, value)
 
     @staticmethod
-    def exec_dialog(dialog):
-        """Call exec on a QDialog, handling Qt5 (exec_) / Qt6 (exec) difference."""
+    def execDialog(dialog):
+        """Wywołanie exec na QDialog, obsługa różnicy między Qt5 (exec_) a Qt6 (exec)."""
         if hasattr(dialog, 'exec'):
             return dialog.exec()
         return dialog.exec_()
+
+    @staticmethod
+    def getMessageBoxIcon(icon='Information'):
+        """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""
+        from qgis.PyQt.QtWidgets import QMessageBox
+        return QtCompat.getEnum(QMessageBox, 'Icon', icon)
 
 
 class MessageUtils:
