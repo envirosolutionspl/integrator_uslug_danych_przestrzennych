@@ -31,11 +31,8 @@ from .api.add_service import AddOGCService
 from .resources import *
 # Import the code for the dialog
 from .web_service_plugin_dialog import WebServicePluginDialog
+from .constants import PLUGIN_NAME, PLUGIN_VERSION
 import os.path
-
-"""Wersja wtyczki"""
-plugin_version = '0.1.0'
-plugin_name = 'Web Service Plugin'
 
 class WebServicePlugin:
     """QGIS Plugin Implementation."""
@@ -173,13 +170,13 @@ class WebServicePlugin:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        self.dlg = WebServicePluginDialog(self.regionFetch)
+        self.dlg = WebServicePluginDialog(self.iface, self.regionFetch)
         self.setup_dialog()
 
         icon_path = ':/plugins/web_service_plugin/images/icon.svg'
         self.add_action(
             icon_path,
-            text=self.tr(plugin_name),
+            text=self.tr(PLUGIN_NAME),
             callback=self.run,
             parent=self.iface.mainWindow())
 
@@ -224,8 +221,8 @@ class WebServicePlugin:
             self.first_start = False
 
              # informacje o wersji
-            self.dlg.setWindowTitle('%s %s' % (plugin_name, plugin_version))
-            self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
+            self.dlg.setWindowTitle(f'{PLUGIN_NAME} {PLUGIN_VERSION}')
+            self.dlg.lbl_pluginVersion.setText(f'{PLUGIN_NAME} {PLUGIN_VERSION}')
 
         self.dlg.show()
         result = self.dlg.exec_()

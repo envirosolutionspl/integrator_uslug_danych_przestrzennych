@@ -6,12 +6,13 @@ from functools import partial
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
-from qgis.PyQt.QtWidgets import QComboBox, QWidget, QMessageBox
+from qgis.PyQt.QtWidgets import QComboBox, QWidget
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem, QShowEvent
 from typing import Any, Dict, Tuple, List
 
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
+from .utils import MessageUtils
 from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
     RADIOBUTTONS_UNITS,
@@ -28,8 +29,9 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, regionFetch, parent=None):
+    def __init__(self, iface, regionFetch, parent=None):
         super(WebServicePluginDialog, self).__init__(parent)
+        self.iface = iface
         self.setupUi(self)
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
@@ -86,16 +88,12 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
             result = self.get_current_type_and_teryt()
             if result is None or result[1] is None:
                 return
-        try:
-            dataset_dict = self.get_services_dict()
-        except Exception:
-            dataset_dict = {}
+        dataset_dict = self.get_services_dict()
         if not dataset_dict:
-            QMessageBox(
-                QMessageBox.Warning,
-                'Ostrzeżenie',
+            MessageUtils.pushWarning(
+                self.iface,
                 'Brak danych dla zaznaczonego regionu - nie zgłoszono usługi pobierania'
-            ).exec_()
+            )
             return
         for service_name, service_url in dataset_dict.items():
             urls = service_url if isinstance(service_url, list) else [service_url]
