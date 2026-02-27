@@ -27,7 +27,7 @@ class WebServicePluginDialogTest(unittest.TestCase):
 
     def setUp(self):
         """Runs before each test."""
-        self.dialog = WebServicePluginDialog(None)
+        self.dialog = WebServicePluginDialog(None, None)
 
     def tearDown(self):
         """Runs after each test."""

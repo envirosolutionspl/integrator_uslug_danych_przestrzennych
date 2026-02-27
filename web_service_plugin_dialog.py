@@ -12,6 +12,7 @@ from typing import Any, Dict, Tuple, List
 
 from .api.eziudp_services_fetcher import EziudpServicesFetcher
 from .api.geoportal_services_fetcher import GeoportalServicesFetcher
+from .utils import MessageUtils
 from .constants import (
     ADMINISTRATIVE_UNITS_OBJECTS,
     RADIOBUTTONS_UNITS,
@@ -28,8 +29,9 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
-    def __init__(self, regionFetch, parent=None):
+    def __init__(self, iface, regionFetch, parent=None):
         super(WebServicePluginDialog, self).__init__(parent)
+        self.iface = iface
         self.setupUi(self)
         self.geoportal_fetcher = GeoportalServicesFetcher()
         self.eziudp_fetcher = EziudpServicesFetcher()
@@ -82,7 +84,17 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
         header.setDefaultAlignment(Qt.AlignCenter)
 
     def fill_services_table(self) -> None:
+        if not self.kraj_rb.isChecked():
+            result = self.get_current_type_and_teryt()
+            if result is None or result[1] is None:
+                return
         dataset_dict = self.get_services_dict()
+        if not dataset_dict:
+            MessageUtils.pushWarning(
+                self.iface,
+                'Brak danych dla zaznaczonego regionu - nie zgłoszono usługi pobierania'
+            )
+            return
         for service_name, service_url in dataset_dict.items():
             urls = service_url if isinstance(service_url, list) else [service_url]
             for url in urls:
@@ -139,7 +151,7 @@ class WebServicePluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def enable_comboboxes(self) -> None:
         comboboxes_to_hide = []
-        if self.sender().objectName() == 'kraj_check':
+        if self.sender().objectName() == 'kraj_rb':
             comboboxes_to_hide = list(RADIOBUTTON_COMBOBOX_LINK.values())
         else:
             for check, cmb in RADIOBUTTON_COMBOBOX_LINK.items():
