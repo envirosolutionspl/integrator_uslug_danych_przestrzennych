@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>WebServicePluginDialogBase</class>
  <widget class="QDialog" name="WebServicePluginDialogBase">
@@ -23,12 +23,6 @@
    <iconset>
     <normaloff>images/icon.svg</normaloff>images/icon.svg</iconset>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
-  <property name="sizeGripEnabled">
-   <bool>false</bool>
-  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="horizontalSpacing">
     <number>6</number>
@@ -36,171 +30,87 @@
    <property name="verticalSpacing">
     <number>4</number>
    </property>
-   <item row="0" column="1" rowspan="2">
-    <widget class="QGroupBox" name="units_wdgt">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="services_groupbox">
      <property name="title">
-      <string>Wybór obszaru usług</string>
+      <string>Wybor uslugi</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="1">
-       <layout class="QGridLayout" name="gridLayout_4">
-        <property name="topMargin">
-         <number>5</number>
-        </property>
-        <item row="1" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="woj_rb">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0" alignment="Qt::AlignHCenter">
+         <widget class="QRadioButton" name="wms_rdbtn">
           <property name="text">
-           <string>Wojewódzkie</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="kraj_rb">
-          <property name="text">
-           <string>Krajowe</string>
+           <string>WMS/WMTS</string>
           </property>
           <property name="checked">
            <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="3" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="gmi_rb">
+        <item row="0" column="1" alignment="Qt::AlignHCenter">
+         <widget class="QRadioButton" name="wfs_rdbtn">
           <property name="text">
-           <string>Gminne</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="gmina_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="wojewodztwo_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-          <property name="duplicatesEnabled">
-           <bool>false</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string/>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="powiat_combo">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-          <property name="maxVisibleItems">
-           <number>10</number>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" alignment="Qt::AlignLeft">
-         <widget class="QRadioButton" name="pow_rb">
-          <property name="text">
-           <string>Powiatowe</string>
+           <string>WFS/WCS</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
-      <item row="1" column="1">
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Wyszukaj po nazwie uslugi</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLineEdit" name="search_lineedit">
+        <property name="placeholderText">
+         <string>Wyszukaj...</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
         </property>
-       </spacer>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="3" column="0">
     <widget class="QTableView" name="services_table">
-     <property name="toolTip">
-      <string>Wciśnij Ctrl aby zaznaczyć więcej usług</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
+   <item row="5" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
-     <property name="topMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>60</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item row="0" column="1">
       <widget class="QPushButton" name="add_btn">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>Dodaje usługę do projektu</string>
-       </property>
        <property name="text">
         <string>Dodaj</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -208,9 +118,6 @@
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -222,40 +129,15 @@
      </item>
      <item row="0" column="3">
       <widget class="QPushButton" name="reject_btn">
-       <property name="toolTip">
-        <string>Czyści zaznaczone wiersze tabeli</string>
-       </property>
        <property name="text">
         <string>Anuluj</string>
        </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
       </widget>
-     </item>
-     <item row="0" column="0">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Minimum</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>60</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item row="0" column="4">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Minimum</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -267,23 +149,8 @@
      </item>
     </layout>
    </item>
-   <item row="7" column="0" colspan="2">
+   <item row="7" column="0">
     <layout class="QHBoxLayout" name="Stopka">
-     <property name="spacing">
-      <number>5</number>
-     </property>
-     <property name="leftMargin">
-      <number>5</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>5</number>
-     </property>
-     <property name="bottomMargin">
-      <number>5</number>
-     </property>
      <item>
       <widget class="QLabel" name="img_main">
        <property name="maximumSize">
@@ -291,9 +158,6 @@
          <width>60</width>
          <height>60</height>
         </size>
-       </property>
-       <property name="text">
-        <string/>
        </property>
        <property name="pixmap">
         <pixmap>images/icon.svg</pixmap>
@@ -304,73 +168,34 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
-       <property name="margin">
-        <number>9</number>
-       </property>
       </widget>
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout_11">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lbl_copyrights_3">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_pluginVersion">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;© 2024 &lt;a href=&quot;http://www.envirosolutions.pl/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;EnviroSolutions Sp. z o.o.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::RichText</enum>
+          <string>Web service plugin</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
-         <property name="openExternalLinks">
-          <bool>true</bool>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lbl_copyrights_3">
+         <property name="text">
+          <string>© 2024 EnviroSolutions Sp. z o.o.</string>
          </property>
-         <property name="textInteractionFlags">
-          <set>Qt::TextBrowserInteraction</set>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="lbl_email_3">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;mailto:office@envirosolutions.pl&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;ZAPRASZAMY DO WSPÓŁPRACY&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::RichText</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="openExternalLinks">
-          <bool>true</bool>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::TextBrowserInteraction</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_pluginVersion">
-         <property name="font">
-          <font>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Web service plugin</string>
+          <string>office@envirosolutions.pl</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -381,28 +206,11 @@
      </item>
      <item>
       <widget class="QLabel" name="img_es">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="maximumSize">
         <size>
          <width>60</width>
          <height>60</height>
         </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>19</pointsize>
-        </font>
-       </property>
-       <property name="mouseTracking">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string/>
        </property>
        <property name="pixmap">
         <pixmap>images/es_logo.svg</pixmap>
@@ -410,104 +218,9 @@
        <property name="scaledContents">
         <bool>true</bool>
        </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="0" column="0">
-    <widget class="QGroupBox" name="services_groupbox">
-     <property name="title">
-      <string>Wybór usługi</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QRadioButton" name="wfs_rdbtn">
-          <property name="toolTip">
-           <string>pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru</string>
-          </property>
-          <property name="text">
-           <string>WFS/WCS</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" alignment="Qt::AlignHCenter">
-         <widget class="QRadioButton" name="wms_rdbtn">
-          <property name="toolTip">
-           <string>Pozwala na pobieranie danych aktualnych i archiwalnych</string>
-          </property>
-          <property name="text">
-           <string>WMS/WMTS</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="inputMethodHints">
-      <set>Qt::ImhFormattedNumbersOnly</set>
-     </property>
-     <property name="title">
-      <string>Wyszukaj po nazwie usługi</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLineEdit" name="search_lineedit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="placeholderText">
-         <string>Wyszukaj...</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
    </item>
   </layout>
  </widget>
@@ -522,16 +235,6 @@
    <signal>clicked()</signal>
    <receiver>services_table</receiver>
    <slot>clearSelection()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>768</x>
-     <y>531</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>442</x>
-     <y>333</y>
-    </hint>
-   </hints>
   </connection>
  </connections>
 </ui>

@@ -1,159 +1,151 @@
-from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
-from typing import Dict, List
+﻿from typing import Dict, List
 from xml.etree import ElementTree as ET
 
-from ..constants import SERVICES_NAMESPACES, RESULT_SERVICE_TAG
+from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
+
+from ..constants import RESULT_SERVICE_TAG, SERVICES_NAMESPACES
 from ..https_adapter import NetworkManager
 
 
 class AddOGCService:
     @staticmethod
-    def detect_service_type(url: str, services: List[str]) -> None or str:
+    def detectServiceType(url: str, services: List[str]) -> str:
         for service in services:
             if service.casefold() in url.casefold():
-                capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-                if AddOGCService.check_service_response(capabilities_url):
+                capabilitiesUrl = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
+                if AddOGCService.checkServiceResponse(capabilitiesUrl):
                     return service
         for service in services:
-            capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-            if AddOGCService.check_service_response(capabilities_url):
+            capabilitiesUrl = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
+            if AddOGCService.checkServiceResponse(capabilitiesUrl):
                 return service
         return None
 
     @staticmethod
-    def check_service_response(url: str) -> bool:
+    def checkServiceResponse(url: str) -> bool:
         result = NetworkManager().getRequest(url)
-        if result and RESULT_SERVICE_TAG in result:
-            return True
+        return bool(result and RESULT_SERVICE_TAG in result)
+
+    @staticmethod
+    def processService(serviceType: str, capabilitiesXml: str, url: str) -> bool:
+        root = ET.fromstring(capabilitiesXml)
+        namespaces = AddOGCService._getNamespaces(serviceType)
+        if serviceType == 'WCS':
+            return AddOGCService._processWcsLayers(root, namespaces, url)
+        if serviceType == 'WFS':
+            return AddOGCService._processWfsLayers(root, namespaces, url)
+        if serviceType == 'WMS':
+            return AddOGCService._processWmsLayers(root, namespaces, url)
+        if serviceType == 'WMTS':
+            return AddOGCService._processWmtsLayers(root, namespaces, url)
         return False
 
     @staticmethod
-    def process_service(service_type, capabilities_xml, url):
-        root = ET.fromstring(capabilities_xml)
-        namespaces = AddOGCService._get_namespaces(service_type)
-        if service_type == 'WCS':
-            return AddOGCService._process_wcs_layers(root, namespaces, url)
-        elif service_type == 'WFS':
-            return AddOGCService._process_wfs_layers(root, namespaces, url)
-        elif service_type == 'WMS':
-            return AddOGCService._process_wms_layers(root, namespaces, url)
-        elif service_type == 'WMTS':
-            return AddOGCService._process_wmts_layers(root, namespaces, url)
-        return False
-
-    @staticmethod
-    def add_service(url: str, service_type: str) -> bool:
-        get_capabilities = f"{url}{'' if '?' in url else f'?service={service_type}&request=GetCapabilities'}"
-        capabilities_xml = NetworkManager().getRequest(get_capabilities)
-        if not capabilities_xml:
+    def addService(url: str, serviceType: str) -> bool:
+        getCapabilities = f"{url}{'' if '?' in url else f'?service={serviceType}&request=GetCapabilities'}"
+        capabilitiesXml = NetworkManager().getRequest(getCapabilities)
+        if not capabilitiesXml:
             return False
         try:
-            return AddOGCService.process_service(service_type, capabilities_xml, url)
+            return AddOGCService.processService(serviceType, capabilitiesXml, url)
         except ET.ParseError:
             return False
 
     @staticmethod
-    def _get_namespaces(service_type: str) -> Dict[str, str]:
-        return SERVICES_NAMESPACES.get(service_type)
+    def _getNamespaces(serviceType: str) -> Dict[str, str]:
+        return SERVICES_NAMESPACES.get(serviceType)
 
     @staticmethod
-    def _process_wcs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
-        add_layer = False
-        coverage_elements = root.findall('.//wcs:CoverageSummary', namespaces)
-        for coverage in coverage_elements:
-            coverage_id = coverage.find('wcs:CoverageId', namespaces).text
-            uri = (
-                f"bbox=...&"
-                f"identifier={coverage_id}&"
-                f"url={url}"
-            )
-            wcs_layer = QgsRasterLayer(uri, f'WCS Layer - {coverage_id}', 'wcs')
-            if wcs_layer.isValid():
-                QgsProject.instance().addMapLayer(wcs_layer)
-                add_layer = True
-        return add_layer
+    def _processWcsLayers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        addLayer = False
+        coverageElements = root.findall('.//wcs:CoverageSummary', namespaces)
+        for coverage in coverageElements:
+            coverageId = coverage.find('wcs:CoverageId', namespaces).text
+            uri = f"bbox=...&identifier={coverageId}&url={url}"
+            wcsLayer = QgsRasterLayer(uri, f'WCS Layer - {coverageId}', 'wcs')
+            if wcsLayer.isValid():
+                QgsProject.instance().addMapLayer(wcsLayer)
+                addLayer = True
+        return addLayer
 
     @staticmethod
-    def _process_wfs_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
-        add_layer = False
-        feature_types = root.findall('.//wfs:FeatureType', namespaces)
-        for feature_type in feature_types:
-            name_element = feature_type.find('wfs:Name', namespaces)
-            title_element = feature_type.find('wfs:Title', namespaces)
-            
-            if name_element is not None and title_element is not None:
-                feature_type_name = name_element.text
-                feature_title_name = title_element.text
-            else:
+    def _processWfsLayers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        addLayer = False
+        featureTypes = root.findall('.//wfs:FeatureType', namespaces)
+        for featureType in featureTypes:
+            nameElement = featureType.find('wfs:Name', namespaces)
+            titleElement = featureType.find('wfs:Title', namespaces)
+            if nameElement is None or titleElement is None:
                 continue
 
+            featureTypeName = nameElement.text
+            featureTitleName = titleElement.text
             uri = (
                 f"url='{url.replace('?service=WFS&request=GetCapabilities', '')}' "
-                f"typename='{feature_type_name}' "
-                f"pagingEnabled='true' "
-                f"version='auto'"
+                f"typename='{featureTypeName}' "
+                "pagingEnabled='true' "
+                "version='auto'"
             )
-            wfs_layer = QgsVectorLayer(uri, f'WFS Layer - {feature_title_name}', 'WFS')
-            if wfs_layer.isValid():
-                QgsProject.instance().addMapLayer(wfs_layer)
-                add_layer = True
-        return add_layer
+            wfsLayer = QgsVectorLayer(uri, f'WFS Layer - {featureTitleName}', 'WFS')
+            if wfsLayer.isValid():
+                QgsProject.instance().addMapLayer(wfsLayer)
+                addLayer = True
+        return addLayer
 
     @staticmethod
-    def _process_wms_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
-        add_layer = False
-        layers_name = root.findall(".//wms:Layer/wms:Name", namespaces)
-        layers_title = root.findall(".//wms:Layer/wms:Title", namespaces)
+    def _processWmsLayers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        addLayer = False
+        layersName = root.findall('.//wms:Layer/wms:Name', namespaces)
+        layersTitle = root.findall('.//wms:Layer/wms:Title', namespaces)
 
-        # WMS 1.1.1 does not use XML namespaces unlike WMS 1.3.0,
-        # without this fallback layers from such services would not be found
-        if not layers_name:
-            layers_name = root.findall(".//Layer/Name")
-            layers_title = root.findall(".//Layer/Title")
+        if not layersName:
+            layersName = root.findall('.//Layer/Name')
+            layersTitle = root.findall('.//Layer/Title')
 
-        for name, title in zip(layers_name, layers_title):
-            wms_name = name.text
-            wms_title = title.text
+        for name, title in zip(layersName, layersTitle):
+            wmsName = name.text
+            wmsTitle = title.text
             if 'arcgis' in url:
-                wms_uri = (
-                    "contextualWMSLegend=0&"
-                    "dpiMode=7&"
-                    "featureCount=10&"
-                    "format=image/png&"
-                    "layers=0&styles&"
-                    "tilePixelRatio=0&"
-                    f"url={url}"
+                wmsUri = (
+                    'contextualWMSLegend=0&'
+                    'dpiMode=7&'
+                    'featureCount=10&'
+                    'format=image/png&'
+                    'layers=0&styles&'
+                    'tilePixelRatio=0&'
+                    f'url={url}'
                 )
             else:
-                wms_uri = f"url={url}&layers={wms_name}&styles=&format=image/png"
-            
-            wms_layer = QgsRasterLayer(wms_uri, f'WMS Layer - {wms_title}', 'wms')
-            if wms_layer.isValid():
-                QgsProject.instance().addMapLayer(wms_layer)
-                add_layer = True
+                wmsUri = f'url={url}&layers={wmsName}&styles=&format=image/png'
 
-        return add_layer
+            wmsLayer = QgsRasterLayer(wmsUri, f'WMS Layer - {wmsTitle}', 'wms')
+            if wmsLayer.isValid():
+                QgsProject.instance().addMapLayer(wmsLayer)
+                addLayer = True
 
-    def _process_wmts_layers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
-        add_layer = False
+        return addLayer
+
+    @staticmethod
+    def _processWmtsLayers(root: ET.Element, namespaces: Dict[str, str], url: str) -> bool:
+        addLayer = False
         url = f"{url}{'' if '?' in url else '?service=WMTS&request=GetCapabilities'}"
         layers = root.findall('.//wmts:Layer', namespaces)
         for layer in layers:
-            layer_identifier = layer.find('ows:Identifier', namespaces).text
-            tile_matrix_set = layer.find('.//wmts:TileMatrixSet', namespaces).text
-            wmts_uri = (
-                "contextualWMSLegend=0&"
-                "dpiMode=7&"
-                "featureCount=10&"
-                "format=image/png&"
-                f"layers={layer_identifier}&"
-                "styles=default&"
-                f"tileMatrixSet={tile_matrix_set}&"
-                "tilePixelRatio=0&"
+            layerIdentifier = layer.find('ows:Identifier', namespaces).text
+            tileMatrixSet = layer.find('.//wmts:TileMatrixSet', namespaces).text
+            wmtsUri = (
+                'contextualWMSLegend=0&'
+                'dpiMode=7&'
+                'featureCount=10&'
+                'format=image/png&'
+                f'layers={layerIdentifier}&'
+                'styles=default&'
+                f'tileMatrixSet={tileMatrixSet}&'
+                'tilePixelRatio=0&'
                 f"url={url.replace('&', '%26')}"
-                )
-            wmts_layer = QgsRasterLayer(wmts_uri, f'WMTS Layer - {layer_identifier}', 'wms')
-            if wmts_layer.isValid():
-                QgsProject.instance().addMapLayer(wmts_layer)
-                add_layer = True
-        return add_layer
+            )
+            wmtsLayer = QgsRasterLayer(wmtsUri, f'WMTS Layer - {layerIdentifier}', 'wms')
+            if wmtsLayer.isValid():
+                QgsProject.instance().addMapLayer(wmtsLayer)
+                addLayer = True
+        return addLayer
