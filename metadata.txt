@@ -3,18 +3,18 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=web_service_plugin
+name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
 description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
-version=0.1
+version=0.2
 author=EnviroSolutions Sp. z o.o.
 email=office@envirosolutions.pl
 supportsQt6=true
 
 about=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
 
-tracker=https://github.com/envirosolutionspl/web_service_plugin/issues
-repository=https://github.com/envirosolutionspl/web_service_plugin
+tracker=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues
+repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 # End of mandatory metadata
 
 # Recommended items:
@@ -26,7 +26,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python,wms,wmts,wfs,wcs,gugik,eziudp
 
-homepage=https://github.com/envirosolutionspl/web_service_plugin
+homepage=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 category=Plugins
 icon=images/icon.svg
 # experimental flag

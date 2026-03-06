@@ -12,12 +12,12 @@ class AddOGCService:
     def detectServiceType(url: str, services: List[str]) -> str:
         for service in services:
             if service.casefold() in url.casefold():
-                capabilitiesUrl = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-                if AddOGCService.checkServiceResponse(capabilitiesUrl):
+                capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
+                if AddOGCService.checkServiceResponse(capabilities_url):
                     return service
         for service in services:
-            capabilitiesUrl = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-            if AddOGCService.checkServiceResponse(capabilitiesUrl):
+            capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
+            if AddOGCService.checkServiceResponse(capabilities_url):
                 return service
         return None
 

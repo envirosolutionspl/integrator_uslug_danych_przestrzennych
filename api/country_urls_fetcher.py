@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List
 
-from ..constants import COUNTRY_URLS_API
+from ..constants import REST_API_BASE_URL, REST_ENDPOINT_COUNTRY
 from ..https_adapter import NetworkManager
 
 
@@ -10,7 +10,7 @@ class CountryUrlsFetcher:
         self.manager = manager or NetworkManager()
 
     def fetchCountryUrls(self) -> List[Dict[str, str]]:
-        result = self.manager.getRequest(COUNTRY_URLS_API)
+        result = self.manager.getRequest(REST_API_BASE_URL + REST_ENDPOINT_COUNTRY)
         if not result:
             return []
         try:

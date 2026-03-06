@@ -8,17 +8,17 @@ from . import PLUGIN_VERSION as pluginVersion
 from .api.add_service import AddOGCService
 from .resources import *  # noqa: F403
 from .utils import QtCompat
-from .web_service_plugin_dialog import WebServicePluginDialog
+from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 import os.path
 
 
-class WebServicePlugin:
+class IntegratorUslugPrzestrzennych:
     def __init__(self, iface):
         self.iface = iface
         self.pluginDir = os.path.dirname(__file__)
 
         locale = QSettings().value('locale/userLocale')[0:2]
-        localePath = os.path.join(self.pluginDir, 'i18n', 'WebServicePlugin_{}.qm'.format(locale))
+        localePath = os.path.join(self.pluginDir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
 
         if os.path.exists(localePath):
             self.translator = QTranslator()
@@ -37,7 +37,7 @@ class WebServicePlugin:
         self.qtCompat = QtCompat()
 
     def tr(self, message):
-        return QCoreApplication.translate('WebServicePlugin', message)
+        return QCoreApplication.translate('IntegratorUslugPrzestrzennych', message)
 
     def addAction(
         self,
@@ -72,10 +72,10 @@ class WebServicePlugin:
         return action
 
     def initGui(self):
-        self.dlg = WebServicePluginDialog()
+        self.dlg = IntegratorUslugPrzestrzennychDialog()
         self.setupDialog()
 
-        iconPath = ':/plugins/web_service_plugin/images/icon.svg'
+        iconPath = os.path.join(self.pluginDir, 'images', 'icon.svg')
         self.addAction(
             iconPath,
             text=self.tr(pluginName),
@@ -126,3 +126,5 @@ class WebServicePlugin:
         result = self.qtCompat.execDialog(self.dlg)
         if result:
             pass
+
+
