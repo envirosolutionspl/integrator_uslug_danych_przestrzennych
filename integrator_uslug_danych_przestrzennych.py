@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
@@ -7,7 +7,8 @@ from . import PLUGIN_NAME as pluginName
 from . import PLUGIN_VERSION as pluginVersion
 from .api.add_service import AddOGCService
 from .resources import *  # noqa: F403
-from .utils import QtCompat
+from .https_adapter import NetworkManager
+from .utils import QtCompat, MessageUtils
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 import os.path
 
@@ -16,7 +17,10 @@ class IntegratorUslugPrzestrzennych:
     def __init__(self, iface):
         self.iface = iface
         self.pluginDir = os.path.dirname(__file__)
-
+        self.messageUtils = MessageUtils()
+        self.networkManager = NetworkManager()
+        self.ogcService = AddOGCService(self.networkManager)
+        
         locale = QSettings().value('locale/userLocale')[0:2]
         localePath = os.path.join(self.pluginDir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
 
@@ -95,23 +99,17 @@ class IntegratorUslugPrzestrzennych:
         selectedUrls = self.dlg.getSelectedServicesUrls()
         for name, url in selectedUrls.items():
             services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
-            serviceType = AddOGCService.detectServiceType(url, services)
+            serviceType = self.ogcService.detectServiceType(url, services)
             if serviceType:
-                addLayer = AddOGCService.addService(url, serviceType)
+                addLayer = self.ogcService.addService(url, serviceType)
                 successfullyAdd[name] = addLayer
             else:
                 successfullyAdd[name] = False
 
-        infoIcon = self.qtCompat.getMessageBoxIcon('Information')
-        msgbox = QMessageBox(
-            infoIcon,
-            'Informacja',
-            '\n'.join(
-                f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
-                for key, value in successfullyAdd.items()
-            ),
-        )
-        self.qtCompat.execDialog(msgbox)
+        self.messageUtils.pushInfo(self.iface, '\n'.join(
+            f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
+            for key, value in successfullyAdd.items()
+        ))
 
     def setupDialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.addService)

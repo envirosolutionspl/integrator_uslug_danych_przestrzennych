@@ -1,4 +1,4 @@
-﻿from typing import Dict, List
+from typing import Dict, List, Optional
 from xml.etree import ElementTree as ET
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
@@ -8,23 +8,24 @@ from ..https_adapter import NetworkManager
 
 
 class AddOGCService:
-    @staticmethod
-    def detectServiceType(url: str, services: List[str]) -> str:
+    def __init__(self, networkManager: NetworkManager):
+        self.networkManager = networkManager
+
+    def checkServiceResponse(self, url: str) -> bool:
+        result = self.networkManager.getRequest(url)
+        return bool(result and RESULT_SERVICE_TAG in result)
+
+    def detectServiceType(self, url: str, services: List[str]) -> Optional[str]:
         for service in services:
             if service.casefold() in url.casefold():
                 capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-                if AddOGCService.checkServiceResponse(capabilities_url):
+                if self.checkServiceResponse(capabilities_url):
                     return service
         for service in services:
             capabilities_url = f"{url}{'' if '?' in url else f'?service={service}&request=GetCapabilities'}"
-            if AddOGCService.checkServiceResponse(capabilities_url):
+            if self.checkServiceResponse(capabilities_url):
                 return service
         return None
-
-    @staticmethod
-    def checkServiceResponse(url: str) -> bool:
-        result = NetworkManager().getRequest(url)
-        return bool(result and RESULT_SERVICE_TAG in result)
 
     @staticmethod
     def processService(serviceType: str, capabilitiesXml: str, url: str) -> bool:
@@ -40,14 +41,13 @@ class AddOGCService:
             return AddOGCService._processWmtsLayers(root, namespaces, url)
         return False
 
-    @staticmethod
-    def addService(url: str, serviceType: str) -> bool:
+    def addService(self, url: str, serviceType: str) -> bool:
         getCapabilities = f"{url}{'' if '?' in url else f'?service={serviceType}&request=GetCapabilities'}"
-        capabilitiesXml = NetworkManager().getRequest(getCapabilities)
+        capabilitiesXml = self.networkManager.getRequest(getCapabilities)
         if not capabilitiesXml:
             return False
         try:
-            return AddOGCService.processService(serviceType, capabilitiesXml, url)
+            return self.processService(serviceType, capabilitiesXml, url)
         except ET.ParseError:
             return False
 
