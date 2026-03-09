@@ -36,8 +36,10 @@ repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrz
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
-  Wersja 0.1.2
-  * Aktualizacja stopki wtyczki
+  Wersja 0.1.3
+  * Dodanie informacji o qgisMaximumVersion
+#  Wersja 0.1.2
+#  * Aktualizacja stopki wtyczki
 #  Wersja 0.1.1
 #  * Zmiana nazwy wtyczki i jej logo
 #  * Dodanie rozbudowanego opisu wtyczki
