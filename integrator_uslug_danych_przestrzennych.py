@@ -3,12 +3,11 @@ from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
-from . import PLUGIN_NAME as pluginName
-from . import PLUGIN_VERSION as pluginVersion
+from . import PLUGIN_NAME as plugin_name
+from . import PLUGIN_VERSION as plugin_version
 from .api.add_service import AddOGCService
 from .resources import *  # noqa: F403
-from .https_adapter import NetworkManager
-from .utils import QtCompat, MessageUtils
+from .utils import QtCompat, MessageUtils, NetworkManager
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 import os.path
 
@@ -16,17 +15,17 @@ import os.path
 class IntegratorUslugPrzestrzennych:
     def __init__(self, iface):
         self.iface = iface
-        self.pluginDir = os.path.dirname(__file__)
-        self.messageUtils = MessageUtils()
-        self.networkManager = NetworkManager()
-        self.ogcService = AddOGCService(self.networkManager)
+        self.plugin_dir = os.path.dirname(__file__)
+        self.message_utils = MessageUtils()
+        self.network_manager = NetworkManager()
+        self.ogc_service = AddOGCService(self.network_manager)
         
         locale = QSettings().value('locale/userLocale')[0:2]
-        localePath = os.path.join(self.pluginDir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
+        locale_path = os.path.join(self.plugin_dir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
 
-        if os.path.exists(localePath):
+        if os.path.exists(locale_path):
             self.translator = QTranslator()
-            self.translator.load(localePath)
+            self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
         self.actions = []
@@ -37,39 +36,39 @@ class IntegratorUslugPrzestrzennych:
             self.toolbar = self.iface.addToolBar(u'EnviroSolutions')
             self.toolbar.setObjectName(u'EnviroSolutions')
 
-        self.firstStart = None
-        self.qtCompat = QtCompat()
+        self.first_start = None
+        self.qt_compat = QtCompat()
 
     def tr(self, message):
         return QCoreApplication.translate('IntegratorUslugPrzestrzennych', message)
 
     def addAction(
         self,
-        iconPath,
+        icon_path,
         text,
         callback,
-        enabledFlag=True,
-        addToMenu=True,
-        addToToolbar=True,
-        statusTip=None,
-        whatsThis=None,
+        enabled_flag=True,
+        add_to_menu=True,
+        add_to_toolbar=True,
+        status_tip=None,
+        whats_this=None,
         parent=None,
     ):
-        icon = QIcon(iconPath)
+        icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
-        action.setEnabled(enabledFlag)
+        action.setEnabled(enabled_flag)
 
-        if statusTip is not None:
-            action.setStatusTip(statusTip)
+        if status_tip is not None:
+            action.setStatusTip(status_tip)
 
-        if whatsThis is not None:
-            action.setWhatsThis(whatsThis)
+        if whats_this is not None:
+            action.setWhatsThis(whats_this)
 
-        if addToToolbar:
+        if add_to_toolbar:
             self.toolbar.addAction(action)
 
-        if addToMenu:
+        if add_to_menu:
             self.iface.addPluginToMenu(self.menu, action)
 
         self.actions.append(action)
@@ -79,15 +78,15 @@ class IntegratorUslugPrzestrzennych:
         self.dlg = IntegratorUslugPrzestrzennychDialog()
         self.setupDialog()
 
-        iconPath = os.path.join(self.pluginDir, 'images', 'icon.svg')
+        icon_path = os.path.join(self.plugin_dir, 'images', 'icon.svg')
         self.addAction(
-            iconPath,
-            text=self.tr(pluginName),
+            icon_path,
+            text=self.tr(plugin_name),
             callback=self.run,
             parent=self.iface.mainWindow(),
         )
 
-        self.firstStart = True
+        self.first_start = True
 
     def unload(self):
         for action in self.actions:
@@ -95,33 +94,33 @@ class IntegratorUslugPrzestrzennych:
             self.toolbar.removeAction(action)
 
     def addService(self) -> None:
-        successfullyAdd = {}
-        selectedUrls = self.dlg.getSelectedServicesUrls()
-        for name, url in selectedUrls.items():
+        successfully_add = {}
+        selected_urls = self.dlg.getSelectedServicesUrls()
+        for name, url in selected_urls.items():
             services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
-            serviceType = self.ogcService.detectServiceType(url, services)
-            if serviceType:
-                addLayer = self.ogcService.addService(url, serviceType)
-                successfullyAdd[name] = addLayer
+            service_type = self.ogc_service.detectServiceType(url, services)
+            if service_type:
+                add_layer = self.ogc_service.addService(url, service_type)
+                successfully_add[name] = add_layer
             else:
-                successfullyAdd[name] = False
+                successfully_add[name] = False
 
-        self.messageUtils.pushInfo(self.iface, '\n'.join(
+        self.message_utils.pushInfo(self.iface, '\n'.join(
             f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
-            for key, value in successfullyAdd.items()
+            for key, value in successfully_add.items()
         ))
 
     def setupDialog(self) -> None:
         self.dlg.add_btn.clicked.connect(self.addService)
 
     def run(self):
-        if self.firstStart:
-            self.firstStart = False
-            self.dlg.setWindowTitle('%s %s' % (pluginName, pluginVersion))
-            self.dlg.lbl_pluginVersion.setText('%s %s' % (pluginName, pluginVersion))
+        if self.first_start:
+            self.first_start = False
+            self.dlg.setWindowTitle('%s %s' % (plugin_name, plugin_version))
+            self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
-        result = self.qtCompat.execDialog(self.dlg)
+        result = self.qt_compat.execDialog(self.dlg)
         if result:
             pass
 

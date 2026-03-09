@@ -22,9 +22,9 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         super(IntegratorUslugPrzestrzennychDialog, self).__init__(parent)
         self.setupUi(self)
-        self.qtCompat = QtCompat()
-        self.countryUrlsFetcher = CountryUrlsFetcher()
-        self.countryServicesCache: List[Dict[str, str]] = []
+        self.qt_compat = QtCompat()
+        self.country_urls_fetcher = CountryUrlsFetcher()
+        self.country_services_cache: List[Dict[str, str]] = []
         self.setupDialog()
         self.setupSignals()
         self.setupTable()
@@ -34,8 +34,8 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def setupSignals(self) -> None:
         for obj in RADIOBUTTONS_SERVICES:
-            widgetObj = getattr(self, obj)
-            widgetObj.toggled.connect(self.setupTable)
+            widget_obj = getattr(self, obj)
+            widget_obj.toggled.connect(self.setupTable)
         self.search_lineedit.textChanged.connect(self.applySearchFilter)
 
     def setupTable(self) -> None:
@@ -47,56 +47,56 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.applySearchFilter(self.search_lineedit.text())
 
     def configureTableHeader(self) -> None:
-        resizeInteractive = self.qtCompat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
+        resize_interactive = self.qt_compat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
         header = self.services_table.horizontalHeader()
-        header.setSectionResizeMode(0, resizeInteractive)
+        header.setSectionResizeMode(0, resize_interactive)
         self.services_table.setColumnWidth(0, 400)
-        header.setSectionResizeMode(1, resizeInteractive)
+        header.setSectionResizeMode(1, resize_interactive)
         self.services_table.setColumnWidth(1, 500)
-        ascending = self.qtCompat.getEnum(Qt, 'SortOrder', 'AscendingOrder')
+        ascending = self.qt_compat.getEnum(Qt, 'SortOrder', 'AscendingOrder')
         self.services_table.horizontalHeader().setSortIndicator(0, ascending)
         self.services_table.setSortingEnabled(True)
         header = self.services_table.verticalHeader()
-        alignCenter = self.qtCompat.getEnum(Qt, 'AlignmentFlag', 'AlignCenter')
-        header.setDefaultAlignment(alignCenter)
+        align_center = self.qt_compat.getEnum(Qt, 'AlignmentFlag', 'AlignCenter')
+        header.setDefaultAlignment(align_center)
 
     def fillServicesTable(self) -> None:
-        for serviceRow in self.getServicesRows():
+        for service_row in self.getServicesRows():
             row = [
-                QStandardItem(serviceRow['datasetName']),
-                QStandardItem(serviceRow['url']),
+                QStandardItem(service_row['dataset_name']),
+                QStandardItem(service_row['url']),
             ]
             self.model.appendRow(row)
         self.services_table.setModel(self.model)
 
     def setupSearch(self) -> None:
-        self.proxyModel = QSortFilterProxyModel()
-        self.proxyModel.setSourceModel(self.model)
-        self.proxyModel.setFilterKeyColumn(0)
-        self.services_table.setModel(self.proxyModel)
+        self.proxy_model = QSortFilterProxyModel()
+        self.proxy_model.setSourceModel(self.model)
+        self.proxy_model.setFilterKeyColumn(0)
+        self.services_table.setModel(self.proxy_model)
 
     def applySearchFilter(self, text: str) -> None:
-        caseInsensitive = self.qtCompat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
-        self.proxyModel.setFilterCaseSensitivity(caseInsensitive)
-        self.proxyModel.setFilterFixedString(text)
+        case_insensitive = self.qt_compat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
+        self.proxy_model.setFilterCaseSensitivity(case_insensitive)
+        self.proxy_model.setFilterFixedString(text)
 
     def getServicesRows(self) -> List[Dict[str, str]]:
-        serviceType = 'WMS' if self.wms_rdbtn.isChecked() else 'WFS'
-        return self.countryUrlsFetcher.getCountryUrlsByServiceType(self.countryServicesCache, serviceType)
+        service_type = 'WMS' if self.wms_rdbtn.isChecked() else 'WFS'
+        return self.country_urls_fetcher.getCountryUrlsByServiceType(self.country_services_cache, service_type)
 
     def getSelectedServicesUrls(self) -> Dict[str, str]:
         model = self.services_table.model()
-        selectedIndexes = self.services_table.selectionModel().selectedRows()
+        selected_indexes = self.services_table.selectionModel().selectedRows()
         values = {}
-        for index in selectedIndexes:
-            nameIndex = model.index(index.row(), 0)
-            valueIndex = model.index(index.row(), 1)
-            values[model.data(nameIndex)] = model.data(valueIndex)
+        for index in selected_indexes:
+            name_index = model.index(index.row(), 0)
+            value_index = model.index(index.row(), 1)
+            values[model.data(name_index)] = model.data(value_index)
         return values
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
-        self.countryServicesCache = self.countryUrlsFetcher.fetchCountryUrls()
+        self.country_services_cache = self.country_urls_fetcher.fetchCountryUrls()
         self.setupTable()
         self.wms_rdbtn.setFocus()
 
