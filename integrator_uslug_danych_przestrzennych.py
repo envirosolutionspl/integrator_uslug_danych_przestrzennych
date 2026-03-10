@@ -3,14 +3,13 @@ from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
 
-from . import PLUGIN_NAME as plugin_name
-from . import PLUGIN_VERSION as plugin_version
 from .api.add_service import AddOGCService
-from .resources import *  # noqa: F403
 from .utils import QtCompat, MessageUtils, NetworkManager
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 import os.path
 
+from . import PLUGIN_NAME as plugin_name
+from . import PLUGIN_VERSION as plugin_version
 
 class IntegratorUslugPrzestrzennych:
     def __init__(self, iface):
@@ -100,8 +99,8 @@ class IntegratorUslugPrzestrzennych:
             services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
             service_type = self.ogc_service.detectServiceType(url, services)
             if service_type:
-                add_layer = self.ogc_service.addService(url, service_type)
-                successfully_add[name] = add_layer
+                if_add_layer = self.ogc_service.addService(url, service_type)
+                successfully_add[name] = if_add_layer
             else:
                 successfully_add[name] = False
 

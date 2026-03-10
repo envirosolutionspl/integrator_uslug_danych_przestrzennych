@@ -7,7 +7,9 @@ from ..utils import NetworkManager
 
 class CountryUrlsFetcher:
     def __init__(self, manager=None):
-        self.manager = manager or NetworkManager()
+        if manager is None:
+            manager = NetworkManager()
+        self.manager = manager
 
     def fetchCountryUrls(self) -> List[Dict[str, str]]:
         url = "/".join([REST_API_BASE_URL.rstrip("/"), REST_ENDPOINT_COUNTRY.lstrip("/")])
