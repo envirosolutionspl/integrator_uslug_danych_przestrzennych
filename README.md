@@ -2,17 +2,12 @@
 
 ## PL
 
-**Integrator Usług Danych Przestrzennych** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS/WMTS oraz WFS/WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
+**Integrator Usług Danych Przestrzennych** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS oraz WFS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
 
 ## Funkcjonalności
 
-* Wyświetlanie wykazu usług WMS/WMTS i WFS/WCS w czytelnej tabeli.
+* Wyświetlanie wykazu usług WMS i WFS w czytelnej tabeli.
 * Wbudowana wyszukiwarka usług według nazwy.
-* Filtracja usług według jednostek administracyjnych:
-  * krajowe
-  * wojewódzkie
-  * powiatowe
-  * gminne
 * Możliwość dodawania wybranych usług bezpośrednio do projektu QGIS.
 
 ## Wymagania
@@ -52,13 +47,8 @@ Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrz
 
 ## Features
 
-* Displays a list of WMS/WMTS and WFS/WCS services in a user-friendly table.
+* Displays a list of WMS and WFS services in a user-friendly table.
 * Built-in search tool to find services by name.
-* Filtering services by administrative units:
-  * national
-  * provincial
-  * district
-  * municipal
 * Ability to add selected services directly to a QGIS project.
 
 ## Requirements

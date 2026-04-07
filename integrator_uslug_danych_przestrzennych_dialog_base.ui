@@ -44,7 +44,7 @@
         <item row="0" column="0" alignment="Qt::AlignHCenter">
          <widget class="QRadioButton" name="wms_rdbtn">
           <property name="text">
-           <string>WMS/WMTS</string>
+           <string>WMS</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -54,7 +54,7 @@
         <item row="0" column="1" alignment="Qt::AlignHCenter">
          <widget class="QRadioButton" name="wfs_rdbtn">
           <property name="text">
-           <string>WFS/WCS</string>
+           <string>WFS</string>
           </property>
          </widget>
         </item>
