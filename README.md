@@ -12,7 +12,7 @@
 
 ## Wymagania
 
-* Minimalna wersja QGIS: **3.22**.
+* Minimalna wersja QGIS: **3.28**.
 
 ## Instalacja
 
@@ -29,7 +29,8 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 2. Skorzystaj z wyszukiwarki lub filtrów, aby znaleźć interesującą Cię usługę.
 3. Dodaj wybraną usługę do projektu QGIS, klikając odpowiednią opcję w tabeli.
 
-![integrator_gif](https://github.com/user-attachments/assets/235ce65c-dc21-4279-8624-9fde20d2691f)
+<img width="1277" height="690" alt="integrator_100_gif" src="https://github.com/user-attachments/assets/2628e4df-ad19-4935-aeca-d19ff58b85fe" />
+
 
 ## Licencja
 
@@ -55,7 +56,7 @@ Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrz
 
 ## Requirements
 
-* Minimum QGIS version: **3.22**.
+* Minimum QGIS version: **3.28**.
 
 ## Installation
 
@@ -72,7 +73,7 @@ To install the plugin, follow these steps:
 2. Use the search tool or filters to find the desired service.
 3. Add the selected service to your QGIS project by clicking the corresponding option in the table.
 
-![integrator_gif](https://github.com/user-attachments/assets/412b0728-af7a-4b5d-8718-02740f17885a)
+<img width="1277" height="690" alt="integrator_100_gif" src="https://github.com/user-attachments/assets/277584cf-2323-4b09-8a49-aa1c76174c01" />
 
 ## License
 
