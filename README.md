@@ -1,4 +1,4 @@
-# Integrator Usług Danych Przestrzennych
+# Integrator usług danych przestrzennych
 
 ## PL
 

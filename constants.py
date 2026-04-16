@@ -1,8 +1,27 @@
 REST_API_BASE_URL = 'https://rest.envirosolutions.pl/integrator'
 REST_ENDPOINT_COUNTRY = '/get-country-urls'
 RESULT_SERVICE_TAG = 'Service'
-
 ENCODING_SYSTEM = "utf-8"
+EZIUDP_URL = 'https://integracja.gugik.gov.pl/eziudp/index.php'
+
+FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
+
+INDUSTRIES = {
+    "999": 'Nie wybrano',
+    "e": 'Energetyka/OZE',
+    "u": 'Urząd',
+    "td": 'Transport/Drogi',
+    "pg": 'Planowanie/Geodezja',
+    "wk": 'WodKan',
+    "s": 'Środowisko',
+    "rl": 'Rolnictwo/Leśnictwo',
+    "tk": 'Telkom',
+    "edu": 'Edukacja',
+    "i": 'Inne',
+    "it": 'IT',
+    "n": 'Nieruchomości'
+}
+
 
 RADIOBUTTONS_SERVICES = [
     'wms_rdbtn',
