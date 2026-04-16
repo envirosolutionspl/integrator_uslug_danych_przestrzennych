@@ -29,7 +29,7 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 2. Skorzystaj z wyszukiwarki lub filtrów, aby znaleźć interesującą Cię usługę.
 3. Dodaj wybraną usługę do projektu QGIS, klikając odpowiednią opcję w tabeli.
 
-<img width="1277" height="690" alt="integrator_100_gif" src="https://github.com/user-attachments/assets/2628e4df-ad19-4935-aeca-d19ff58b85fe" />
+<img width="1339" height="720" alt="integrator_udp_100_gif-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/ee2b4699-b2fa-4f5f-b7ad-656f9a69b6fa" />
 
 
 ## Licencja
@@ -73,7 +73,7 @@ To install the plugin, follow these steps:
 2. Use the search tool or filters to find the desired service.
 3. Add the selected service to your QGIS project by clicking the corresponding option in the table.
 
-<img width="1277" height="690" alt="integrator_100_gif" src="https://github.com/user-attachments/assets/277584cf-2323-4b09-8a49-aa1c76174c01" />
+<img width="1339" height="720" alt="integrator_udp_100_gif-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/355dc990-92fb-4e81-96a8-c7c7eb337984" />
 
 ## License
 
