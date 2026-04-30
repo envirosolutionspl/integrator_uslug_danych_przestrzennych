@@ -6,7 +6,7 @@
 name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
 description=Wtyczka umożliwia prezentację danych z serwisów WMS oraz WFS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
-version=1.0
+version=2.0.0
 author=EnviroSolutions Sp. z o.o.
 email=office@envirosolutions.pl
 supportsQt6=true
@@ -22,10 +22,12 @@ repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrz
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 # changelog=
-    Wersja 1.0
-        *Usprawnienie wyszukiwania usług WMS oraz WFS
-        *Od teraz wszystkie wyświetlane usługi są uprzednio filtrowane pod względem poprawności działania
-        *Zapewnienie kompatybilności zarówno z modułem Qt5 jak i Qt6
+    Wersja 2.0.0
+        *Przyspieszenie działania wtyczki
+#    Wersja 1.0
+#        *Usprawnienie wyszukiwania usług WMS oraz WFS
+#        *Od teraz wszystkie wyświetlane usługi są uprzednio filtrowane pod względem poprawności działania
+#        *Zapewnienie kompatybilności zarówno z modułem Qt5 jak i Qt6
 # Tags are comma separated with spaces allowed
 tags=python,wms,wfs,gugik,eziudp
 
