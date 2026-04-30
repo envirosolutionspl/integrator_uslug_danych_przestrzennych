@@ -9,7 +9,7 @@
         begin                : 2024-08-28
         git sha              : $Format:%H$
         copyright            : (C) 2026 by EnviroSolutions Sp. z o.o.
-        email                : office@envirosolutions.pl
+        email                : gis@envirosolutions.pl
  ***************************************************************************/
 
 /***************************************************************************

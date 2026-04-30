@@ -8,7 +8,7 @@ qgisMinimumVersion=3.28
 description=Wtyczka umożliwia prezentację danych z serwisów WMS oraz WFS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
 version=1.0.0
 author=EnviroSolutions Sp. z o.o.
-email=office@envirosolutions.pl
+email=gis@envirosolutions.pl
 supportsQt6=true
 
 about=

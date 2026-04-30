@@ -171,7 +171,7 @@ class Ui_IntegratorPluginDialogBase(object):
         self.reject_btn.setToolTip(_translate("IntegratorPluginDialogBase", "Czyści zaznaczone wiersze tabeli"))
         self.reject_btn.setText(_translate("IntegratorPluginDialogBase", "Anuluj"))
         self.lbl_copyrights_3.setText(_translate("IntegratorPluginDialogBase", "<html><head/><body><p>© 2024 <a href=\"http://www.envirosolutions.pl/\"><span style=\" text-decoration: underline; color:#0000ff;\">EnviroSolutions Sp. z o.o.</span></a></p></body></html>"))
-        self.lbl_email_3.setText(_translate("IntegratorPluginDialogBase", "<html><head/><body><p><a href=\"mailto:office@envirosolutions.pl\"><span style=\" text-decoration: underline; color:#0000ff;\">ZAPRASZAMY DO WSPÓŁPRACY</span></a></p></body></html>"))
+        self.lbl_email_3.setText(_translate("IntegratorPluginDialogBase", "<html><head/><body><p><a href=\"mailto:gis@envirosolutions.pl\"><span style=\" text-decoration: underline; color:#0000ff;\">ZAPRASZAMY DO WSPÓŁPRACY</span></a></p></body></html>"))
         self.lbl_pluginVersion.setText(_translate("IntegratorPluginDialogBase", "Integrator usług danych przestrzennych"))
         self.services_groupbox.setTitle(_translate("IntegratorPluginDialogBase", "Wybór usługi"))
         self.wfs_rdbtn.setToolTip(_translate("IntegratorPluginDialogBase", "pozwala szybko wyszukiwać najaktualniejsze dane dla zadanego obszaru"))

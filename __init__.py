@@ -8,7 +8,7 @@
                              -------------------
         begin                : 2026-08-28
         copyright            : (C) 2026 by EnviroSolutions Sp. z o.o.
-        email                : office@envirosolutions.pl
+        email                : gis@envirosolutions.pl
         git sha              : $Format:%H$
  ***************************************************************************/
 
