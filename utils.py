@@ -65,18 +65,6 @@ class MessageUtils:
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
         QtCompat.execDialog(msg_box)
 
-    @staticmethod
-    def pushMessageBoxYesNo(parent, title: str, message: str) -> bool:
-        msg_box = QMessageBox(parent)
-        msg_box.setIcon(QtCompat.getMessageBoxIcon('Question'))
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        yes = QtCompat.getEnum(QMessageBox, 'StandardButton', 'Yes')
-        no = QtCompat.getEnum(QMessageBox, 'StandardButton', 'No')
-        msg_box.setStandardButtons(yes | no)
-        return QtCompat.execDialog(msg_box) == yes
-
-    @staticmethod
     def pushSuccess(iface, message: str) -> None:
         iface.messageBar().pushMessage(
             "Sukces:",
