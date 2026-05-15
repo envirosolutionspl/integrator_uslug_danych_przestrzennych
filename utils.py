@@ -1,6 +1,8 @@
 from qgis.core import Qgis, QgsMessageLog, QgsNetworkAccessManager, QgsBlockingNetworkRequest
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtNetwork import QNetworkRequest, QNetworkAccessManager
 from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt.QtWidgets import QMessageBox
 
 from . import PLUGIN_NAME
 from .constants import ENCODING_SYSTEM
@@ -30,6 +32,50 @@ class QtCompat:
 
 
 class MessageUtils:
+    @staticmethod
+    def pushMessageBoxCritical(parent, title: str, message: str) -> None:
+        msg_box = QMessageBox(parent)
+        msg_box.setIcon(QtCompat.getMessageBoxIcon('Critical'))
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
+        if hasattr(parent, 'plugin_icon'):
+            msg_box.setWindowIcon(QIcon(parent.plugin_icon))
+        QtCompat.execDialog(msg_box)
+
+    @staticmethod
+    def pushMessageBoxInfo(parent, title: str, message: str) -> None:
+        msg_box = QMessageBox(parent)
+        msg_box.setIcon(QtCompat.getMessageBoxIcon('Information'))
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
+        if hasattr(parent, 'plugin_icon'):
+            msg_box.setWindowIcon(QIcon(parent.plugin_icon))
+        QtCompat.execDialog(msg_box)
+
+    @staticmethod
+    def pushMessageBoxWarning(parent, title: str, message: str) -> None:
+        msg_box = QMessageBox(parent)
+        msg_box.setIcon(QtCompat.getMessageBoxIcon('Warning'))
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
+        if hasattr(parent, 'plugin_icon'):
+            msg_box.setWindowIcon(QIcon(parent.plugin_icon))
+        QtCompat.execDialog(msg_box)
+
+    @staticmethod
+    def pushMessageBoxYesNo(parent, title: str, message: str) -> bool:
+        msg_box = QMessageBox(parent)
+        msg_box.setIcon(QtCompat.getMessageBoxIcon('Question'))
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        yes = QtCompat.getEnum(QMessageBox, 'StandardButton', 'Yes')
+        no = QtCompat.getEnum(QMessageBox, 'StandardButton', 'No')
+        msg_box.setStandardButtons(yes | no)
+        return QtCompat.execDialog(msg_box) == yes
+
     @staticmethod
     def pushSuccess(iface, message: str) -> None:
         iface.messageBar().pushMessage(

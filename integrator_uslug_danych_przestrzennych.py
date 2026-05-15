@@ -151,11 +151,19 @@ class IntegratorUslugPrzestrzennych:
     def addService(self) -> None:
         successfully_add = {}
         selected_urls = self.dlg.getSelectedServicesUrls()
+        if not selected_urls:
+            self.message_utils.pushMessageBoxWarning(
+                self.dlg,
+                'Ostrzezenie',
+                'Nie wybrano zadnej uslugi z listy.'
+            )
+            return
+
         selected_service_type = self.dlg.getSelectedServiceType()
         for name, url in selected_urls.items():
             successfully_add[name] = self.ogc_service.addService(url, selected_service_type)
 
-        self.message_utils.pushInfo(self.iface, '\n'.join(
+        self.message_utils.pushMessageBoxInfo(self.dlg, 'Informacja', '\n'.join(
             f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
             for key, value in successfully_add.items()
         ))
