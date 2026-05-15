@@ -23,13 +23,13 @@
 """
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QMessageBox, QToolBar
+from qgis.PyQt.QtWidgets import QAction, QDialog, QToolBar
 from qgis.core import Qgis, QgsSettings
+
 from .api.add_service import AddOGCService
 from .utils import QtCompat, MessageUtils, NetworkManager
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
-from .qgis_feed import QgisFeedDialog, QgisFeed
-from qgis.PyQt.QtWidgets import QDialog
+from .qgis_feed import QgisFeed, QgisFeedDialog
 import os.path
 
 from . import PLUGIN_NAME as plugin_name
@@ -44,29 +44,18 @@ class IntegratorUslugPrzestrzennych:
             application at run time.
         :type iface: QgsInterface
         """
-        self.settings = QgsSettings()
-
-        if Qgis.QGIS_VERSION_INT >= 31000:
-            from .qgis_feed import QgisFeed
-            self.selected_industry = self.settings.value("selected_industry", None)
-            show_dialog = self.settings.value("showDialog", True, type=bool)
-            if self.selected_industry is None and show_dialog:
-                self.showBranchSelectionDialog()
-            select_indust_session = self.settings.value('selected_industry')
-            self.feed = QgisFeed(selected_industry=select_indust_session, plugin_name=plugin_name)
-            self.feed.initFeed()
-
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
+        self.settings = QgsSettings()
         self.message_utils = MessageUtils()
         self.network_manager = NetworkManager()
         self.ogc_service = AddOGCService(self.network_manager)
-
-        # initialize locale
-        locale = self.settings.value('locale/userLocale')[:2]
-        locale_path = os.path.join(
-            self.plugin_dir, 'i18n', f'IntegratorPlugin_{locale}.qm'
-        )
+        self.selected_industry = None
+        self.feed = None
+        self.setupFeed()
+        
+        locale = QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(self.plugin_dir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -82,7 +71,28 @@ class IntegratorUslugPrzestrzennych:
             self.toolbar.setObjectName(u'EnviroSolutions')
 
         self.first_start = None
-        self.qt_compat = QtCompat()
+
+    def setupFeed(self) -> None:
+        if Qgis.QGIS_VERSION_INT < 31000:
+            return
+
+        self.selected_industry = self.settings.value('selected_industry')
+        show_dialog = self.settings.value('showDialog', True, type=bool)
+        if self.selected_industry is None and show_dialog:
+            self.selected_industry = self.showBranchSelectionDialog()
+
+        self.feed = QgisFeed(selected_industry=self.selected_industry, plugin_name=plugin_name)
+        self.feed.initFeed()
+
+    def showBranchSelectionDialog(self):
+        dialog = QgisFeedDialog()
+        if QtCompat.execDialog(dialog) != QDialog.Accepted:
+            return None
+
+        selected_industry = dialog.comboBox.currentText()
+        self.settings.setValue('selected_industry', selected_industry)
+        self.settings.setValue('showDialog', False)
+        return selected_industry
 
     def tr(self, message):
         return QCoreApplication.translate('IntegratorUslugPrzestrzennych', message)
@@ -132,35 +142,18 @@ class IntegratorUslugPrzestrzennych:
         )
 
         self.first_start = True
-    def showBranchSelectionDialog(self):
-            self.qgisfeed_dialog = QgisFeedDialog()
 
-            if self.qgisfeed_dialog.exec_() == QDialog.Accepted:
-                self.selected_branch = self.qgisfeed_dialog.comboBox.currentText()
-
-                # Zapis w QGIS3.ini
-                self.settings.setValue("selected_industry", self.selected_branch)
-                self.settings.setValue("showDialog", False)
     def unload(self):
-        """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&EnviroSolutions'),
-                action)
-            # self.iface.removeToolBarIcon(action)
+            self.iface.removePluginMenu(self.tr(u'&EnviroSolutions'), action)
             self.toolbar.removeAction(action)
 
     def addService(self) -> None:
         successfully_add = {}
         selected_urls = self.dlg.getSelectedServicesUrls()
+        selected_service_type = self.dlg.getSelectedServiceType()
         for name, url in selected_urls.items():
-            services = ['WFS', 'WCS'] if self.dlg.wfs_rdbtn.isChecked() else ['WMTS', 'WMS']
-            service_type = self.ogc_service.detectServiceType(url, services)
-            if service_type:
-                if_add_layer = self.ogc_service.addService(url, service_type)
-                successfully_add[name] = if_add_layer
-            else:
-                successfully_add[name] = False
+            successfully_add[name] = self.ogc_service.addService(url, selected_service_type)
 
         self.message_utils.pushInfo(self.iface, '\n'.join(
             f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
@@ -177,8 +170,6 @@ class IntegratorUslugPrzestrzennych:
             self.dlg.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
 
         self.dlg.show()
-        result = self.qt_compat.execDialog(self.dlg)
+        result = QtCompat.execDialog(self.dlg)
         if result:
             pass
-
-

@@ -1,6 +1,7 @@
 REST_API_BASE_URL = 'https://rest.envirosolutions.pl/integrator'
 REST_ENDPOINT_COUNTRY = '/get-country-urls'
 RESULT_SERVICE_TAG = 'Service'
+
 ENCODING_SYSTEM = "utf-8"
 
 FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
@@ -21,9 +22,10 @@ INDUSTRIES = {
     "n": 'Nieruchomości'
 }
 
-
 RADIOBUTTONS_SERVICES = [
     'wms_rdbtn',
+    'wmts_rdbtn',
+    'wcs_rdbtn',
     'wfs_rdbtn',
 ]
 
@@ -44,4 +46,3 @@ SERVICES_NAMESPACES = {
         'ows': 'http://www.opengis.net/ows/1.1'
     },
 }
-
