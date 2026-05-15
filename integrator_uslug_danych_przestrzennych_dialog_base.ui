@@ -110,14 +110,7 @@
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <layout class="QGridLayout" name="gridLayout_8">
-        <item row="1" column="2">
-         <widget class="QRadioButton" name="wfs_rdbtn">
-          <property name="text">
-           <string>WFS</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
+        <item row="1" column="6">
          <widget class="QRadioButton" name="wcs_rdbtn">
           <property name="enabled">
            <bool>true</bool>
@@ -131,6 +124,19 @@
          </widget>
         </item>
         <item row="1" column="1">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="2">
          <widget class="QRadioButton" name="wmts_rdbtn">
           <property name="text">
            <string>WMTS</string>
@@ -146,6 +152,39 @@
            <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="1" column="3">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="4">
+         <widget class="QRadioButton" name="wfs_rdbtn">
+          <property name="text">
+           <string>WFS</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
