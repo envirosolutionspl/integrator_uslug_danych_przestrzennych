@@ -80,9 +80,20 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
+    def getSelectedServiceType(self) -> str:
+        if self.wmts_rdbtn.isChecked():
+            return 'WMTS'
+        if self.wcs_rdbtn.isChecked():
+            return 'WCS'
+        if self.wfs_rdbtn.isChecked():
+            return 'WFS'
+        return 'WMS'
+
     def getServicesRows(self) -> List[Dict[str, str]]:
-        service_type = 'WMS' if self.wms_rdbtn.isChecked() else 'WFS'
-        return self.country_urls_fetcher.getCountryUrlsByServiceType(self.country_services_cache, service_type)
+        return self.country_urls_fetcher.getCountryUrlsByServiceType(
+            self.country_services_cache,
+            self.getSelectedServiceType(),
+        )
 
     def getSelectedServicesUrls(self) -> Dict[str, str]:
         model = self.services_table.model()

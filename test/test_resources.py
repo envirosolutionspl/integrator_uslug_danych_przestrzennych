@@ -8,7 +8,7 @@
 
 """
 
-__author__ = 'office@envirosolutions.pl'
+__author__ = 'gis@envirosolutions.pl'
 __date__ = '2024-08-28'
 __copyright__ = 'Copyright 2024, EnviroSolutions Sp. z o.o.'
 
