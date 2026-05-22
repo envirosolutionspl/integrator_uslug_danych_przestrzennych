@@ -5,7 +5,7 @@
 [general]
 name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
-
+qgisMiaximumVersion=4.99
 description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
 version=1.0.0
 
