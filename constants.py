@@ -4,8 +4,28 @@ RESULT_SERVICE_TAG = 'Service'
 
 ENCODING_SYSTEM = "utf-8"
 
+FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
+
+INDUSTRIES = {
+    "999": 'Nie wybrano',
+    "e": 'Energetyka/OZE',
+    "u": 'Urząd',
+    "td": 'Transport/Drogi',
+    "pg": 'Planowanie/Geodezja',
+    "wk": 'WodKan',
+    "s": 'Środowisko',
+    "rl": 'Rolnictwo/Leśnictwo',
+    "tk": 'Telkom',
+    "edu": 'Edukacja',
+    "i": 'Inne',
+    "it": 'IT',
+    "n": 'Nieruchomości'
+}
+
 RADIOBUTTONS_SERVICES = [
     'wms_rdbtn',
+    'wmts_rdbtn',
+    'wcs_rdbtn',
     'wfs_rdbtn',
 ]
 
@@ -26,4 +46,3 @@ SERVICES_NAMESPACES = {
         'ows': 'http://www.opengis.net/ows/1.1'
     },
 }
-
