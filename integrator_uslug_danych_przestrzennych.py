@@ -161,7 +161,7 @@ class IntegratorUslugPrzestrzennych:
 
         selected_service_type = self.dlg.getSelectedServiceType()
         for name, url in selected_urls.items():
-            successfully_add[name] = self.ogc_service.addService(url, selected_service_type)
+            successfully_add[name] = self.ogc_service.addService(selected_service_type, url)
 
         self.message_utils.pushMessageBoxInfo(self.dlg, 'Informacja', '\n'.join(
             f'Dodano usluge {key}' if value else f'Nie dodano uslugi {key}'
