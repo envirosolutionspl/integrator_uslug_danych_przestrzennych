@@ -1,15 +1,35 @@
-from qgis.core import (QgsNewsFeedParser, QgsSettings, QgsNewsFeedModel,
-                       QgsMessageLog, QgsApplication)
-from qgis.PyQt.QtCore import QUrl
-from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QComboBox, QPushButton
-
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ * Integrator Uslug Danych Przestrzennych                                  *
+ *                                 A QGIS plugin                           *
+ * Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS    *
+ * w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów  *
+ * i Usług oraz strony geoportal.gov.pl                                    *
+ * ----------------------------------------------------------------------- *
+ *       begin                : 2026-05-28                                 *
+ *       copyright            : (C) 2026 by EnviroSolutions Sp. z o.o.     *
+ *       email                : gis@envirosolutions.pl                     *
+ *       git sha              : $Format:%H$                                *
+ ***************************************************************************/
+"""
 import re
 import os
 import unicodedata
 
-from .constants import INDUSTRIES, FEED_URL
+from qgis.core import (
+    QgsNewsFeedParser,
+    QgsSettings,
+    QgsNewsFeedModel,    
+    QgsMessageLog, 
+    QgsApplication,
 
+)
+from qgis.PyQt.QtCore import QUrl
+from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import QDialog, QComboBox, QPushButton
+
+from .constants import INDUSTRIES, FEED_URL
 
 class QgisFeed:
     def __init__(self, selected_industry, plugin_name):
