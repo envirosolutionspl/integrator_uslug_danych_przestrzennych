@@ -24,11 +24,9 @@ from owslib.wmts import WebMapTileService
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
 from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS
-from ..utils import NetworkManager, MessageUtils
 
 class AddOGCService:
-    def __init__(self, network_manager: NetworkManager):
-        self.network_manager = network_manager
+    def __init__(self):
         self.downloaded_layers = []
 
     def _addMapLayer(self, layer) -> bool:

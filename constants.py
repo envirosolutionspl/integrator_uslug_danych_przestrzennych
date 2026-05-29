@@ -1,5 +1,5 @@
 REST_API_BASE_URL = 'https://rest.envirosolutions.pl/integrator'
-REST_ENDPOINT_COUNTRY = '/get-country-urls'
+REST_ENDPOINT_COUNTRY = '/get-services-urls'
 RESULT_SERVICE_TAG = 'Service'
 
 ENCODING_SYSTEM = "utf-8"

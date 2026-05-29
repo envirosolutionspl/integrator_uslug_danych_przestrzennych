@@ -22,7 +22,8 @@ from .. import PLUGIN_NAME as plugin_name
 from ..modules.country_urls_fetcher import CountryUrlsFetcher
 from ..modules.standalone_urls_fetcher import StandaloneUrlsFetcher
 from ..modules.add_service import AddOGCService
-from ..utils import QtCompat, SingleTaskManager, MessageUtils, NetworkManager
+from ..utils import QtCompat, SingleTaskManager, MessageUtils
+from ..constants import SERVICE_TYPES
 
 class ContentManager(QObject):
     data_updated_signal = pyqtSignal(int) 
@@ -30,8 +31,7 @@ class ContentManager(QObject):
     def __init__(self, dialog_parent):
         super().__init__()
         self.dialog_parent = dialog_parent
-        self.network_manager = NetworkManager()
-        self.ogc_service = AddOGCService(self.network_manager)
+        self.ogc_service = AddOGCService()
         self.data_updated_signal.connect(self._noSignalConnected)
         
         # Sekcja API
@@ -84,7 +84,9 @@ class ContentManager(QObject):
         " Pobieranie danych z sieci podczas pierwszego uruchomienia "
         # Próba pobrania danych z serwera API
         if not self.use_standalone_data and len(self.country_services_cache) == 0:
-            self.country_services_cache = self.country_urls_fetcher.fetchCountryUrls()
+            self.country_services_cache = []
+            for service_type in SERVICE_TYPES:
+                self.country_services_cache.extend(self.country_urls_fetcher.fetchCountryUrls('PL', service_type.upper()))
         if len(self.country_services_cache) > 0:
             MessageUtils.logInfo(
                 f"Pobrano dane o usługach z zewnętrznego API. "
@@ -118,13 +120,9 @@ class ContentManager(QObject):
             return
 
         progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, len(selected_table_indexes)+1, self.dialog_parent)
-        progress.setWindowTitle(plugin_name)
-        progress.setWindowModality(QtCompat.getEnum(Qt, 'WindowModality', 'WindowModal'))
-        progress.setAutoClose(True)
-        progress.setAutoReset(True)
-        progress.setMinimumDuration(0)   # natychmiast pokaż
-        progress.setCancelButtonText("Anuluj")
+        self._appendDefaultProgressDialogSettings(progress)
         progress.show()
+
         loop = QEventLoop(self.dialog_parent)
         for name, url in selected_services.items():
             self.ogc_service.downloadServices(name, url, selected_service_type)
@@ -148,3 +146,11 @@ class ContentManager(QObject):
 
         progress.deleteLater()
         progress = None
+
+    def _appendDefaultProgressDialogSettings(self, progress_dialog):
+        progress_dialog.setWindowTitle(plugin_name)
+        progress_dialog.setWindowModality(QtCompat.getEnum(Qt, 'WindowModality', 'WindowModal'))
+        progress_dialog.setAutoClose(True)
+        progress_dialog.setAutoReset(True)
+        progress_dialog.setMinimumDuration(0)   # natychmiast pokaż
+        progress_dialog.setCancelButtonText("Anuluj")

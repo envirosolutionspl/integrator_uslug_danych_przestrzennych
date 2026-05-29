@@ -20,7 +20,10 @@ from functools import partial
 import requests
 import ssl
 import urllib3
-from urllib3.util import create_urllib3_context
+try:
+    from urllib3.util.ssl_ import create_urllib3_context
+except ImportError:
+    from urllib3.util import create_urllib3_context
 
 from qgis.core import (
     Qgis,
@@ -312,30 +315,6 @@ class MessageUtils:
             tag=PLUGIN_NAME,
             level=Qgis.Critical
         )
-
-
-class NetworkManager:
-
-    def __init__(self):
-        self.manager = QNetworkAccessManager()
-        self.manager.setProxy(QgsNetworkAccessManager.instance().proxy())
-
-    def getRequest(self, url):
-        """Synchroniczna odpowiedź requestu. Zwraca string lub None w przypadku błędu."""
-        if isinstance(url, str):
-            url = QUrl(url)
-        request = QNetworkRequest(url)
-        blocking_request = QgsBlockingNetworkRequest()
-        error_code = blocking_request.get(request)
-
-        if error_code != QgsBlockingNetworkRequest.NoError:
-            return None
-
-        reply = blocking_request.reply()
-        raw_data = reply.content()
-        if len(raw_data) == 0:
-            return None
-        return bytes(raw_data).decode(ENCODING_SYSTEM)
 
 class LegacySslAdapter(requests.adapters.HTTPAdapter):
     """Adapter dopuszczający stare połączenia SSL"""

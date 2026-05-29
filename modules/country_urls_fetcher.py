@@ -17,18 +17,18 @@ import json
 from typing import Dict, List
 
 from ..constants import REST_API_BASE_URL, REST_ENDPOINT_COUNTRY
-from ..utils import NetworkManager
+from ..utils import NetworkUtils
+
+from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS
 
 class CountryUrlsFetcher:
     def __init__(self, manager=None):
-        if manager is None:
-            manager = NetworkManager()
-        self.manager = manager
+        pass
 
-    def fetchCountryUrls(self) -> List[Dict[str, str]]:
-        url = "/".join([REST_API_BASE_URL.rstrip("/"), REST_ENDPOINT_COUNTRY.lstrip("/")])
-        result = self.manager.getRequest(url)
-        if not result:
+    def fetchCountryUrls(self, teryt: str, service_type: str) -> List[Dict[str, str]]:
+        url = "/".join([REST_API_BASE_URL.rstrip("/"), REST_ENDPOINT_COUNTRY.lstrip("/"), teryt, service_type])
+        is_success, result = NetworkUtils().fetchContent(url, timeout_ms= SERVICES_REQUEST_TIMEOUT_SECONDS * 1000)
+        if not result or not is_success:
             return []
         try:
             payload = json.loads(result)

@@ -17,7 +17,7 @@
 
 ## Wymagania
 
-* Minimalna wersja QGIS: **3.22**.
+* Minimalna wersja QGIS: **3.28**.
 
 ## Instalacja
 
@@ -63,7 +63,7 @@ Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrz
 
 ## Requirements
 
-* Minimum QGIS version: **3.22**.
+* Minimum QGIS version: **3.28**.
 
 ## Installation
 

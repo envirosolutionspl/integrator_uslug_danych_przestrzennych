@@ -23,7 +23,7 @@ about=
     • Łatwość użytkowania: Wszystkie dane dostępne są z poziomu QGIS, eliminując potrzebę odwiedzania wielu stron internetowych czy geoportali.
     • Szeroki zakres danych: Wtyczka obsługuje dane na różnych poziomach administracyjnych – od krajowego po gminny.
     • Automatyczne pobieranie: Dzięki mechanizmowi „na żywo”, dane są aktualizowane natychmiast po ich udostępnieniu przez właściwe jednostki administracyjne.
-    • Obsługuje następujące rodzaje usług IIP: WMS i WFS
+    • Obsługuje następujące rodzaje usług IIP: WMS, WMTS, WFS i WCS
   
 tracker=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues
 repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
@@ -33,7 +33,7 @@ repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrz
  
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=
     Wersja 1.0.0
         * Usprawnienie wyszukiwania usług WMS oraz WFS
         * Podział usług na 4 kategorie WMS WMTS WFS WCS
@@ -52,7 +52,7 @@ hasProcessingProvider=no
 #  * Dodanie QGIS-feed
 
 # Tags are comma separated with spaces allowed
-tags=Polska,polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WFS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,GIS w Polsce,GUGiK,GGK
+tags=Polska,polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WMTS,WFS,WCS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,GIS w Polsce,GUGiK,GGK
 
 homepage=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 category=Plugins

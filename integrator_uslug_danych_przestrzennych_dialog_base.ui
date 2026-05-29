@@ -50,6 +50,9 @@
        <property name="text">
         <string>Dodaj zaznaczone</string>
        </property>
+       <property name="toolTip">
+        <string>Dodaje usługę do projektu</string>
+       </property>
       </widget>
      </item>
      <item row="0" column="2">
@@ -69,6 +72,9 @@
       <widget class="QPushButton" name="reject_btn">
        <property name="text">
         <string>Odznacz wybór</string>
+       </property>
+       <property name="toolTip">
+        <string>Czyści zaznaczone wiersze tabeli</string>
        </property>
       </widget>
      </item>
