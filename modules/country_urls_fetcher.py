@@ -1,9 +1,23 @@
+# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ * Integrator Uslug Danych Przestrzennych                                  *
+ *                                 A QGIS plugin                           *
+ * Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS    *
+ * w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów  *
+ * i Usług oraz strony geoportal.gov.pl                                    *
+ * ----------------------------------------------------------------------- *
+ *       begin                : 2026-05-28                                 *
+ *       copyright            : (C) 2026 by EnviroSolutions Sp. z o.o.     *
+ *       email                : office@envirosolutions.pl                  *
+ *       git sha              : $Format:%H$                                *
+ ***************************************************************************/
+"""
 import json
 from typing import Dict, List
 
 from ..constants import REST_API_BASE_URL, REST_ENDPOINT_COUNTRY
 from ..utils import NetworkManager
-
 
 class CountryUrlsFetcher:
     def __init__(self, manager=None):

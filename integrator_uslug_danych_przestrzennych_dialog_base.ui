@@ -48,7 +48,7 @@
      <item row="0" column="1">
       <widget class="QPushButton" name="add_btn">
        <property name="text">
-        <string>Dodaj</string>
+        <string>Dodaj zaznaczone</string>
        </property>
       </widget>
      </item>
@@ -68,7 +68,7 @@
      <item row="0" column="3">
       <widget class="QPushButton" name="reject_btn">
        <property name="text">
-        <string>Anuluj</string>
+        <string>Odznacz wybór</string>
        </property>
       </widget>
      </item>
@@ -102,7 +102,7 @@
       <bool>false</bool>
      </property>
      <property name="title">
-      <string>Wybor uslugi</string>
+      <string>Wybór usługi</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -201,7 +201,7 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Wyszukaj po nazwie uslugi</string>
+      <string>Wyszukaj po nazwie usługi:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
