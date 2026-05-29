@@ -1,9 +1,15 @@
-from typing import Dict
-from xml.etree import ElementTree as ET
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+from xml.etree.ElementTree import ParseError
+
+import requests
+from owslib.util import ServiceException
+from owslib.wcs import WebCoverageService
+from owslib.wfs import WebFeatureService
+from owslib.wms import WebMapService
+from owslib.wmts import WebMapTileService
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
-from ..constants import SERVICES_NAMESPACES
 from ..utils import NetworkManager
 
 
@@ -12,38 +18,7 @@ class AddOGCService:
         self.network_manager = network_manager
 
     @staticmethod
-    def processService(service_type: str, capabilities_xml: str, url: str) -> bool:
-        """Rozdziela XML GetCapabilities na warstwy QGIS zgodnie z typem uslugi."""
-        capabilities_root = ET.fromstring(capabilities_xml)
-        xml_namespaces = AddOGCService._getNamespaces(service_type)
-        if service_type == 'WCS':
-            return AddOGCService._processWcsLayers(capabilities_root, xml_namespaces, url)
-        if service_type == 'WFS':
-            return AddOGCService._processWfsLayers(capabilities_root, xml_namespaces, url)
-        if service_type == 'WMS':
-            return AddOGCService._processWmsLayers(capabilities_root, xml_namespaces, url)
-        if service_type == 'WMTS':
-            return AddOGCService._processWmtsLayers(capabilities_root, xml_namespaces, url)
-        return False
-
-    def addService(self, url: str, service_type: str) -> bool:
-        """Pobiera GetCapabilities dla wybranego endpointu i dodaje znalezione warstwy do QGIS."""
-        capabilities_url = f"{url}{'' if '?' in url else f'?service={service_type}&request=GetCapabilities'}"
-        capabilities_xml = self.network_manager.getRequest(capabilities_url)
-        if not capabilities_xml:
-            return False
-        try:
-            return self.processService(service_type, capabilities_xml, url)
-        except ET.ParseError:
-            return False
-
-    @staticmethod
-    def _getNamespaces(service_type: str) -> Dict[str, str]:
-        """Zwraca przestrzenie nazw XML potrzebne do odczytu danego typu uslugi OGC."""
-        return SERVICES_NAMESPACES.get(service_type)
-
-    @staticmethod
-    def _add_map_layer(layer) -> bool:
+    def _addMapLayer(layer) -> bool:
         """Dodaje poprawna warstwe do projektu QGIS."""
         if not layer.isValid():
             return False
@@ -51,65 +26,76 @@ class AddOGCService:
         return True
 
     @staticmethod
-    def _processWcsLayers(root: ET.Element, ns: Dict[str, str], url: str) -> bool:
+    def addService(service_type: str, url: str) -> bool:
+        """Dodaje usluge OGC do projektu QGIS."""
+        try:
+            if service_type == 'WMS':
+                return AddOGCService._processWmsLayer(url)
+            if service_type == 'WMTS':
+                return AddOGCService._processWmtsLayer(url)
+            if service_type == 'WFS':
+                return AddOGCService._processWfsLayer(url)
+            if service_type == 'WCS':
+                return AddOGCService._processWcsLayer(url)
+        except ServiceException:
+            return False
+        except ParseError:
+            return False
+        except requests.exceptions.RequestException:
+            return False
+
+    @staticmethod
+    def _processWcsLayer(url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
-        enc = url.replace('&', '%26')
+        service = WebCoverageService(url, version='1.1.1')
+        encoded_url = url.split('?')[0].replace('&', '%26') + '?'
         ok = False
-        for node in root.findall('.//wcs:CoverageSummary', ns):
-            cid = node.find('wcs:CoverageId', ns)
-            if cid is None or not cid.text:
-                continue
-            name = cid.text.strip()
-            uri = f'identifier={name}&url={enc}'
-            layer = QgsRasterLayer(uri, f'WCS Layer - {name}', 'wcs')
-            ok |= AddOGCService._add_map_layer(layer)
+        for coverage_id in service.contents:
+            uri = f'identifier={coverage_id}&url={encoded_url}'
+            layer = QgsRasterLayer(uri, f'WCS - {coverage_id}', 'wcs')
+            ok |= AddOGCService._addMapLayer(layer)
         return ok
 
     @staticmethod
-    def _processWfsLayers(root: ET.Element, ns: Dict[str, str], url: str) -> bool:
-        """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
-        base = url.replace('?service=WFS&request=GetCapabilities', '')
-        ok = False
-        for ft in root.findall('.//wfs:FeatureType', ns):
-            n, t = ft.find('wfs:Name', ns), ft.find('wfs:Title', ns)
-            if n is None or t is None or not n.text or not t.text:
-                continue
-            uri = (
-                f"url='{base}' typename='{n.text}' pagingEnabled='true' version='auto'"
-            )
-            layer = QgsVectorLayer(uri, f'WFS Layer - {t.text}', 'WFS')
-            ok |= AddOGCService._add_map_layer(layer)
-        return ok
-
-    @staticmethod
-    def _processWmsLayers(root: ET.Element, ns: Dict[str, str], url: str) -> bool:
+    def _processWmsLayer(url: str) -> bool:
         """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
-        names = root.findall('.//wms:Layer/wms:Name', ns)
-        titles = root.findall('.//wms:Layer/wms:Title', ns)
-        if not names:
-            names = root.findall('.//Layer/Name')
-            titles = root.findall('.//Layer/Title')
+        try:
+            service = WebMapService(url, version='1.3.0')
+        except Exception:
+            service = WebMapService(url, version='1.1.1')
         ok = False
-        for name_el, title_el in zip(names, titles):
-            if not name_el.text or not title_el.text:
-                continue
-            uri = f'url={url}&layers={name_el.text}&styles=&format=image/png'
-            layer = QgsRasterLayer(uri, f'WMS Layer - {title_el.text}', 'wms')
-            ok |= AddOGCService._add_map_layer(layer)
+        for layer_name, layer_info in service.contents.items():
+            uri = f'url={service.url}&layers={layer_name}&styles=&format=image/png'
+            layer = QgsRasterLayer(uri, f'WMS - {layer_info.title or layer_name}', 'wms')
+            ok |= AddOGCService._addMapLayer(layer)
         return ok
 
     @staticmethod
-    def _processWmtsLayers(root: ET.Element, ns: Dict[str, str], url: str) -> bool:
-        """Tworzy warstwy kafelkowe WMTS z identyfikatora warstwy i TileMatrixSet."""
-        enc = url.replace('&', '%26')
+    def _processWfsLayer(url: str) -> bool:
+        """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
+        service = WebFeatureService(url, version='2.0.0')
+        base_url = url.split('?')[0]
         ok = False
-        for node in root.findall('.//wmts:Layer', ns):
-            id_el = node.find('ows:Identifier', ns)
-            mtx_el = node.find('.//wmts:TileMatrixSet', ns)
-            if id_el is None or mtx_el is None or not id_el.text or not mtx_el.text:
+        for feature_name, feature_info in service.contents.items():
+            uri = f"url='{base_url}' typename='{feature_name}' pagingEnabled='true' version='auto'"
+            layer = QgsVectorLayer(uri, f'WFS - {feature_info.title or feature_name}', 'WFS')
+            ok |= AddOGCService._addMapLayer(layer)
+        return ok
+
+    @staticmethod
+    def _processWmtsLayer(url: str) -> bool:
+        """Tworzy warstwy kafelkowe WMTS z identyfikatora warstwy i TileMatrixSet."""
+        service = WebMapTileService(url)
+        encoded_url = url.replace('&', '%26')
+        ok = False
+        for layer_name, layer_info in service.contents.items():
+            tile_matrix_set = (
+                layer_info.tilematrixsetlinks[0].tilematrixset
+                if layer_info.tilematrixsetlinks else None
+            )
+            if not tile_matrix_set:
                 continue
-            lid, matrix = id_el.text, mtx_el.text
-            uri = f'format=image/png&layers={lid}&styles=&tileMatrixSet={matrix}&url={enc}'
-            layer = QgsRasterLayer(uri, f'WMTS Layer - {lid}', 'wms')
-            ok |= AddOGCService._add_map_layer(layer)
+            uri = f'format=image/png&layers={layer_name}&styles=&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
+            layer = QgsRasterLayer(uri, f'WMTS - {layer_name}', 'wms')
+            ok |= AddOGCService._addMapLayer(layer)
         return ok
