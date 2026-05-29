@@ -9,14 +9,14 @@
  * ----------------------------------------------------------------------- *
  *       begin                : 2026-05-28                                 *
  *       copyright            : (C) 2026 by EnviroSolutions Sp. z o.o.     *
- *       email                : gis@envirosolutions.pl                     *
+ *       email                : office@envirosolutions.pl                  *
  *       git sha              : $Format:%H$                                *
  ***************************************************************************/
 """
 from typing import Dict, List, Callable
 
 from qgis.PyQt.QtWidgets import QProgressDialog
-from qgis.PyQt.QtCore import Qt, QObject, pyqtSignal, pyqtSlot
+from qgis.PyQt.QtCore import Qt, QObject, pyqtSignal, pyqtSlot, QEventLoop
 
 from .. import PLUGIN_NAME as plugin_name
 from ..modules.country_urls_fetcher import CountryUrlsFetcher
@@ -125,13 +125,14 @@ class ContentManager(QObject):
         progress.setMinimumDuration(0)   # natychmiast pokaż
         progress.setCancelButtonText("Anuluj")
         progress.show()
-  
+        loop = QEventLoop(self.dialog_parent)
         for name, url in selected_services.items():
             self.ogc_service.downloadServices(name, url, selected_service_type)
             if progress.value() < progress.maximum():
                 progress.setValue(progress.value()+1)
+                loop.processEvents()
             if progress.wasCanceled():
-                self.ogc_service.clearCache()
+                self.ogc_service.clearCache()       
                 break
         
         successfully_add = self.ogc_service.addServices()
