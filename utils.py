@@ -16,14 +16,11 @@
 from typing import Callable
 import json
 import os
+import time
 from functools import partial
 import requests
 import ssl
 import urllib3
-try:
-    from urllib3.util.ssl_ import create_urllib3_context
-except ImportError:
-    from urllib3.util import create_urllib3_context
 
 from qgis.core import (
     Qgis,
@@ -38,6 +35,20 @@ from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QUrl, QUrlQuery, QEventLoop, QTimer, QT_VERSION_STR
 from qgis.PyQt.QtNetwork import QNetworkReply, QNetworkRequest, QNetworkAccessManager
+
+try:
+    if urllib3.__version__.startswith("1."):
+        from urllib3.util.ssl_ import create_urllib3_context
+    else:
+        from urllib3.util import create_urllib3_context
+except ImportError:
+    QMessageBox.critical(
+        None,
+        "Błąd biblioteki",
+        "Wystąpił problem z wersją urllib3. "
+        "Wtyczka może nie działać poprawnie.",
+    )
+    create_urllib3_context = None
 
 from . import PLUGIN_NAME
 
@@ -54,6 +65,8 @@ from .constants import (
     REDIRECT_POLICY_NAME,
     REDIRECT_POLICY_NO_LESS_SAFE,
     DEFAULT_REDIRECT_POLICY,
+    MAX_ATTEMPTS,
+    MSG_NO_CONNECTION,
     MSG_FILE_WRITE_ERROR, 
     MSG_DOWNLOAD_CANCELED, 
     MSG_EMPTY_CONTENT, 
@@ -61,6 +74,7 @@ from .constants import (
     MSG_HTTP_ERROR, 
     MSG_TIMEOUT, 
     MSG_NETWORK_ERROR,
+    EZIUDP_BASE_URL,
     USER_AGENT_HEADER,
     CONNECTION_HEADER,
 )
@@ -316,6 +330,7 @@ class MessageUtils:
             level=Qgis.Critical
         )
 
+
 class LegacySslAdapter(requests.adapters.HTTPAdapter):
     """Adapter dopuszczający stare połączenia SSL"""
     def init_poolmanager(self, *args, **kwargs):
@@ -570,6 +585,33 @@ class NetworkUtils:
 
         return False, f"Nieoczekiwany błąd requests: {str(e)}"
    
+class ServiceAPI:
+    def __init__(self, parent=None):
+        if parent:
+            self.iface = parent.iface
+        else:
+            self.iface = None
+        self.network_utils = NetworkUtils()
+
+
+    def getRequest(self, params, url):
+        attempt = 0
+        while attempt <= MAX_ATTEMPTS:
+            attempt += 1
+            is_success, result = self.network_utils.fetchContent(url, params=params, timeout_ms=TIMEOUT_MS * 2)
+            if is_success:
+                return True, result
+            time.sleep(2)
+        return False, "Nieudana próba połączenia"
+    
+
+    def checkInternetConnection(self, url=EZIUDP_BASE_URL):
+        # próba połączenia z serwerem np. gugik
+        is_success, _ = self.network_utils.fetchContent(url, timeout_ms=TIMEOUT_MS)
+        if not is_success and self.iface:
+            MessageUtils.pushWarning(self.iface, MSG_NO_CONNECTION)
+        return is_success
+
 class VersionUtils:
 
     @staticmethod

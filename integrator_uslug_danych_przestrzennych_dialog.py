@@ -22,8 +22,8 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QSortFilterProxyModel, Qt
 from qgis.PyQt.QtGui import QShowEvent, QStandardItem, QStandardItemModel
 from .modules.content_manager import ContentManager
-from .constants import RADIOBUTTONS_SERVICES
-from .utils import QtCompat, SingleTaskManager, MessageUtils
+from .constants import RADIOBUTTONS_SERVICES, REST_API_CONNECTION_CHECK_URL
+from .utils import QtCompat, SingleTaskManager, MessageUtils, ServiceAPI
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -114,10 +114,14 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Ponowna próba pobrania danych z API, jeśli poprzednia się nie powiodła
         if len(self.content_manager.getCountryServicesCache()) == 0:
-            if not self.content_manager.servicesCacheInit():
+            if not ServiceAPI().checkInternetConnection(REST_API_CONNECTION_CHECK_URL):
+                self.pushMessageOverTable(" Brak dostęu do usług...","Błąd połączenia internetowego")
                 self.setEnabledRadiobuttons(True)
-                self.pushMessageOverTable(" Aktualizacja usług...","Nieoczekiwany błąd.")
                 return
+            else:
+                if not self.content_manager.servicesCacheInit():
+                    self.setEnabledRadiobuttons(True)
+                    return
         
         if not self.table_setup_task.run(): # SingleTaskManager(self.fetchServices, self.finishTableSetup)
             self.pushMessageOverTable(" Aktualizacja usług...","Nieoczekiwany błąd.")
@@ -141,11 +145,21 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setEnabledRadiobuttons(False)
         self.setEnabledTable(False)
 
-        # Pobranie danych z tabeli i dodanie usług do mapy
-        proxy_model = self.services_table.model()
-        selected_indexes = self.services_table.selectionModel().selectedRows()
-        selected_service_type = self.getSelectedServiceType()
-        self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
+        # Sprawdzanie połaczenia internetowego
+        if ServiceAPI().checkInternetConnection():
+
+            # Pobranie danych z tabeli i dodanie usług do mapy
+            proxy_model = self.services_table.model()
+            selected_indexes = self.services_table.selectionModel().selectedRows()
+            selected_service_type = self.getSelectedServiceType()
+            self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
+
+        else:
+            MessageUtils.pushMessageBoxWarning(
+                self,
+                'Ostrzeżenie',
+                'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie.\nNie można dodać usług.',
+            )
 
         # Odblokowanie elementów okna 
         self.setEnabledRadiobuttons(True)

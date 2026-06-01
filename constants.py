@@ -1,4 +1,5 @@
 REST_API_BASE_URL = 'https://rest.envirosolutions.pl/integrator'
+REST_API_CONNECTION_CHECK_URL = 'https://rest.envirosolutions.pl/integrator/docs'
 REST_ENDPOINT_COUNTRY = '/get-services-urls'
 RESULT_SERVICE_TAG = 'Service'
 
@@ -93,6 +94,8 @@ MSG_TIMEOUT = "Przekroczono czas oczekiwania dla: {}"
 MSG_FILE_WRITE_ERROR = "Błąd zapisu do pliku: {}"
 MSG_JSON_DECODE_ERROR = "Błąd JSON: {}"
 MSG_NO_CONNECTION = "Brak połączenia z internetem."
+
+EZIUDP_BASE_URL = "https://integracja.gugik.gov.pl/eziudp/index.php"
 
 # =============================
 # Parametry do klasy ContentManager
