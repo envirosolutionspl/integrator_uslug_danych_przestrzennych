@@ -13,96 +13,53 @@
  *       git sha              : $Format:%H$                                *
  ***************************************************************************/
 """
-from typing import Dict, List, Callable
+from typing import Dict, List
 
 from qgis.PyQt.QtWidgets import QProgressDialog
-from qgis.PyQt.QtCore import Qt, QObject, pyqtSignal, pyqtSlot, QEventLoop
+from qgis.PyQt.QtCore import Qt, QObject, QEventLoop
 
 from .. import PLUGIN_NAME as plugin_name
 from ..modules.country_urls_fetcher import CountryUrlsFetcher
-from ..modules.standalone_urls_fetcher import StandaloneUrlsFetcher
 from ..modules.add_service import AddOGCService
-from ..utils import QtCompat, SingleTaskManager, MessageUtils
+from ..utils import QtCompat, MessageUtils
 from ..constants import SERVICE_TYPES
 
 class ContentManager(QObject):
-    data_updated_signal = pyqtSignal(int) 
 
     def __init__(self, dialog_parent):
         super().__init__()
         self.dialog_parent = dialog_parent
         self.ogc_service = AddOGCService()
-        self.data_updated_signal.connect(self._noSignalConnected)
         
         # Sekcja API
         self.country_urls_fetcher = CountryUrlsFetcher()
         self.country_services_cache: List[Dict[str, str]] = []
-
-        # Sekcja STANDALONE
-        self.standalone = StandaloneUrlsFetcher()
-        self.use_standalone_data = False
-        self.standalone_services_cache: List[Dict[str, str]] = []
-        self.standalone_fetch_task = SingleTaskManager(self._fetchStanaloneServices, self._finishStanaloneServicesFetch, 'Pobieranie usług z alternatywnego źródła')
-        self.is_standalone_services_cache_ready = False
-        self.refresh_table_function = None
-
-    def _fetchStanaloneServices(self):
-        self.standalone_services_cache = self.standalone.fetch() 
-
-    def _finishStanaloneServicesFetch(self):
-        self.is_standalone_services_cache_ready = True
-        if self.use_standalone_data:
-            self.country_services_cache = self.standalone_services_cache
-            self.data_updated_signal.emit(len(self.country_services_cache))
-            
-    @pyqtSlot(int)
-    def _noSignalConnected(self, ilosc_pobrana: int):
-        MessageUtils.logInfo(
-                f"Pobrano dane o usługach ze stron www.geoportal.gov.pl oraz integracja.gugik.gov.pl. "
-                f"Ilość dostępnych usług na dzień dzisiejszy to: {ilosc_pobrana}"
-            )
-        if self.refresh_table_function is not None and callable(self.refresh_table_function):
-            self.refresh_table_function()
-
-    def setTableRefreshFunction(self, func: Callable = None):
-        self.refresh_table_function = func
-
-    def isStandaloneFetchTaskRunning(self):
-        return self.standalone_fetch_task.isRunning()
-
-    def isStandaloneServicesCacheReady(self):
-        return self.is_standalone_services_cache_ready
     
     def getCountryServicesCache(self):
+        " Zwraca listę z usługami na poziomie krajowym "
         return self.country_services_cache
     
     def getCountryUrlsByServiceType(self, service_type: str) -> List[Dict[str, str]]:
+        " Zwraca listę z usługami na poziomie krajowym, według wybranego typu usługi "
         normalized_type = service_type.strip().upper()
         return [row for row in self.country_services_cache if row.get('service_type') == normalized_type]
 
-    def servicesCacheInit(self):
-        " Pobieranie danych z sieci podczas pierwszego uruchomienia "
+    def servicesCacheInit(self) -> bool:
+        " Pobieranie danych krajowych z API. Pobiera tylko gdy cache jest pusty. Zwraca False, gdy cache jest dalej pusty."
         # Próba pobrania danych z serwera API
-        if not self.use_standalone_data and len(self.country_services_cache) == 0:
+        if len(self.country_services_cache) == 0:
             self.country_services_cache = []
             for service_type in SERVICE_TYPES:
                 self.country_services_cache.extend(self.country_urls_fetcher.fetchCountryUrls('PL', service_type.upper()))
-        if len(self.country_services_cache) > 0:
-            MessageUtils.logInfo(
-                f"Pobrano dane o usługach z zewnętrznego API. "
-                f"Ilość dostępnych usług na dzień dzisiejszy to: {len(self.country_services_cache)}"
-            )
-            return
-
-        # Próba scrapowania danych w przypadku niedostępności API
-        if not self.use_standalone_data:
-            MessageUtils.pushMessageBoxWarning(
-                self.dialog_parent, "Komunikat",
-                "Nie można pobrać usług z serwera.\nSpróbuj ponownie."
-            )
-            self.use_standalone_data = True
-            self.standalone_fetch_task.run()
-
+            if len(self.country_services_cache) > 0:
+                MessageUtils.logInfo(
+                    f"Pobrano dane o usługach z zewnętrznego API. "
+                    f"Ilość dostępnych usług na dzień dzisiejszy to: {len(self.country_services_cache)}"
+                )
+                return True
+            return False
+        return True
+    
     def addServiceFromSelection(self, table_proxy_model, selected_table_indexes, selected_service_type: str):
         " Dodaje usługi do mapy według podanych: tabeli i zaznaczenia "
         selected_services = {}

@@ -94,9 +94,8 @@ MSG_FILE_WRITE_ERROR = "Błąd zapisu do pliku: {}"
 MSG_JSON_DECODE_ERROR = "Błąd JSON: {}"
 MSG_NO_CONNECTION = "Brak połączenia z internetem."
 
-
 # =============================
-# Parametry do klasy StandaloneUrlsFetcher
+# Parametry do klasy ContentManager
 SERVICE_TYPES = (
     "wms",
     "wmts",
@@ -104,33 +103,8 @@ SERVICE_TYPES = (
     "wcs",
 )
 
-TERYT_PL = 'PL'
 
 # =============================
-# Parametry do klasy GeoportalServicesFetcher
-#GEOPORTAL endpoints
-GEOPORTAL_WMS_WMTS_URL = (
-    "https://www.geoportal.gov.pl/pl/usluga/uslugi-przegladania-wms-i-wmts/"
-)
-GEOPORTAL_WFS_URL = "https://www.geoportal.gov.pl/pl/usluga/uslugi-pobierania-wfs/"
-GEOPORTAL_WCS_URL = "https://www.geoportal.gov.pl/pl/usluga/uslugi-pobierania-wcs/"
+# Parametry do klasy AddService
 
-# =============================
-# Parametry do klasy
-# EZIUDP endpoint
-EZIUDP_BASE_URL = "https://integracja.gugik.gov.pl/eziudp/index.php"
-
-# EZIUDP HTML parsing
-XPATH_TABLE_SORTABLE = '//table[contains(@class, "table sortable")]'
-XPATH_TABLE_ROWS = ".//tr[position()>1]"
-XPATH_ROW_COLUMNS = ".//td"
-XPATH_LINK_TAG = ".//a"
-MIN_COLUMNS_FOR_ROW = 6
-DATASET_NAME_COLUMN = 2
-WMS_WMTS_COLUMN = 5
-WFS_WCS_COLUMN = 6
-
-# EZIUDP fetcher settings
 SERVICES_REQUEST_TIMEOUT_SECONDS = 10
-EZIUDP_WMS_WMTS_NEEDLES = ("wms", "wmts")
-EZIUDP_WFS_WCS_NEEDLES = ("wfs", "wcs")

@@ -23,7 +23,7 @@ from qgis.PyQt.QtCore import QSortFilterProxyModel, Qt
 from qgis.PyQt.QtGui import QShowEvent, QStandardItem, QStandardItemModel
 from .modules.content_manager import ContentManager
 from .constants import RADIOBUTTONS_SERVICES
-from .utils import QtCompat, SingleTaskManager
+from .utils import QtCompat, SingleTaskManager, MessageUtils
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,13 +32,14 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
 
+    is_window_shown = False
+
     def __init__(self, parent=None):
         super(IntegratorUslugPrzestrzennychDialog, self).__init__(parent)
         self.setupUi(self)
         self.qt_compat = QtCompat()
         
         self.content_manager = ContentManager(self)
-        self.content_manager.setTableRefreshFunction(self.setupTable)
         self.serv_rows = []
         self.table_setup_task = SingleTaskManager(self._fetchServices, self._finishTableSetup)
         self.plugin_name = ''
@@ -102,13 +103,22 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.add_btn.clicked.connect(self.addService)
 
     def setupTable(self) -> None:
-        if self.content_manager.isStandaloneFetchTaskRunning() and not self.content_manager.isStandaloneServicesCacheReady():
-            self.pushMessageOverTable(" Aktualizacja usług...","Pobieranie danych.")
+        " Aktualizacja zawartości tabeli. "
+        # Zapobiega wyzwalaniu funkcji podczas inicjacji QGIS (ta funkcja wyzwalana jest sygnałem)
+        if not self.is_window_shown:
             return
-        if self.table_setup_task.isRunning():
-            return
+        
+        # Pobieranie danych do tabeli
         self.setEnabledRadiobuttons(False)
         self.pushMessageOverTable(" Aktualizacja usług...","Pobieranie")
+
+        # Ponowna próba pobrania danych z API, jeśli poprzednia się nie powiodła
+        if len(self.content_manager.getCountryServicesCache()) == 0:
+            if not self.content_manager.servicesCacheInit():
+                self.setEnabledRadiobuttons(True)
+                self.pushMessageOverTable(" Aktualizacja usług...","Nieoczekiwany błąd.")
+                return
+        
         if not self.table_setup_task.run(): # SingleTaskManager(self.fetchServices, self.finishTableSetup)
             self.pushMessageOverTable(" Aktualizacja usług...","Nieoczekiwany błąd.")
 
@@ -130,7 +140,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         # Blokowanie elementów okna
         self.setEnabledRadiobuttons(False)
         self.setEnabledTable(False)
-        
+
         # Pobranie danych z tabeli i dodanie usług do mapy
         proxy_model = self.services_table.model()
         selected_indexes = self.services_table.selectionModel().selectedRows()
@@ -203,12 +213,20 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
-        self.content_manager.servicesCacheInit()
+        if not self.is_window_shown:
+            if not self.content_manager.servicesCacheInit():
+                MessageUtils.pushMessageBoxWarning(
+                    self,
+                    'Ostrzeżenie',
+                    'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie\nNie można pobrać usług.',
+                )
+            self.is_window_shown = True
         self.setupTable()
         self.setEnabledRadiobuttons(True)
         self.setEnabledTable(True)
         self.wms_rdbtn.setFocus()
 
     def closeEvent(self, event: QShowEvent) -> None:
+        self.is_window_shown = False
         event.accept()
         self.accept()
