@@ -67,7 +67,10 @@ class AddOGCService:
 
     def _processWcsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
-        service = WebCoverageService(url, version='1.1.1', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        try:
+            service = WebCoverageService(url, version='1.0.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        except Exception:
+            service = WebCoverageService(url, version='1.1.1', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
         encoded_url = url.split('?')[0].replace('&', '%26') + '?'
         ok = False
         for coverage_id in service.contents:
@@ -83,7 +86,7 @@ class AddOGCService:
                         'service_type': 'WCS',
                     }
                 )
-        return True
+        return ok
 
     def _processWmsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
@@ -133,10 +136,8 @@ class AddOGCService:
         encoded_url = url.replace('&', '%26')
         ok = False
         for layer_name, layer_info in service.contents.items():
-            tile_matrix_set = (
-                layer_info.tilematrixsetlinks[0].tilematrixset
-                if layer_info.tilematrixsetlinks else None
-            )
+            tile_matrix_set_link = next(iter(layer_info.tilematrixsetlinks), None) if layer_info.tilematrixsetlinks else None
+            tile_matrix_set = getattr(tile_matrix_set_link, 'tilematrixset', tile_matrix_set_link)
             if not tile_matrix_set:
                 continue
             uri = f'format=image/png&layers={layer_name}&styles=&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
