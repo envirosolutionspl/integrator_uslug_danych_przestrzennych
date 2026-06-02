@@ -25,9 +25,16 @@ from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
 from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS
 
-class AddOGCService:
+from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
+
+class AddOGCService(QObject):
+
     def __init__(self):
+        super().__init__()
         self.downloaded_layers = []
+        self.loop = QEventLoop()
+        self.cancel_tasks = False
+
 
     def _addMapLayer(self, layer) -> bool:
         """Dodaje poprawna warstwe do projektu QGIS."""
@@ -35,19 +42,25 @@ class AddOGCService:
             return False
         QgsProject.instance().addMapLayer(layer)
         return True
+    
+    def cancelTasks(self):
+        """Wystawia flagę wymuszającą zatrzymanie dodwania usług"""
+        self.cancel_tasks = True
         
     def addServices(self):
+        """Finalizuje proces dodawania usług wrzucając zawartość kolejki warstw do projektu QGIS"""
         result = {}
         for layer in self.downloaded_layers:
             try:
                 result[layer['name']] = self._addMapLayer(layer['layer'])
             except Exception:
                 result[layer['name']] = False
-        self.downloaded_layers = []
+        self.clearCache()
         return result
 
     def downloadServices(self, name: str, url: str, service_type: str) -> bool:
         """Pobiera GetCapabilities dla wybranego endpointu i dodaje znalezione warstwy do QGIS."""
+        self.cancel_tasks = False
         try:
             if service_type == 'WMS':
                 return self._processWmsLayer(name, url)
@@ -61,9 +74,33 @@ class AddOGCService:
             return False
         except requests.exceptions.RequestException:
             return False
+        return False
 
     def clearCache(self):
+        """Czyści kolejkę usług do dodania, np. w przypadku anulowania operacji"""
         self.downloaded_layers = []
+
+    def _createQgsLayer(self, service_uri, service_name, service_type, layer_type="raster"):
+        """Przygotowywuje nową wartstwę nie blokując okien dialogowych"""
+
+        def _tick():
+            self.loop.processEvents()
+
+        # Zapewnienie obsługi pętli zdarzeń Qt
+        timer = QTimer(self)
+        timer.timeout.connect(_tick)
+        timer.start(200)
+
+        if layer_type == "raster":
+            layer = QgsRasterLayer(service_uri, service_name, service_type)
+        else:
+            layer = QgsVectorLayer(service_uri, service_name, service_type)
+
+        timer.stop()
+
+        if self.cancel_tasks:
+            return None, True
+        return layer, False
 
     def _processWcsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
@@ -75,7 +112,13 @@ class AddOGCService:
         ok = False
         for coverage_id in service.contents:
             uri = f'identifier={coverage_id}&url={encoded_url}'
-            layer = QgsRasterLayer(uri, f'WCS - {coverage_id}', 'wcs')
+            layer, is_canceled = self._createQgsLayer(
+                uri, 
+                f'WCS - {coverage_id}', 
+                'wcs',
+            )
+            if is_canceled:
+                return False
             if layer.isValid():
                 ok |= True
                 self.downloaded_layers.append(
@@ -97,7 +140,13 @@ class AddOGCService:
         ok = False
         for layer_name, layer_info in service.contents.items():
             uri = f'url={service.url}&layers={layer_name}&styles=&format=image/png'
-            layer = QgsRasterLayer(uri, f'WMS - {layer_info.title or layer_name}', 'wms')
+            layer, is_canceled = self._createQgsLayer(
+                uri, 
+                f'WMS - {layer_info.title or layer_name}', 
+                'wms',
+            )
+            if is_canceled:
+                return False
             if layer.isValid():
                 ok |= True
                 self.downloaded_layers.append(
@@ -108,7 +157,7 @@ class AddOGCService:
                         'service_type': 'WMS',
                     }
                 )
-        return True
+        return ok
 
     def _processWfsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
@@ -117,7 +166,14 @@ class AddOGCService:
         ok = False
         for feature_name, feature_info in service.contents.items():
             uri = f"url='{base_url}' typename='{feature_name}' pagingEnabled='true' version='auto'"
-            layer = QgsVectorLayer(uri, f'WFS - {feature_info.title or feature_name}', 'WFS')
+            layer, is_canceled = self._createQgsLayer(
+                uri, 
+                f'WFS - {feature_info.title or feature_name}', 
+                'WFS',
+                layer_type="vector",
+            )
+            if is_canceled:
+                return False
             if layer.isValid():
                 ok |= True
                 self.downloaded_layers.append(
@@ -141,7 +197,13 @@ class AddOGCService:
             if not tile_matrix_set:
                 continue
             uri = f'format=image/png&layers={layer_name}&styles=&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
-            layer = QgsRasterLayer(uri, f'WMTS - {layer_name}', 'wms')
+            layer, is_canceled = self._createQgsLayer(
+                uri, 
+                f'WMTS - {layer_name}', 
+                'wms',
+            )
+            if is_canceled:
+                return False
             if layer.isValid():
                 ok |= True
                 self.downloaded_layers.append(

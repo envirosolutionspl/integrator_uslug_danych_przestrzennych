@@ -19,6 +19,7 @@ from typing import Dict, List
 
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import QTableView
 from qgis.PyQt.QtCore import QSortFilterProxyModel, Qt
 from qgis.PyQt.QtGui import QShowEvent, QStandardItem, QStandardItemModel
 from .modules.content_manager import ContentManager
@@ -53,7 +54,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupTable()
 
     def configureTableHeader(self) -> None:
-        " Wstępna konfiguracja tabeli "
+        """Wstępna konfiguracja tabeli"""
 
         # QtCompat
         resize_interactive = self.qt_compat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'Interactive')
@@ -79,14 +80,18 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.services_table.setColumnWidth(0, 400)
         self.services_table.setColumnWidth(1, 500)
         self.services_table.setSortingEnabled(True)
+        self.services_table.setSelectionBehavior(self.qt_compat.getEnum(QTableView, 'SelectionBehavior', 'SelectRows'))
+        self.services_table.setSelectionMode(self.qt_compat.getEnum(QTableView, 'SelectionMode', 'MultiSelection'))
 
     def setupSearch(self) -> None:
+        """Konfiguracja modelu proxy dla pola wyszukiwania"""
         self.proxy_model = QSortFilterProxyModel()
         self.proxy_model.setSourceModel(self.model)
         self.proxy_model.setFilterKeyColumn(0)
         self.services_table.setModel(self.proxy_model)
 
     def setupDialog(self, plugin_name, plugin_version) -> None:
+        """Ustawienie podstawowych danych okna dialogowego"""
         self.img_main.setMargin(9)
         self.setWindowTitle('%s %s' % (plugin_name, plugin_version))
         self.lbl_pluginVersion.setText('%s %s' % (plugin_name, plugin_version))
@@ -96,6 +101,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
     # Fukcje obsługujące sygnały
 
     def setupSignals(self) -> None:
+        """Ustawienie odbiorców sygnałów emitowanych przez okno dialogowe"""
         for obj in RADIOBUTTONS_SERVICES:
             widget_obj = getattr(self, obj)
             widget_obj.toggled.connect(self.setupTable)
@@ -103,7 +109,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.add_btn.clicked.connect(self.addService)
 
     def setupTable(self) -> None:
-        " Aktualizacja zawartości tabeli. "
+        """Przeprowadza aktualizację zawartości tabeli."""
         # Zapobiega wyzwalaniu funkcji podczas inicjacji QGIS (ta funkcja wyzwalana jest sygnałem)
         if not self.is_window_shown:
             return
@@ -127,20 +133,23 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
             self.pushMessageOverTable(" Aktualizacja usług...","Nieoczekiwany błąd.")
 
     def _fetchServices(self) -> None:
+        """Wątek odpowiedzialny za pobranie danych do tabeli"""
         self.serv_rows = self.getServicesRows()
 
     def _finishTableSetup(self) -> None:
+        """Finalizacja wątka odpowiedzialnego za pobranie danych do tabeli"""
         self.fillServicesTable(self.serv_rows)
         self.applySearchFilter(self.search_lineedit.text())
         self.setEnabledRadiobuttons(True)
 
     def applySearchFilter(self, text: str) -> None:
+        """Zastosowanie filtrów wyszukiwania do tabeli"""
         case_insensitive = self.qt_compat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
     def addService(self):
-
+        """Funcja pobiera nazwy usług i linki wybrane w tabeli i dodaje usługi do projektu QGIS"""
         # Blokowanie elementów okna
         self.setEnabledRadiobuttons(False)
         self.setEnabledTable(False)
@@ -169,7 +178,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
     # Fukcje obsługujące elementy okna
 
     def fillServicesTable(self, service_rows: List = []) -> None:
-
+        """Czyści tabelę i wypełnia na nowo danymi"""
         # Oczyszczenie tablicy
         row_count = self.model.rowCount()
         if row_count > 0:
@@ -187,8 +196,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.model.sort(0, ascending)
 
     def pushMessageOverTable(self, message : str, status : str = '') -> None:
-        " Czyści tabelę i wykorzysuje pierwsze pole jako miejsce na komunikat i opcjonalnie status "
-
+        """Czyści tabelę i wykorzysuje pierwsze pole jako miejsce na komunikat i opcjonalnie status"""
         # Oczyszczenie tablicy
         row_count = self.model.rowCount()
         if row_count > 0:
@@ -203,14 +211,17 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.model.appendRow(row)
 
     def setEnabledRadiobuttons(self, is_enabled = True):
+        """Ustawia dostępność radiobutton'ów"""
         for obj in RADIOBUTTONS_SERVICES:
             widget_obj = getattr(self, obj)
             widget_obj.setEnabled(is_enabled)
 
     def setEnabledTable(self, is_enabled = True):
+        """Ustawia dostępność tabeli"""
         self.services_table.setEnabled(is_enabled)
 
     def getSelectedServiceType(self) -> str:
+        """Podaje aktualnie wybrany na radiobutton'ach typ usługi"""
         if self.wmts_rdbtn.isChecked():
             return 'WMTS'
         if self.wcs_rdbtn.isChecked():
@@ -220,6 +231,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         return 'WMS'
 
     def getServicesRows(self) -> List[Dict[str, str]]:
+        """Pobiera listę usług według wybranego typu usługi"""
         return self.content_manager.getCountryUrlsByServiceType(self.getSelectedServiceType())
     
     # =============================

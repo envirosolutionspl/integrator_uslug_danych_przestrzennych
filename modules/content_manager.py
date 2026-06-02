@@ -36,16 +36,16 @@ class ContentManager(QObject):
         self.country_services_cache: List[Dict[str, str]] = []
     
     def getCountryServicesCache(self):
-        " Zwraca listę z usługami na poziomie krajowym "
+        """Zwraca listę z usługami na poziomie krajowym"""
         return self.country_services_cache
     
     def getCountryUrlsByServiceType(self, service_type: str) -> List[Dict[str, str]]:
-        " Zwraca listę z usługami na poziomie krajowym, według wybranego typu usługi "
+        """Zwraca listę z usługami na poziomie krajowym, według wybranego typu usługi"""
         normalized_type = service_type.strip().upper()
         return [row for row in self.country_services_cache if row.get('service_type') == normalized_type]
 
     def servicesCacheInit(self) -> bool:
-        " Pobieranie danych krajowych z API. Pobiera tylko gdy cache jest pusty. Zwraca False, gdy cache jest dalej pusty."
+        """Pobieranie danych krajowych z API. Pobiera tylko gdy cache jest pusty. Zwraca False, gdy cache jest dalej pusty."""
         # Próba pobrania danych z serwera API
         if len(self.country_services_cache) == 0:
             self.country_services_cache = []
@@ -61,12 +61,13 @@ class ContentManager(QObject):
         return True
     
     def addServiceFromSelection(self, table_proxy_model, selected_table_indexes, selected_service_type: str):
-        " Dodaje usługi do mapy według podanych: tabeli i zaznaczenia "
+        """Dodaje usługi do mapy według podanych: tabeli i zaznaczenia"""
+        # Pobranie wyboru usług z tabeli
         selected_services = {}
         for index in selected_table_indexes:
             name_index = table_proxy_model.index(index.row(), 0)
             value_index = table_proxy_model.index(index.row(), 1)
-            selected_services[table_proxy_model.data(name_index)] = table_proxy_model.data(value_index)
+            selected_services[table_proxy_model.data(value_index)] = table_proxy_model.data(name_index)
 
         if not selected_services:
             MessageUtils.pushMessageBoxWarning(
@@ -76,12 +77,14 @@ class ContentManager(QObject):
             )
             return
 
+        # Utworzenie okna progresu
         progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, len(selected_table_indexes)+1, self.dialog_parent)
         self._appendDefaultProgressDialogSettings(progress)
         progress.show()
 
+        # Utworzenie szkieletu warstw w pamięci
         loop = QEventLoop(self.dialog_parent)
-        for name, url in selected_services.items():
+        for url, name in selected_services.items():
             self.ogc_service.downloadServices(name, url, selected_service_type)
             if progress.value() < progress.maximum():
                 progress.setValue(progress.value()+1)
@@ -90,7 +93,9 @@ class ContentManager(QObject):
                 self.ogc_service.clearCache()       
                 break
         
+        # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
         successfully_add = self.ogc_service.addServices()
+
         progress.setValue(progress.maximum())
 
         if successfully_add:
@@ -105,9 +110,19 @@ class ContentManager(QObject):
         progress = None
 
     def _appendDefaultProgressDialogSettings(self, progress_dialog):
+        """Przypisuje postawowe zachowanie okna progresu"""
+
+        def _cancelProgressDialog():
+            """Obsługuje przycik Anuluj"""
+            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej usługę
+            progress_dialog.setLabelText("Przerywanie operacji. Proszę czekać...")
+            progress_dialog.show() # zapobiega chowaniu się okna
+
+        progress_dialog.canceled.connect(_cancelProgressDialog)
+
         progress_dialog.setWindowTitle(plugin_name)
         progress_dialog.setWindowModality(QtCompat.getEnum(Qt, 'WindowModality', 'WindowModal'))
-        progress_dialog.setAutoClose(True)
-        progress_dialog.setAutoReset(True)
+        progress_dialog.setAutoClose(False)
+        progress_dialog.setAutoReset(False)
         progress_dialog.setMinimumDuration(0)   # natychmiast pokaż
         progress_dialog.setCancelButtonText("Anuluj")
