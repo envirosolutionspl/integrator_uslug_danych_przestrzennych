@@ -6,11 +6,12 @@
 name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
 qgisMaximumVersion=4.99
-description=Narzędzie stworzone dla użytkowników QGIS, które umożliwia szybki i bezpośredni dostęp do danych przestrzennych pochodzących z oficjalnej ewidencji zbiorów i usług danych przestrzennych kraju (EZiUDP). To najlepszy sposób pracy z polskimi danymi przestrzennymi, jeśli na co dzień z nich korzystasz.
+description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
+version=1.0.0
 
-version=0.1.3
 author=EnviroSolutions Sp. z o.o.
-email=office@envirosolutions.pl
+email=gis@envirosolutions.pl
+supportsQt6=true
 
 about=
   Wtyczka wykorzystuje, prowadzoną zgodnie z art.13 ust. 2 ustawy z dnia 4 marca 2010r. o infrastrukturze informacji przestrzennej (IIP) oraz §4 ust.1 Rozporządzenia Ministra Inwestycji i Rozwoju z dnia 28 listopada 2018 r. zmieniającego rozporządzenie w sprawie ewidencji zbiorów i usług danych przestrzennych objętych infrastrukturą informacji przestrzennej, publicznie dostępną ewidencje zbiorów oraz usług danych przestrzennych objętych infrastrukturą prowadzoną przez Głównego Geodetę Kraju.
@@ -24,20 +25,26 @@ about=
     • Automatyczne pobieranie: Dzięki mechanizmowi „na żywo”, dane są aktualizowane natychmiast po ich udostępnieniu przez właściwe jednostki administracyjne.
     • Obsługuje następujące rodzaje usług IIP: WMS, WMTS, WFS i WCS
   
-  Ważna informacja!
-  Wtyczka przetwarza duże ilości zapytań do serwerów usług, odpytując tysiące z nich (na dzień 20.12.2024 r. ponad 11 000) dostępnych w ramach IIP. Proces ten może chwilę potrwać, więc prosimy o cierpliwość. Jeśli "kółeczko" się kręci, to nie znaczy, że wtyczka się zawiesiła. To znaczy, że wtyczka intensywnie pracuje, aby dostarczyć najbardziej aktualne dane.
-
 tracker=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych/issues
 repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
 # End of mandatory metadata
 
 # Recommended items:
-
+ 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
-  Wersja 0.1.3
-  * Dodanie informacji o qgisMaximumVersion
+  Wersja 1.0.0
+  * Obsługa QGIS 4.0
+  * Usprawnienie wyszukiwania usług WMS oraz WFS
+  * Podział usług na 4 kategorie WMS WMTS WFS WCS
+  * Od teraz wszystkie wyświetlane usługi są uprzednio filtrowane pod względem poprawności działania
+  * Dodanie okna dialogowego z postępem dodawania usług
+  * Poprawa błędów bezpieczeństwa
+  * Poprawa działania i estetyki okna wtyczki
+  * Zapewnienie kompatybilności zarówno z modułem Qt5 jak i Qt6
+#  Wersja 0.1.3
+#  * Dodanie informacji o qgisMaximumVersion
 #  Wersja 0.1.2
 #  * Aktualizacja stopki wtyczki
 #  Wersja 0.1.1
@@ -46,9 +53,9 @@ changelog=
 #  * Dodanie QGIS-feed
 
 # Tags are comma separated with spaces allowed
-#tags=Polska,polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WMTS,WFS,WCS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,GIS w Polsce,GUGiK,GGK
+tags=Polska,polskie,oficjalnenarodowe,dane przestrzenne,infrastruktura informacji przestrzennej,IIP,EZiUDP,ewidencja danych przestrzennych,dane administracyjne,dane krajowe,geoportal,WMS,WMTS,WFS,WCS,aktualne dane,administracja publiczna,jednostki administracyjne,dane publiczne,GIS w Polsce,GUGiK,GGK
 
-homepage=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrzennych
+homepage=https://envirosolutions.pl/wtyczki-qgis/integrator-uslug-danych-przestrzennych/
 category=Plugins
 icon=images/icon.svg
 # experimental flag

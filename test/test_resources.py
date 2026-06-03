@@ -8,7 +8,7 @@
 
 """
 
-__author__ = 'office@envirosolutions.pl'
+__author__ = 'gis@envirosolutions.pl'
 __date__ = '2024-08-28'
 __copyright__ = 'Copyright 2024, EnviroSolutions Sp. z o.o.'
 
@@ -36,7 +36,7 @@ class WebServicePluginDialogTest(unittest.TestCase):
         self.assertFalse(icon.isNull())
 
 if __name__ == "__main__":
-    suite = unittest.makeSuite(WebServicePluginResourcesTest)
+    suite = unittest.makeSuite(WebServicePluginDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 

@@ -1,17 +1,17 @@
 # coding=utf-8
 """Tests QGIS plugin init."""
 
+import configparser
+import logging
+import os
+import unittest
+
 __author__ = 'Tim Sutton <tim@linfiniti.com>'
 __revision__ = '$Format:%H$'
 __date__ = '17/10/2010'
 __license__ = "GPL"
 __copyright__ = 'Copyright 2012, Australia Indonesia Facility for '
 __copyright__ += 'Disaster Reduction'
-
-import os
-import unittest
-import logging
-import configparser
 
 LOGGER = logging.getLogger('QGIS')
 
@@ -51,7 +51,7 @@ class TestInit(unittest.TestCase):
         parser.optionxform = str
         parser.read(file_path)
         message = 'Cannot find a section named "general" in %s' % file_path
-        assert parser.has_section('general'), message
+        assert parser.has_section('general'), message #nosec B101
         metadata.extend(parser.items('general'))
 
         for expectation in required_metadata:
