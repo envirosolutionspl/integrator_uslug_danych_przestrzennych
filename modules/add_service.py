@@ -14,6 +14,8 @@
  ***************************************************************************/
 """
 import requests
+import lxml
+from xml.etree import ElementTree as ET # nosec B405
 
 from owslib.util import ServiceException
 from owslib.wcs import WebCoverageService
@@ -23,9 +25,52 @@ from owslib.wmts import WebMapTileService
 
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
-from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS
+from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS, SERVICES_NAMESPACES
+from ..utils import ServiceAPI
 
 from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
+
+class legacyWebCoverageService:
+    """Klasa dla QGIS w wersji 3.28 i 3.34, gdzie występują problemy z SSL"""
+    def __init__(self):
+        self.service_api = ServiceAPI()
+        self.contents = []
+
+    def __init__(self, url: str):
+        self.service_api = ServiceAPI()
+        self.contents = []
+        self.updateContents(url=url)
+
+    def updateContents(self, url: str):
+        self.contents = []
+        parser = lxml.etree.XMLParser(
+            resolve_entities=False,  # Prevent XXE
+            no_network=True,         # Disable network access
+            recover=False            # Avoid silent error recovery
+        )
+        
+        try:
+            is_ok, capabilities_xml = self.service_api.getRequest(url)
+            if not is_ok:
+                return False
+            capabilities_root = lxml.etree.fromstring(capabilities_xml.encode('utf-8'), parser=parser)
+        except ET.ParseError:
+            return False
+        except Exception as e:
+            return False
+        
+        ns = SERVICES_NAMESPACES.get("WCS")
+        for node in capabilities_root.findall('.//wcs:CoverageSummary', ns):
+            cid = node.find('wcs:CoverageId', ns)
+            if cid is None or not cid.text:
+                continue
+            name = cid.text.strip()
+            self.contents.append(name)
+        return True
+
+    def getContents(self):
+        return self.contents
+        
 
 class AddOGCService(QObject):
 
@@ -104,10 +149,19 @@ class AddOGCService(QObject):
 
     def _processWcsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
-        try:
-            service = WebCoverageService(url, version='1.0.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        except Exception:
-            service = WebCoverageService(url, version='1.1.1', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        source_not_parsed = True
+
+        for ver in ('1.0.0', '1.1.1'):
+            try:
+                service = WebCoverageService(url, version=ver, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+                source_not_parsed = False
+                break
+            except Exception:
+                source_not_parsed = True         
+
+        if source_not_parsed:
+            service = legacyWebCoverageService(url)
+
         encoded_url = url.split('?')[0].replace('&', '%26') + '?'
         ok = False
         for coverage_id in service.contents:

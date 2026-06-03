@@ -111,3 +111,21 @@ SERVICE_TYPES = (
 # Parametry do klasy AddService
 
 SERVICES_REQUEST_TIMEOUT_SECONDS = 10
+
+SERVICES_NAMESPACES = {
+    'WCS': {
+        'wcs': 'http://www.opengis.net/wcs/2.0',
+        'ows': 'http://www.opengis.net/ows/2.0'
+    },
+    'WFS': {
+        'wfs': 'http://www.opengis.net/wfs/2.0',
+        'ows': 'http://www.opengis.net/ows/1.1'
+    },
+    'WMS': {
+        'wms': 'http://www.opengis.net/wms'
+    },
+    'WMTS': {
+        'wmts': 'http://www.opengis.net/wmts/1.0',
+        'ows': 'http://www.opengis.net/ows/1.1'
+    },
+}

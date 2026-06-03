@@ -594,7 +594,7 @@ class ServiceAPI:
         self.network_utils = NetworkUtils()
 
 
-    def getRequest(self, params, url):
+    def getRequest(self, url, params=None):
         attempt = 0
         while attempt <= MAX_ATTEMPTS:
             attempt += 1
