@@ -34,6 +34,9 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 2. Skorzystaj z wyszukiwarki lub filtrów, aby znaleźć interesującą Cię usługę.
 3. Dodaj wybraną usługę do projektu QGIS, klikając odpowiednią opcję w tabeli.
 
+## Przykład użycia
+![Przykład użycia](images/przyklad_uzycia.gif)
+
 ## Licencja
 
 Wtyczka jest dystrybuowana na licencji **GPL-3.0**, co oznacza, że możesz jej używać, modyfikować i rozpowszechniać zgodnie z zasadami tej licencji.
@@ -79,6 +82,9 @@ To install the plugin, follow these steps:
 1. After installation, launch the plugin from the QGIS menu.
 2. Use the search tool or filters to find the desired service.
 3. Add the selected service to your QGIS project by clicking the corresponding option in the table.
+
+## Usage Example
+![Usage example](images/przyklad_uzycia.gif)
 
 ## License
 
