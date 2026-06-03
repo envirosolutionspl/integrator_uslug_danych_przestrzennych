@@ -2,11 +2,11 @@
 
 ## PL
 
-**Integrator usług danych przestrzennych** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS/WMTS oraz WFS/WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
+**Integrator Usług Danych Przestrzennych** to wtyczka dla QGIS, która umożliwia wyświetlanie wykazu usług WMS, WMTS, WFS oraz WCS z geoportalu i ewidencji zbiorów i usług danych przestrzennych w formie tabeli. Użytkownik może łatwo przeszukiwać i filtrować dostępne usługi, a także dodawać je bezpośrednio do projektu QGIS.
 
 ## Funkcjonalności
 
-* Wyświetlanie wykazu usług WMS/WMTS i WFS/WCS w czytelnej tabeli.
+* Wyświetlanie wykazu usług WMS, WMTS, WFS oraz WCS w czytelnej tabeli.
 * Wbudowana wyszukiwarka usług według nazwy.
 * Filtracja usług według jednostek administracyjnych:
   * krajowe
@@ -26,7 +26,7 @@ Aby zainstalować wtyczkę, postępuj zgodnie z poniższymi krokami:
 1. Wtyczkę należy zainstalować w QGIS jako ZIP lub wgrać pliki wtyczki do lokalizacji `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
 2. Aby uruchomić wtyczkę, należy kliknąć na ikonę pomarańczowego drzewa.
 3. Jeżeli ikona wtyczki nie jest widoczna w panelu warstw, spróbuj zrestartować QGIS.
-4. Jeżeli wtyczka nadal nie jest widoczna, należy przejść w QGIS Desktop do `Wtyczki -> Zarządzanie wtyczkami -> Zainstalowane -> Integrator usług danych przestrzennych` -> Odinstalować wtyczkę i zainstalować ponownie.
+4. Jeżeli wtyczka nadal nie jest widoczna, należy przejść w QGIS Desktop do `Wtyczki -> Zarządzanie wtyczkami -> Zainstalowane -> Integrator Usług Danych Przestrzennych` -> Odinstalować wtyczkę i zainstalować ponownie.
 
 ## Jak używać
 
@@ -48,11 +48,11 @@ Wtyczka została stworzona przez ****EnviroSolutions**. W razie pytań lub potrz
 
 ## EN
 
-**Spatial Data Services Integrator** is a QGIS plugin that displays a list of WMS/WMTS and WFS/WCS services from the Geoportal and the spatial data sets and services registry in a table. Users can easily search and filter available services and add them directly to a QGIS project.
+**Integrator Usług Danych Przestrzennych** is a QGIS plugin that displays a list of WMS, WMTS, WFS and WCS services from the Geoportal and the spatial data sets and services registry in a table. Users can easily search and filter available services and add them directly to a QGIS project.
 
 ## Features
 
-* Displays a list of WMS/WMTS and WFS/WCS services in a user-friendly table.
+* Displays a list of WMS, WMTS, WFS and WCS services in a user-friendly table.
 * Built-in search tool to find services by name.
 * Filtering services by administrative units:
   * national
@@ -72,7 +72,7 @@ To install the plugin, follow these steps:
 1. The plugin should be installed in QGIS as a ZIP or by uploading the plugin files to the location `C:\Users\User\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins`.
 2. To launch the plugin, click on the orange tree icon.
 3. If the plugin icon is not visible in the layer panel, try restarting QGIS.
-4. If the plugin is still not visible, go to QGIS Desktop -> `Plugins -> Manage and Install Plugins -> Installed -> Integrator usług danych przestrzennych` -> Uninstall the plugin and reinstall it.
+4. If the plugin is still not visible, go to QGIS Desktop -> `Plugins -> Manage and Install Plugins -> Installed -> Integrator Usług Danych Przestrzennych` -> Uninstall the plugin and reinstall it.
 
 ## How to Use
 
