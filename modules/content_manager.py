@@ -15,12 +15,13 @@
 """
 from typing import Dict, List
 
-from qgis.PyQt.QtWidgets import QProgressDialog
+from qgis.PyQt.QtWidgets import QProgressDialog, QDialog
 from qgis.PyQt.QtCore import Qt, QObject, QEventLoop
 
 from .. import PLUGIN_NAME as plugin_name
 from ..modules.country_urls_fetcher import CountryUrlsFetcher
 from ..modules.add_service import AddOGCService
+from ..integrator_uslug_danych_przestrzennych_dialog_which_layers import ChooseLayersDialog
 from ..utils import QtCompat, MessageUtils
 from ..constants import SERVICE_TYPES
 
@@ -76,7 +77,7 @@ class ContentManager(QObject):
                 'Nie wybrano żadnej usługi z listy.'
             )
             return
-
+        
         # Utworzenie okna progresu
         progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, len(selected_table_indexes)+1, self.dialog_parent)
         self._appendDefaultProgressDialogSettings(progress)
@@ -93,6 +94,27 @@ class ContentManager(QObject):
                 self.ogc_service.clearCache()       
                 break
         
+        progress.setValue(progress.maximum())
+        progress.hide()
+        
+        if not selected_services:
+            return
+        # Zebranie wszystkich warstw dostarczanych przez konkretną usługę OGC
+        selected_layers = {}
+        for url, name in selected_services.items():
+            available_layers = self.ogc_service.getDownloadedLayerDescriptions(url)
+
+            # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
+            dialog = ChooseLayersDialog(name, url, available_layers, parent=self.dialog_parent)
+            result = QtCompat.execDialog(dialog)
+
+            if result != QDialog.Accepted:
+                progress.deleteLater()
+                progress = None
+                return
+
+            selected_layers[url] = dialog.getSelectedLayerIds()
+
         # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
         successfully_add = self.ogc_service.addServices()
 

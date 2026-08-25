@@ -91,18 +91,43 @@ class AddOGCService(QObject):
     def cancelTasks(self):
         """Wystawia flagę wymuszającą zatrzymanie dodwania usług"""
         self.cancel_tasks = True
-        
-    def addServices(self):
-        """Finalizuje proces dodawania usług wrzucając zawartość kolejki warstw do projektu QGIS"""
+
+    #TODO rozważyć komunikat 'z uwagi na wiecej warstw serwowanych uslug 
+    # wyswietla sie warstwy ktore mozesz dodac, 
+    # a reszta tez zostanie dodana ale jako ze jest jedna warstwa 
+    # no to tylko dla tych obszernych usług OGC'
+    ##TODO sprawdzić czy działa to dla zagnieżdżonych warstw z drzewa
+    def addServices(self, selected_layers):
+        """Dodaje do płótna te warstwy, które zostały wybrane przez użytkownika."""
         result = {}
         for layer in self.downloaded_layers:
+            selected_ids = selected_layers.get(layer['url'], [])
+
+            if layer['layer_id'] not in selected_ids:
+                continue
+
+            result_name = f"{layer['name']} - {layer['title']}"
+
             try:
-                result[layer['name']] = self._addMapLayer(layer['layer'])
+                result[result_name] = self._addMapLayer(
+                    layer['layer']
+                )
             except Exception:
-                result[layer['name']] = False
+                result[result_name] = False
+
         self.clearCache()
         return result
 
+    def getDownloadedLayerDescriptions(self, url):
+        descriptions = []
+        for layer_data in self.downloaded_layers:
+            if layer_data['url'] == url:
+                descriptions_dict = {}
+                descriptions_dict['id'] = layer_data['layer_id']
+                descriptions_dict['title'] = layer_data['title']
+                descriptions.append(descriptions_dict)
+        return descriptions
+    
     def downloadServices(self, name: str, url: str, service_type: str) -> bool:
         """Pobiera GetCapabilities dla wybranego endpointu i dodaje znalezione warstwy do QGIS."""
         self.cancel_tasks = False
@@ -179,6 +204,8 @@ class AddOGCService(QObject):
                     {
                         'name': name,
                         'layer': layer,
+                        'layer_id': coverage_id,
+                        'title': coverage_id,
                         'url': url,
                         'service_type': 'WCS',
                     }
@@ -207,6 +234,8 @@ class AddOGCService(QObject):
                     {
                         'name': name,
                         'layer': layer,
+                        'layer_id': layer_name,
+                        'title': layer_info.title or layer_name,
                         'url': url,
                         'service_type': 'WMS',
                     }
@@ -234,6 +263,8 @@ class AddOGCService(QObject):
                     {
                         'name': name,
                         'layer': layer,
+                        'layer_id': feature_name,
+                        'title': feature_info.title or feature_name,
                         'url': url,
                         'service_type': 'WFS',
                     }
@@ -264,6 +295,8 @@ class AddOGCService(QObject):
                     {
                         'name': name,
                         'layer': layer,
+                        'layer_id': layer_name,
+                        'title': getattr(layer_info, 'title', None) or layer_name,
                         'url': url,
                         'service_type': 'WMTS',
                     }
