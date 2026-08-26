@@ -145,7 +145,7 @@
    </item>
 
    <item row="1" column="0">
-    <widget class="QTableView" name="services_table">
+    <widget class="QTableView" name="layers_table">
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
@@ -227,7 +227,7 @@
   <connection>
    <sender>reject_btn</sender>
    <signal>clicked()</signal>
-   <receiver>services_table</receiver>
+   <receiver>layers_table</receiver>
    <slot>clearSelection()</slot>
    <hints>
     <hint type="sourcelabel">

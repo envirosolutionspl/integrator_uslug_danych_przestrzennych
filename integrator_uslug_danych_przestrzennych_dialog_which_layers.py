@@ -33,71 +33,82 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def __init__(self,
                  service_name: str,
-                 service_url: str,
                  available_layers: list[dict],
                  parent=None,
     ):
         super().__init__(parent)
         self.setupUi(self)
+        self.qt_compat = QtCompat()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels([
-            'Nazwa warstwy',
-            'Identyfikator',
-        ])
-        self.services_table.setModel(self.model)
-
-        # Proxy do filtrowania warstw w search barze
-        self.proxy_model = QSortFilterProxyModel(self)
-        self.proxy_model.setSourceModel(self.model)
-        self.proxy_model.setFilterKeyColumn(0)
-
-        self.services_table.setModel(self.proxy_model)
-        self.services_table.setSelectionBehavior(
-            QtCompat.getEnum(
-                QTableView,
-                'SelectionBehavior',
-                'SelectRows',
-                )
-            )
-        self.services_table.setSelectionMode(
-            QtCompat.getEnum(
-                QTableView,
-                'SelectionMode',
-                'MultiSelection',
-                )
-            )
-
-        self.search_lineedit.textChanged.connect(self.applySearchFilter)
-
-        self.service_name = service_name
-        self.link_do_uslugi.setText(service_url)
         self.available_layers = available_layers
 
+        self.user_role = self.qt_compat.getEnum(Qt, 'ItemDataRole', 'UserRole')
+
+        self.search_lineedit.textChanged.connect(self.applySearchFilter)
+        self.service_name = service_name
+        self.link_do_uslugi.setText(self.service_name)
+
+        self.confiureServicesTable()
         self.addLayersToTable()
         self.add_btn.clicked.connect(self.accept)
 
     def addLayersToTable(self) -> None:
         for layer in self.available_layers:
             title_item = QStandardItem(layer['title'])
-            id_item = QStandardItem(layer['id'])
 
             title_item.setEditable(False)
-            id_item.setEditable(False)
+
+            title_item.setData(
+                layer['id'],
+                self.user_role,
+            )
 
             self.model.appendRow([
                 title_item,
-                id_item,
             ])
 
     def getSelectedLayerIds(self) -> list:
-        selected_rows = self.services_table.selectionModel().selectedRows(1)
-        selected_ids = [index.data() for index in selected_rows]
+        selected_rows = self.layers_table.selectionModel().selectedRows(0)
+        selected_ids = [index.data(self.user_role) for index in selected_rows]
 
         return selected_ids
     
     def applySearchFilter(self, text) -> None:
-        case_insensitive = QtCompat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
+        case_insensitive = self.qt_compat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
 
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
+    def confiureServicesTable(self) -> None:
+        self.model.setHorizontalHeaderLabels([
+            'Nazwa warstwy',
+        ])
+
+        # Proxy do filtrowania warstw w search barze
+        self.proxy_model = QSortFilterProxyModel(self)
+        self.proxy_model.setSourceModel(self.model)
+        self.proxy_model.setFilterKeyColumn(0)
+        self.layers_table.setModel(self.proxy_model)
+
+        resize_to_content = self.qt_compat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'ResizeToContents')
+
+
+        h_header = self.layers_table.horizontalHeader()
+        h_header.setSectionResizeMode(0, resize_to_content)
+
+
+        self.layers_table.setSelectionBehavior(
+            self.qt_compat.getEnum(
+                QTableView,
+                'SelectionBehavior',
+                'SelectRows',
+                )
+            )
+        self.layers_table.setSelectionMode(
+            self.qt_compat.getEnum(
+                QTableView,
+                'SelectionMode',
+                'MultiSelection',
+                )
+            )
+        
