@@ -155,25 +155,26 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setEnabledTable(False)
 
         # Sprawdzanie połaczenia internetowego
-        if ServiceAPI().checkInternetConnection():
+        try:
+            if ServiceAPI().checkInternetConnection():
 
-            # Pobranie danych z tabeli i dodanie usług do mapy
-            proxy_model = self.services_table.model()
-            selected_indexes = self.services_table.selectionModel().selectedRows()
-            selected_service_type = self.getSelectedServiceType()
-            self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
+                # Pobranie danych z tabeli i dodanie usług do mapy
+                proxy_model = self.services_table.model()
+                selected_indexes = self.services_table.selectionModel().selectedRows()
+                selected_service_type = self.getSelectedServiceType()
+                self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
+                
+            else:
+                MessageUtils.pushMessageBoxWarning(
+                    self,
+                    'Ostrzeżenie',
+                    'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie.\nNie można dodać usług.',
+                )
+        finally:
+            # Odblokowanie elementów okna 
+            self.setEnabledRadiobuttons(True)
+            self.setEnabledTable(True)
 
-        else:
-            MessageUtils.pushMessageBoxWarning(
-                self,
-                'Ostrzeżenie',
-                'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie.\nNie można dodać usług.',
-            )
-
-        # Odblokowanie elementów okna 
-        self.setEnabledRadiobuttons(True)
-        self.setEnabledTable(True)
-   
     # =============================
     # Fukcje obsługujące elementy okna
 
