@@ -72,13 +72,28 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         h_header.setSectionResizeMode(1, resize_interactive)
         h_header.setSortIndicator(0, ascending)
 
+        resize_stretch = self.qt_compat.getEnum(
+            QtWidgets.QHeaderView,
+            'ResizeMode',
+            'Stretch',
+        )
+
+        align_center = self.qt_compat.getEnum(
+            Qt,
+            'AlignmentFlag',
+            'AlignCenter',
+        )
+
+        h_header = self.services_table.horizontalHeader()
+        h_header.setSectionResizeMode(0, resize_stretch)
+        h_header.setSectionResizeMode(1, resize_stretch)
+        h_header.setDefaultAlignment(align_center)
+
         # Ustawienia pionowe
         v_header = self.services_table.verticalHeader()
         v_header.setDefaultSectionSize(14)
         v_header.setDefaultAlignment(align_center)
 
-        self.services_table.setColumnWidth(0, 400)
-        self.services_table.setColumnWidth(1, 500)
         self.services_table.setSortingEnabled(True)
         self.services_table.setSelectionBehavior(self.qt_compat.getEnum(QTableView, 'SelectionBehavior', 'SelectRows'))
         self.services_table.setSelectionMode(self.qt_compat.getEnum(QTableView, 'SelectionMode', 'MultiSelection'))
@@ -148,6 +163,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
+    #TODO dodać możliwość wyboru opcji warstw które chcemy dodać z konkretnej usługi w momencie klikania Dodaj Zaznaczone
     def addService(self):
         """Funcja pobiera nazwy usług i linki wybrane w tabeli i dodaje usługi do projektu QGIS"""
         # Blokowanie elementów okna
@@ -174,6 +190,11 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
             # Odblokowanie elementów okna 
             self.setEnabledRadiobuttons(True)
             self.setEnabledTable(True)
+
+    def _chooseWhatLayers(self):
+        '''Pozwala użytkownikowi na wybór warstw konkretnej usługi, które może dodać.'''
+
+
 
     # =============================
     # Fukcje obsługujące elementy okna
