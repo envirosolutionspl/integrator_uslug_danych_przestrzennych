@@ -23,7 +23,6 @@
    <iconset>
     <normaloff>images/icon.svg</normaloff>images/icon.svg</iconset>
   </property>
-
   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0">
    <property name="horizontalSpacing">
     <number>6</number>
@@ -31,7 +30,6 @@
    <property name="verticalSpacing">
     <number>4</number>
    </property>
-
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -40,15 +38,10 @@
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
-
      <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0">
-      <property name="horizontalSpacing">
+      <property name="spacing">
        <number>7</number>
       </property>
-      <property name="verticalSpacing">
-       <number>7</number>
-      </property>
-
       <item row="0" column="0" colspan="3">
        <widget class="QLabel" name="link_do_uslugi">
         <property name="text">
@@ -59,39 +52,6 @@
         </property>
        </widget>
       </item>
-
-      <item row="1" column="0">
-       <widget class="QLabel" name="img_main">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="pixmap">
-         <pixmap>images/icon.svg</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-
       <item row="1" column="1">
        <widget class="QLineEdit" name="search_lineedit">
         <property name="sizePolicy">
@@ -108,42 +68,9 @@
         </property>
        </widget>
       </item>
-
-      <item row="1" column="2">
-       <widget class="QLabel" name="img_es">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="pixmap">
-         <pixmap>images/es_logo.svg</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-
    <item row="1" column="0">
     <widget class="QTableView" name="layers_table">
      <property name="selectionBehavior">
@@ -151,7 +78,6 @@
      </property>
     </widget>
    </item>
-
    <item row="2" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
@@ -167,7 +93,6 @@
        </property>
       </spacer>
      </item>
-
      <item row="0" column="1">
       <widget class="QPushButton" name="add_btn">
        <property name="toolTip">
@@ -178,7 +103,6 @@
        </property>
       </widget>
      </item>
-
      <item row="0" column="2">
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -192,7 +116,6 @@
        </property>
       </spacer>
      </item>
-
      <item row="0" column="3">
       <widget class="QPushButton" name="reject_btn">
        <property name="toolTip">
@@ -203,7 +126,6 @@
        </property>
       </widget>
      </item>
-
      <item row="0" column="4">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
@@ -221,7 +143,6 @@
    </item>
   </layout>
  </widget>
-
  <resources/>
  <connections>
   <connection>
