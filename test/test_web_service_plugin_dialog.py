@@ -14,8 +14,8 @@ __copyright__ = 'Copyright 2024, EnviroSolutions Sp. z o.o.'
 
 import unittest
 
-from qgis.PyQt.QtGui import QDialogButtonBox, QDialog
-
+from qgis.PyQt.QtWidgets import QDialogButtonBox, QDialog
+from ..utils import QtCompat
 from web_service_plugin_dialog import WebServicePluginDialog
 
 from utilities import get_qgis_app
@@ -35,18 +35,21 @@ class WebServicePluginDialogTest(unittest.TestCase):
 
     def test_dialog_ok(self):
         """Test we can click OK."""
-
-        button = self.dialog.button_box.button(QDialogButtonBox.Ok)
+        ok = QtCompat.getEnum(QDialogButtonBox, 'StandardButton', 'Ok')
+        button = self.dialog.button_box.button(ok)
         button.click()
         result = self.dialog.result()
-        self.assertEqual(result, QDialog.Accepted)
+        accepted = QtCompat.getEnum(QDialog, 'DialogCode', 'Accepted')
+        self.assertEqual(result, accepted)
 
     def test_dialog_cancel(self):
         """Test we can click cancel."""
-        button = self.dialog.button_box.button(QDialogButtonBox.Cancel)
+        cancel = QtCompat.getEnum(QDialogButtonBox, 'StandardButton', 'Cancel')
+        button = self.dialog.button_box.button(cancel)
         button.click()
         result = self.dialog.result()
-        self.assertEqual(result, QDialog.Rejected)
+        rejected = QtCompat.getEnum(QDialog, 'DialogCode', 'Rejected')
+        self.assertEqual(result, rejected)
 
 if __name__ == "__main__":
     suite = unittest.makeSuite(WebServicePluginDialogTest)
