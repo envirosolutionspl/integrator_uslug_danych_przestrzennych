@@ -84,7 +84,7 @@ class IntegratorUslugPrzestrzennych:
     def showBranchSelectionDialog(self):
         dialog = QgisFeedDialog()
         accepted = QtCompat.getEnum(QDialog, 'DialogCode', 'Accepted')
-        if QtCompat.execDialog(dialog) != accepted:
+        if dialog.exec() != accepted:
             return None
 
         selected_industry = dialog.comboBox.currentText()
@@ -146,5 +146,5 @@ class IntegratorUslugPrzestrzennych:
 
     def run(self):
         self.dlg.show()
-        QtCompat.execDialog(self.dlg)
+        self.dlg.exec()
 

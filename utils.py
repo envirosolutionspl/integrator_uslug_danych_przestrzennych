@@ -89,13 +89,6 @@ class QtCompat:
         return getattr(parent, value)
 
     @staticmethod
-    def execDialog(dialog):
-        """Wywołanie exec na QDialog, obsługa różnicy między Qt5 (exec_) a Qt6 (exec)."""
-        if hasattr(dialog, 'exec'):
-            return dialog.exec()
-        return dialog.exec_()
-
-    @staticmethod
     def getMessageBoxIcon(icon='Information'):
         """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""
         from qgis.PyQt.QtWidgets import QMessageBox
@@ -220,7 +213,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushMessageBoxInfo(parent, title: str, message: str) -> None:
@@ -231,7 +224,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushMessageBoxWarning(parent, title: str, message: str) -> None:
@@ -242,7 +235,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
         
     @staticmethod
     def pushMessageBoxCritical(parent, title: str, message: str) -> None:
@@ -253,7 +246,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushSuccess(iface, message: str) -> None:
