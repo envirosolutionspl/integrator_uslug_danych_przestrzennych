@@ -86,7 +86,13 @@ class ContentManager(QObject):
         # Utworzenie szkieletu warstw w pamięci
         loop = QEventLoop(self.dialog_parent)
         for url, name in selected_services.items():
-            self.ogc_service.downloadServices(name, url, selected_service_type)
+            downloaded = self.ogc_service.downloadServices(name, url, selected_service_type)
+            if not downloaded:
+                MessageUtils.pushMessageBoxWarning(
+                    self.dialog_parent,
+                    'Nie udało się pobrać usługi',
+                    f'Usługa „{name}” nie odpowiedziała poprawnie i została pominięta.',
+                )
             if progress.value() < progress.maximum():
                 progress.setValue(progress.value()+1)
                 loop.processEvents()
@@ -104,21 +110,27 @@ class ContentManager(QObject):
         for url, name in selected_services.items():
             available_layers = self.ogc_service.getDownloadedLayerDescriptions(url)
 
+            if len(available_layers) < 2:
+                selected_layers[url] = [
+                    layer_description['id']
+                    for layer_description in available_layers
+                ]
+                continue
+
             # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
-            dialog = ChooseLayersDialog(name, url, available_layers, parent=self.dialog_parent)
+            dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
             result = QtCompat.execDialog(dialog)
 
             if result != QDialog.Accepted:
                 progress.deleteLater()
+                self.ogc_service.clearCache()
                 progress = None
                 return
 
             selected_layers[url] = dialog.getSelectedLayerIds()
 
         # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
-        successfully_add = self.ogc_service.addServices()
-
-        progress.setValue(progress.maximum())
+        successfully_add = self.ogc_service.addServices(selected_layers)
 
         if successfully_add:
             MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', '\n'.join(
