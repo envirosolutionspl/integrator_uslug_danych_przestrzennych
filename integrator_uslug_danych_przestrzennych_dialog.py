@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
  * Integrator Uslug Danych Przestrzennych                                  *
