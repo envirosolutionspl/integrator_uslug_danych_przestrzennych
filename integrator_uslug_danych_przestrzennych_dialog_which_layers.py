@@ -90,12 +90,21 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setFilterKeyColumn(0)
         self.layers_table.setModel(self.proxy_model)
 
-        resize_to_content = self.qt_compat.getEnum(QtWidgets.QHeaderView, 'ResizeMode', 'ResizeToContents')
-
 
         h_header = self.layers_table.horizontalHeader()
-        h_header.setSectionResizeMode(0, resize_to_content)
+        resize_stretch = self.qt_compat.getEnum(
+            QtWidgets.QHeaderView,
+            'ResizeMode',
+            'Stretch',
+        )
 
+        align_center = self.qt_compat.getEnum(
+            Qt,
+            'AlignmentFlag',
+            'AlignCenter',
+        )
+        h_header.setSectionResizeMode(0, resize_stretch)
+        h_header.setDefaultAlignment(align_center)
 
         self.layers_table.setSelectionBehavior(
             self.qt_compat.getEnum(
