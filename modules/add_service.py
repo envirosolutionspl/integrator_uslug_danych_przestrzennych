@@ -26,7 +26,7 @@ from owslib.wmts import WebMapTileService
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
 from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS, SERVICES_NAMESPACES
-from ..utils import ServiceAPI
+from ..utils import ServiceAPI, MessageUtils
 
 from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
 
@@ -214,12 +214,31 @@ class AddOGCService(QObject):
 
     def _processWmsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
-        try:
-            service = WebMapService(url, version='1.3.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        except Exception:
-            service = WebMapService(url, version='1.1.1', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        service = None
+        for version in ['1.3.0', '1.1.1']:
+            try:
+                service = WebMapService(url, version=version, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+                break
+            except requests.exceptions.Timeout:
+                MessageUtils.logWarning(
+                    f'WMS {url}, wersja {version}: przekroczono czas połączenia.'
+                )
+            except ServiceException as error:
+                MessageUtils.logWarning(
+                    f'WMS {url}, wersja {version}: błąd usługi OGC: {error}.'
+                ) 
+            except Exception as error:
+                MessageUtils.logWarning(
+                    f'Wms {url}, wersja {version}: błąd {error}.'
+                )
+
+        if service is None:
+            return False
+        
         ok = False
         for layer_name, layer_info in service.contents.items():
+            if layer_info.children:
+                continue
             uri = f'url={service.url}&layers={layer_name}&styles=&format=image/png'
             layer, is_canceled = self._createQgsLayer(
                 uri, 
