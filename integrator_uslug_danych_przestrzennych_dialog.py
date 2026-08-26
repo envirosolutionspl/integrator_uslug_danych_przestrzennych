@@ -163,7 +163,6 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
-    #TODO dodać możliwość wyboru opcji warstw które chcemy dodać z konkretnej usługi w momencie klikania Dodaj Zaznaczone
     def addService(self):
         """Funcja pobiera nazwy usług i linki wybrane w tabeli i dodaje usługi do projektu QGIS"""
         # Blokowanie elementów okna
@@ -190,12 +189,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
             # Odblokowanie elementów okna 
             self.setEnabledRadiobuttons(True)
             self.setEnabledTable(True)
-
-    def _chooseWhatLayers(self):
-        '''Pozwala użytkownikowi na wybór warstw konkretnej usługi, które może dodać.'''
-
-
-
+            
     # =============================
     # Fukcje obsługujące elementy okna
 
