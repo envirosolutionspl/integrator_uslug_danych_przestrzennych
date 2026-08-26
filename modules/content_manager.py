@@ -31,7 +31,7 @@ class ContentManager(QObject):
         super().__init__()
         self.dialog_parent = dialog_parent
         self.ogc_service = AddOGCService()
-        
+        self.qt_compat = QtCompat()
         # Sekcja API
         self.country_urls_fetcher = CountryUrlsFetcher()
         self.country_services_cache: List[Dict[str, str]] = []
@@ -119,9 +119,9 @@ class ContentManager(QObject):
 
             # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
             dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
-            result = QtCompat.execDialog(dialog)
-
-            if result != QDialog.Accepted:
+            result = self.qt_compat.execDialog(dialog)
+            accepted = self.qt_compat.getEnum(QDialog, 'DialogCode', 'Accepted')
+            if result != accepted:
                 progress.deleteLater()
                 self.ogc_service.clearCache()
                 progress = None
@@ -155,7 +155,7 @@ class ContentManager(QObject):
         progress_dialog.canceled.connect(_cancelProgressDialog)
 
         progress_dialog.setWindowTitle(plugin_name)
-        progress_dialog.setWindowModality(QtCompat.getEnum(Qt, 'WindowModality', 'WindowModal'))
+        progress_dialog.setWindowModality(self.qt_compat.getEnum(Qt, 'WindowModality', 'WindowModal'))
         progress_dialog.setAutoClose(False)
         progress_dialog.setAutoReset(False)
         progress_dialog.setMinimumDuration(0)   # natychmiast pokaż
