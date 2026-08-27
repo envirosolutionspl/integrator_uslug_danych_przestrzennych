@@ -45,11 +45,12 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         self.user_role = self.qt_compat.getEnum(Qt, 'ItemDataRole', 'UserRole')
 
         self.search_lineedit.textChanged.connect(self.applySearchFilter)
-        self.zaznacz_wszystkie_warstwy.stateChanged.connect(self.selectAllLayers)
+        self.zaznacz_wszystkie_warstwy.clicked.connect(self.selectAllLayers)
         self.service_name = service_name
         self.link_do_uslugi.setText(self.service_name)
 
         self.confiureServicesTable()
+        self.layers_table.selectionModel().selectionChanged.connect(self.updateSelectAllCheckbox)
         self.addLayersToTable()
         self.add_btn.clicked.connect(self.accept)
 
@@ -122,9 +123,13 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
                 )
             )
 
-    def selectAllLayers(self, state: bool) -> None:
-        '''Metoda dla comboboxa do zaznaczenia wszystkich warstw.'''
-        if state == 2:
+    def selectAllLayers(self, checked: bool) -> None:
+        if checked:
             self.layers_table.selectAll()
         else:
             self.layers_table.clearSelection()
+
+    def updateSelectAllCheckbox(self, selected, deselected) -> None:
+        selected = len(self.layers_table.selectionModel().selectedRows())
+        total = self.proxy_model.rowCount()
+        self.zaznacz_wszystkie_warstwy.setChecked(total > 0 and selected == total)
