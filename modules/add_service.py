@@ -222,7 +222,6 @@ class AddOGCService(QObject):
         base_url = url.split('?')[0]
         ok = False
         for feature_name, feature_info in service.contents.items():
-            format_name = layer_info.formats[0]
             uri = f"url='{base_url}' typename='{feature_name}' pagingEnabled='true' version='auto'"
             layer, is_canceled = self._createQgsLayer(
                 uri, 
