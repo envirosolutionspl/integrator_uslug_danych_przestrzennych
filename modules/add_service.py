@@ -92,11 +92,6 @@ class AddOGCService(QObject):
         """Wystawia flagę wymuszającą zatrzymanie dodwania usług"""
         self.cancel_tasks = True
 
-    #TODO rozważyć komunikat 'z uwagi na wiecej warstw serwowanych uslug 
-    # wyswietla sie warstwy ktore mozesz dodac, 
-    # a reszta tez zostanie dodana ale jako ze jest jedna warstwa 
-    # no to tylko dla tych obszernych usług OGC'
-    ##TODO sprawdzić czy działa to dla zagnieżdżonych warstw z drzewa
     def addServices(self, selected_layers):
         """Dodaje do płótna te warstwy, które zostały wybrane przez użytkownika."""
         result = {}
