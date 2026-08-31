@@ -134,7 +134,7 @@ class ContentManager(QObject):
 
         if successfully_add:
             MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
-                '\n'.join(f'Dodano usługę {value} - {len(selected_layers.get(key, []))} {self._messageLayerForm(len(selected_layers.get(key, [])))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
+                '\n'.join(f'Dodano usługę {value} - ilość warstw: {len(selected_layers.get(key, []))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
                 for key, value in selected_services.items()
             ))
         else:
@@ -143,13 +143,6 @@ class ContentManager(QObject):
         progress.deleteLater()
         progress = None
 
-    def _messageLayerForm(self, liczba):
-        '''Obejście poprawnej polszczyzny (uproszczone 3 przypadki odmiany)'''
-        if liczba == 1:
-            return 'warstwa'
-        else:
-            return 'warstw(y)'
-        
     def _appendDefaultProgressDialogSettings(self, progress_dialog):
         """Przypisuje postawowe zachowanie okna progresu"""
 
