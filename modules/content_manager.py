@@ -105,7 +105,7 @@ class ContentManager(QObject):
         
         if not selected_services:
             return
-        # Zebranie wszystkich warstw dostarczanych przez konkretną usługę OGC
+        # Zebranie wszystkich warstw dostarczanych przez konkretną  OGC
         selected_layers = {}
         for url, name in selected_services.items():
             available_layers = self.ogc_service.getDownloadedLayerDescriptions(url)
@@ -134,7 +134,7 @@ class ContentManager(QObject):
 
         if successfully_add:
             MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
-                '\n'.join(f'Dodano usługe {value} - {len(selected_layers.get(key, []))} {self._messageLayerForm(len(selected_layers.get(key, [])))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
+                '\n'.join(f'Dodano usługę {value} - {len(selected_layers.get(key, []))} {self._messageLayerForm(len(selected_layers.get(key, [])))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
                 for key, value in selected_services.items()
             ))
         else:
@@ -155,7 +155,7 @@ class ContentManager(QObject):
 
         def _cancelProgressDialog():
             """Obsługuje przycik Anuluj"""
-            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej usługę
+            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej 
             progress_dialog.setLabelText("Przerywanie operacji. Proszę czekać...")
             progress_dialog.show() # zapobiega chowaniu się okna
 
