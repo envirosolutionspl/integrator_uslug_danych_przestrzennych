@@ -81,6 +81,8 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setFilterCaseSensitivity(case_insensitive)
         self.proxy_model.setFilterFixedString(text)
 
+        self.updateSelectAllCheckbox()
+
     def confiureServicesTable(self) -> None:
         self.model.setHorizontalHeaderLabels([
             'Nazwa warstwy',
@@ -129,7 +131,7 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             self.layers_table.clearSelection()
 
-    def updateSelectAllCheckbox(self, selected, deselected) -> None:
+    def updateSelectAllCheckbox(self) -> None:
         selected = len(self.layers_table.selectionModel().selectedRows())
         total = self.proxy_model.rowCount()
         self.zaznacz_wszystkie_warstwy.setChecked(total > 0 and selected == total)
