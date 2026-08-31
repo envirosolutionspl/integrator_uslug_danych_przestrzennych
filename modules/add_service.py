@@ -239,10 +239,15 @@ class AddOGCService(QObject):
         for layer_name, layer_info in service.contents.items():
             if layer_info.children:
                 continue
-            uri = f'url={service.url}&layers={layer_name}&styles=&format=image/png'
+
+            get_map = service.getOperationByName('GetMap')
+            format_name = get_map.formatOptions[0]
+            style_name = list(layer_info.styles.keys())[0] if layer_info.styles else ''
+            uri = f'url={service.url}&layers={layer_name}&styles={style_name}&format={format_name}'
+
             layer, is_canceled = self._createQgsLayer(
-                uri, 
-                f'WMS - {layer_info.title or layer_name}', 
+                uri,
+                f'WMS - {layer_info.title or layer_name}',
                 'wms',
             )
             if is_canceled:
@@ -300,7 +305,9 @@ class AddOGCService(QObject):
             tile_matrix_set = getattr(tile_matrix_set_link, 'tilematrixset', tile_matrix_set_link)
             if not tile_matrix_set:
                 continue
-            uri = f'format=image/png&layers={layer_name}&styles=&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
+            format_name = layer_info.formats[0]
+            style_name = list(layer_info.styles.keys())[0]
+            uri = f'format={format_name}&layers={layer_name}&styles={style_name}&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
             layer, is_canceled = self._createQgsLayer(
                 uri, 
                 f'WMTS - {layer_name}', 
