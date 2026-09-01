@@ -78,11 +78,42 @@ class ContentManager(QObject):
             )
             return
         
+        progress = self._createProgressWindow(len(selected_table_indexes))
+
+        if not self._createSkeletInMemory(selected_services, selected_service_type, progress):
+            progress.deleteLater()
+            return
+
+        progress.setValue(progress.maximum())
+        progress.hide()
+
+        selected_layers = self.collectAllLayersFromOGC(selected_services)
+        if selected_layers is None:
+            progress.deleteLater()
+            self.ogc_service.clearCache()
+            return
+
+        # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
+        successfully_add = self.ogc_service.addServices(selected_layers)
+
+        if successfully_add:
+            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
+                '\n'.join(f'Dodano usługę {value} - ilość warstw: {len(selected_layers.get(key, []))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
+                for key, value in selected_services.items()
+            ))
+        else:
+            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', 'Nie dodano żadnych usług')
+
+        progress.deleteLater()
+
+    def _createProgressWindow(self, selected_services_count):
         # Utworzenie okna progresu
-        progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, len(selected_table_indexes)+1, self.dialog_parent)
+        progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, selected_services_count+1, self.dialog_parent)
         self._appendDefaultProgressDialogSettings(progress)
         progress.show()
+        return progress
 
+    def _createSkeletInMemory(self, selected_services, selected_service_type, progress):
         # Utworzenie szkieletu warstw w pamięci
         loop = QEventLoop(self.dialog_parent)
         for url, name in selected_services.items():
@@ -97,15 +128,12 @@ class ContentManager(QObject):
                 progress.setValue(progress.value()+1)
                 loop.processEvents()
             if progress.wasCanceled():
-                self.ogc_service.clearCache()       
-                break
-        
-        progress.setValue(progress.maximum())
-        progress.hide()
-        
-        if not selected_services:
-            return
-        # Zebranie wszystkich warstw dostarczanych przez konkretną  OGC
+                self.ogc_service.clearCache()
+                return False
+        return True
+
+    def collectAllLayersFromOGC(self, selected_services):
+        # Zebranie wszystkich warstw dostarczanych przez konkretne OGC
         selected_layers = {}
         for url, name in selected_services.items():
             available_layers = self.ogc_service.getDownloadedLayerDescriptions(url)
@@ -117,31 +145,22 @@ class ContentManager(QObject):
                 ]
                 continue
 
-            # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
-            dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
-            result = self.qt_compat.execDialog(dialog)
-            accepted = self.qt_compat.getEnum(QDialog, 'DialogCode', 'Accepted')
-            if result != accepted:
-                progress.deleteLater()
-                self.ogc_service.clearCache()
-                progress = None
-                return
+            selected_layer_ids = self._chooseLayerFromOgc(name, available_layers)
+            if selected_layer_ids is None:
+                return None
 
-            selected_layers[url] = dialog.getSelectedLayerIds()
+            selected_layers[url] = selected_layer_ids
 
-        # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
-        successfully_add = self.ogc_service.addServices(selected_layers)
+        return selected_layers
 
-        if successfully_add:
-            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
-                '\n'.join(f'Dodano usługę {value} - ilość warstw: {len(selected_layers.get(key, []))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
-                for key, value in selected_services.items()
-            ))
-        else:
-            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', 'Nie dodano żadnych usług')
-
-        progress.deleteLater()
-        progress = None
+    def _chooseLayerFromOgc(self, name, available_layers):
+        # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
+        dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
+        result = self.qt_compat.execDialog(dialog)
+        accepted = self.qt_compat.getEnum(QDialog, 'DialogCode', 'Accepted')
+        if result != accepted:
+            return None
+        return dialog.getSelectedLayerIds()
 
     def _appendDefaultProgressDialogSettings(self, progress_dialog):
         """Przypisuje postawowe zachowanie okna progresu"""
