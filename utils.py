@@ -89,6 +89,13 @@ class QtCompat:
         return getattr(parent, value)
 
     @staticmethod
+    def execDialog(dialog):
+        exec_method = getattr(dialog, 'exec', None)
+        if callable(exec_method):
+            return exec_method()
+        return dialog.exec_()
+    
+    @staticmethod
     def getMessageBoxIcon(icon='Information'):
         """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""
         from qgis.PyQt.QtWidgets import QMessageBox
