@@ -156,7 +156,7 @@ class ContentManager(QObject):
     def _chooseLayerFromOgc(self, name, available_layers):
         # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
         dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
-        result = self.qt_compat.execDialog(dialog)
+        result = dialog.exec()
         accepted = self.qt_compat.getEnum(QDialog, 'DialogCode', 'Accepted')
         if result != accepted:
             return None
