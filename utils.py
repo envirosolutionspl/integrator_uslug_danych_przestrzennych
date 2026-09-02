@@ -87,13 +87,6 @@ class QtCompat:
         if scoped is not None:
             return getattr(scoped, value)
         return getattr(parent, value)
-
-    @staticmethod
-    def execDialog(dialog):
-        exec_method = getattr(dialog, 'exec', None)
-        if callable(exec_method):
-            return exec_method()
-        return dialog.exec_()
     
     @staticmethod
     def getMessageBoxIcon(icon='Information'):
