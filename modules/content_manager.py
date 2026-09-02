@@ -15,12 +15,13 @@
 """
 from typing import Dict, List
 
-from qgis.PyQt.QtWidgets import QProgressDialog
+from qgis.PyQt.QtWidgets import QProgressDialog, QDialog
 from qgis.PyQt.QtCore import Qt, QObject, QEventLoop
 
 from .. import PLUGIN_NAME as plugin_name
 from ..modules.country_urls_fetcher import CountryUrlsFetcher
 from ..modules.add_service import AddOGCService
+from ..integrator_uslug_danych_przestrzennych_dialog_which_layers import ChooseLayersDialog
 from ..utils import QtCompat, MessageUtils
 from ..constants import SERVICE_TYPES
 
@@ -30,7 +31,7 @@ class ContentManager(QObject):
         super().__init__()
         self.dialog_parent = dialog_parent
         self.ogc_service = AddOGCService()
-        
+        self.qt_compat = QtCompat()
         # Sekcja API
         self.country_urls_fetcher = CountryUrlsFetcher()
         self.country_services_cache: List[Dict[str, str]] = []
@@ -76,52 +77,104 @@ class ContentManager(QObject):
                 'Nie wybrano żadnej usługi z listy.'
             )
             return
-
-        # Utworzenie okna progresu
-        progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, len(selected_table_indexes)+1, self.dialog_parent)
-        self._appendDefaultProgressDialogSettings(progress)
-        progress.show()
-
-        # Utworzenie szkieletu warstw w pamięci
-        loop = QEventLoop(self.dialog_parent)
-        for url, name in selected_services.items():
-            self.ogc_service.downloadServices(name, url, selected_service_type)
-            if progress.value() < progress.maximum():
-                progress.setValue(progress.value()+1)
-                loop.processEvents()
-            if progress.wasCanceled():
-                self.ogc_service.clearCache()       
-                break
         
-        # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
-        successfully_add = self.ogc_service.addServices()
+        progress = self._createProgressWindow(len(selected_table_indexes))
+
+        if not self._createSkeletInMemory(selected_services, selected_service_type, progress):
+            progress.deleteLater()
+            return
 
         progress.setValue(progress.maximum())
+        progress.hide()
+
+        selected_layers = self.collectAllLayersFromOGC(selected_services)
+        if selected_layers is None:
+            progress.deleteLater()
+            self.ogc_service.clearCache()
+            return
+
+        # Finalizowanie dodawania usług poprzez dodanie ich do projektu QGIS
+        successfully_add = self.ogc_service.addServices(selected_layers)
 
         if successfully_add:
-            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', '\n'.join(
-                f'Dodano usługe {key}' if value else f'Nie dodano usługi {key}'
-                for key, value in successfully_add.items()
+            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
+                '\n'.join(f'Dodano usługę {value} - ilość warstw: {len(selected_layers.get(key, []))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
+                for key, value in selected_services.items()
             ))
         else:
             MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', 'Nie dodano żadnych usług')
 
         progress.deleteLater()
-        progress = None
+
+    def _createProgressWindow(self, selected_services_count):
+        # Utworzenie okna progresu
+        progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, selected_services_count+1, self.dialog_parent)
+        self._appendDefaultProgressDialogSettings(progress)
+        progress.show()
+        return progress
+
+    def _createSkeletInMemory(self, selected_services, selected_service_type, progress):
+        # Utworzenie szkieletu warstw w pamięci
+        loop = QEventLoop(self.dialog_parent)
+        for url, name in selected_services.items():
+            downloaded = self.ogc_service.downloadServices(name, url, selected_service_type)
+            if not downloaded:
+                MessageUtils.pushMessageBoxWarning(
+                    self.dialog_parent,
+                    'Nie udało się pobrać usługi',
+                    f'Usługa „{name}” nie odpowiedziała poprawnie i została pominięta.',
+                )
+            if progress.value() < progress.maximum():
+                progress.setValue(progress.value()+1)
+                loop.processEvents()
+            if progress.wasCanceled():
+                self.ogc_service.clearCache()
+                return False
+        return True
+
+    def collectAllLayersFromOGC(self, selected_services):
+        # Zebranie wszystkich warstw dostarczanych przez konkretne OGC
+        selected_layers = {}
+        for url, name in selected_services.items():
+            available_layers = self.ogc_service.getDownloadedLayerDescriptions(url)
+
+            if len(available_layers) < 2:
+                selected_layers[url] = [
+                    layer_description['id']
+                    for layer_description in available_layers
+                ]
+                continue
+
+            selected_layer_ids = self._chooseLayerFromOgc(name, available_layers)
+            if selected_layer_ids is None:
+                return None
+
+            selected_layers[url] = selected_layer_ids
+
+        return selected_layers
+
+    def _chooseLayerFromOgc(self, name, available_layers):
+        # Uruchomienie okna dialogowego pozwalającego na wybór warstw konkretnej usługi OGC
+        dialog = ChooseLayersDialog(name, available_layers, parent=self.dialog_parent)
+        result = dialog.exec()
+        accepted = self.qt_compat.getEnum(QDialog, 'DialogCode', 'Accepted')
+        if result != accepted:
+            return None
+        return dialog.getSelectedLayerIds()
 
     def _appendDefaultProgressDialogSettings(self, progress_dialog):
         """Przypisuje postawowe zachowanie okna progresu"""
 
         def _cancelProgressDialog():
             """Obsługuje przycik Anuluj"""
-            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej usługę
+            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej 
             progress_dialog.setLabelText("Przerywanie operacji. Proszę czekać...")
             progress_dialog.show() # zapobiega chowaniu się okna
 
         progress_dialog.canceled.connect(_cancelProgressDialog)
 
         progress_dialog.setWindowTitle(plugin_name)
-        progress_dialog.setWindowModality(QtCompat.getEnum(Qt, 'WindowModality', 'WindowModal'))
+        progress_dialog.setWindowModality(self.qt_compat.getEnum(Qt, 'WindowModality', 'WindowModal'))
         progress_dialog.setAutoClose(False)
         progress_dialog.setAutoReset(False)
         progress_dialog.setMinimumDuration(0)   # natychmiast pokaż

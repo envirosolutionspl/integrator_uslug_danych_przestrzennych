@@ -87,7 +87,7 @@ class QtCompat:
         if scoped is not None:
             return getattr(scoped, value)
         return getattr(parent, value)
-
+    
     @staticmethod
     def getMessageBoxIcon(icon='Information'):
         """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""

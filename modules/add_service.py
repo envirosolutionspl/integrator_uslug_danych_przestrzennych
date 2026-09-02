@@ -14,6 +14,7 @@
  ***************************************************************************/
 """
 import requests
+from dataclasses import dataclass
 import lxml
 from xml.etree import ElementTree as ET # nosec B405
 
@@ -26,7 +27,7 @@ from owslib.wmts import WebMapTileService
 from qgis.core import QgsProject, QgsRasterLayer, QgsVectorLayer
 
 from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS, SERVICES_NAMESPACES
-from ..utils import ServiceAPI
+from ..utils import ServiceAPI, MessageUtils
 
 from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
 
@@ -71,6 +72,14 @@ class legacyWebCoverageService:
     def getContents(self):
         return self.contents
         
+@dataclass
+class _LayerDefinition:
+    uri: str
+    display_name: str
+    provider: str
+    layer_type: str
+    layer_id: str
+    title: str
 
 class AddOGCService(QObject):
 
@@ -91,18 +100,38 @@ class AddOGCService(QObject):
     def cancelTasks(self):
         """Wystawia flagę wymuszającą zatrzymanie dodwania usług"""
         self.cancel_tasks = True
-        
-    def addServices(self):
-        """Finalizuje proces dodawania usług wrzucając zawartość kolejki warstw do projektu QGIS"""
+
+    def addServices(self, selected_layers):
+        """Dodaje do płótna te warstwy, które zostały wybrane przez użytkownika."""
         result = {}
         for layer in self.downloaded_layers:
+            selected_ids = selected_layers.get(layer['url'], [])
+
+            if layer['layer_id'] not in selected_ids:
+                continue
+
+            result_name = f"{layer['name']} - {layer['title']}"
+
             try:
-                result[layer['name']] = self._addMapLayer(layer['layer'])
+                result[result_name] = self._addMapLayer(
+                    layer['layer']
+                )
             except Exception:
-                result[layer['name']] = False
+                result[result_name] = False
+
         self.clearCache()
         return result
 
+    def getDownloadedLayerDescriptions(self, url):
+        descriptions = []
+        for layer_data in self.downloaded_layers:
+            if layer_data['url'] == url:
+                descriptions_dict = {}
+                descriptions_dict['id'] = layer_data['layer_id']
+                descriptions_dict['title'] = layer_data['title']
+                descriptions.append(descriptions_dict)
+        return descriptions
+    
     def downloadServices(self, name: str, url: str, service_type: str) -> bool:
         """Pobiera GetCapabilities dla wybranego endpointu i dodaje znalezione warstwy do QGIS."""
         self.cancel_tasks = False
@@ -147,6 +176,147 @@ class AddOGCService(QObject):
             return None, True
         return layer, False
 
+    def _processLayerDefinitions(
+            self,
+            name: str,
+            url: str,
+            service_type: str,
+            definitions: list[_LayerDefinition],
+    ) -> bool:
+
+        ok = False
+        for definition in definitions:
+            layer, is_canceled = self._createQgsLayer(
+                service_uri=definition.uri,
+                service_name=definition.display_name,
+                service_type=definition.provider,
+                layer_type=definition.layer_type,
+            )
+
+            if is_canceled:
+                return False
+
+            if layer.isValid():
+                ok = True
+                self.downloaded_layers.append(
+                    {
+                        'name': name,
+                        'layer': layer,
+                        'layer_id': definition.layer_id,
+                        'title': definition.title,
+                        'url': url,
+                        'service_type': service_type,
+                    }
+                )
+        return ok
+    
+    def _processWmsLayer(self, name: str, url: str) -> bool:
+        """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
+        service = None
+        for version in ['1.3.0', '1.1.1']:
+            try:
+                service = WebMapService(url, version=version, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+                break
+            except requests.exceptions.Timeout:
+                MessageUtils.logWarning(
+                    f'WMS {url}, wersja {version}: przekroczono czas połączenia.'
+                )
+            except ServiceException as error:
+                MessageUtils.logWarning(
+                    f'WMS {url}, wersja {version}: błąd usługi OGC: {error}.'
+                ) 
+            except Exception as error:
+                MessageUtils.logWarning(
+                    f'Wms {url}, wersja {version}: błąd {error}.'
+                )
+
+        if service is None:
+            return False
+        
+        definitions = []
+        for layer_name, layer_info in service.contents.items():
+            if layer_info.children:
+                continue
+
+            get_map = service.getOperationByName('GetMap')
+            format_name = get_map.formatOptions[0]
+            style_name = list(layer_info.styles.keys())[0] if layer_info.styles else ''
+            uri = f'url={service.url}&layers={layer_name}&styles={style_name}&format={format_name}'
+            title = layer_info.title or layer_name
+            definitions.append(
+                _LayerDefinition(
+                    uri=uri,
+                    display_name=f'WMS - {title}',
+                    provider='wms',
+                    layer_type='raster',
+                    layer_id=layer_name,
+                    title=title,
+                )
+            )
+        return self._processLayerDefinitions(
+            name=name,
+            url=url,
+            service_type='WMS',
+            definitions=definitions,
+        )
+    def _processWmtsLayer(self, name: str, url: str) -> bool:
+        """Tworzy warstwy kafelkowe WMTS z identyfikatora warstwy i TileMatrixSet."""
+        service = WebMapTileService(url, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        encoded_url = url.replace('&', '%26')
+        definitions = []
+        for layer_name, layer_info in service.contents.items():
+            tile_matrix_set_link = next(iter(layer_info.tilematrixsetlinks), None) if layer_info.tilematrixsetlinks else None
+            tile_matrix_set = getattr(tile_matrix_set_link, 'tilematrixset', tile_matrix_set_link)
+            if not tile_matrix_set:
+                continue
+            format_name = layer_info.formats[0]
+            style_name = list(layer_info.styles.keys())[0]
+            uri = f'format={format_name}&layers={layer_name}&styles={style_name}&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
+            title = getattr(layer_info, 'title', None) or layer_name
+            definitions.append(
+                _LayerDefinition(
+                    uri=uri,
+                    display_name=f'WMTS - {layer_name}',
+                    provider='wms',
+                    layer_type='raster',
+                    layer_id=layer_name,
+                    title=title,
+                )
+            )
+        return self._processLayerDefinitions(
+            name=name,
+            url=url,
+            service_type='WMTS',
+            definitions=definitions,
+        )
+    
+    def _processWfsLayer(self, name: str, url: str) -> bool:
+        """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
+        service = WebFeatureService(url, version='2.0.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
+        base_url = url.split('?')[0]
+
+        definitions = []
+        for feature_name, feature_info in service.contents.items():
+            title = feature_info.title or feature_name
+            uri = f"url='{base_url}' typename='{feature_name}' pagingEnabled='true' version='auto'"
+
+            definitions.append(
+                _LayerDefinition(
+                    uri=uri,
+                    display_name=f'WFS - {title}',
+                    provider='WFS',
+                    layer_type='vector',
+                    layer_id=feature_name,
+                    title=title,
+                )
+            )
+        return self._processLayerDefinitions(
+            name=name,
+            url=url,
+            service_type='WFS',
+            definitions=definitions,
+        )
+    
     def _processWcsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
         source_not_parsed = True
@@ -163,114 +333,22 @@ class AddOGCService(QObject):
             service = legacyWebCoverageService(url)
 
         encoded_url = url.split('?')[0].replace('&', '%26') + '?'
-        ok = False
+        definitions = []
         for coverage_id in service.contents:
             uri = f'identifier={coverage_id}&url={encoded_url}'
-            layer, is_canceled = self._createQgsLayer(
-                uri, 
-                f'WCS - {coverage_id}', 
-                'wcs',
-            )
-            if is_canceled:
-                return False
-            if layer.isValid():
-                ok |= True
-                self.downloaded_layers.append(
-                    {
-                        'name': name,
-                        'layer': layer,
-                        'url': url,
-                        'service_type': 'WCS',
-                    }
+            definitions.append(
+                _LayerDefinition(
+                    uri=uri,
+                    display_name=f'WCS - {coverage_id}',
+                    provider='wcs',
+                    layer_type='raster',
+                    layer_id=coverage_id,
+                    title=coverage_id,
                 )
-        return ok
-
-    def _processWmsLayer(self, name: str, url: str) -> bool:
-        """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
-        try:
-            service = WebMapService(url, version='1.3.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        except Exception:
-            service = WebMapService(url, version='1.1.1', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        ok = False
-        for layer_name, layer_info in service.contents.items():
-            get_map = service.getOperationByName('GetMap')
-            format_name = get_map.formatOptions[0]
-            style_name = list(layer_info.styles.keys())[0] if layer_info.styles else ''
-            uri = f'url={service.url}&layers={layer_name}&styles={style_name}&format={format_name}'
-            layer, is_canceled = self._createQgsLayer(
-                uri, 
-                f'WMS - {layer_info.title or layer_name}', 
-                'wms',
             )
-            if is_canceled:
-                return False
-            if layer.isValid():
-                ok |= True
-                self.downloaded_layers.append(
-                    {
-                        'name': name,
-                        'layer': layer,
-                        'url': url,
-                        'service_type': 'WMS',
-                    }
-                )
-        return ok
-
-    def _processWfsLayer(self, name: str, url: str) -> bool:
-        """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
-        service = WebFeatureService(url, version='2.0.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        base_url = url.split('?')[0]
-        ok = False
-        for feature_name, feature_info in service.contents.items():
-            uri = f"url='{base_url}' typename='{feature_name}' pagingEnabled='true' version='auto'"
-            layer, is_canceled = self._createQgsLayer(
-                uri, 
-                f'WFS - {feature_info.title or feature_name}', 
-                'WFS',
-                layer_type="vector",
-            )
-            if is_canceled:
-                return False
-            if layer.isValid():
-                ok |= True
-                self.downloaded_layers.append(
-                    {
-                        'name': name,
-                        'layer': layer,
-                        'url': url,
-                        'service_type': 'WFS',
-                    }
-                )
-        return ok
-
-    def _processWmtsLayer(self, name: str, url: str) -> bool:
-        """Tworzy warstwy kafelkowe WMTS z identyfikatora warstwy i TileMatrixSet."""
-        service = WebMapTileService(url, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
-        encoded_url = url.replace('&', '%26')
-        ok = False
-        for layer_name, layer_info in service.contents.items():
-            tile_matrix_set_link = next(iter(layer_info.tilematrixsetlinks), None) if layer_info.tilematrixsetlinks else None
-            tile_matrix_set = getattr(tile_matrix_set_link, 'tilematrixset', tile_matrix_set_link)
-            if not tile_matrix_set:
-                continue
-            format_name = layer_info.formats[0]
-            style_name = list(layer_info.styles.keys())[0]
-            uri = f'format={format_name}&layers={layer_name}&styles={style_name}&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
-            layer, is_canceled = self._createQgsLayer(
-                uri, 
-                f'WMTS - {layer_name}', 
-                'wms',
-            )
-            if is_canceled:
-                return False
-            if layer.isValid():
-                ok |= True
-                self.downloaded_layers.append(
-                    {
-                        'name': name,
-                        'layer': layer,
-                        'url': url,
-                        'service_type': 'WMTS',
-                    }
-                )
-        return ok
+        return self._processLayerDefinitions(
+            name=name,
+            url=url,
+            service_type='WCS',
+            definitions=definitions,
+        )
