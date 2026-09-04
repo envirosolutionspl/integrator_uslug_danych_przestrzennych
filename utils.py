@@ -87,14 +87,7 @@ class QtCompat:
         if scoped is not None:
             return getattr(scoped, value)
         return getattr(parent, value)
-
-    @staticmethod
-    def execDialog(dialog):
-        """Wywołanie exec na QDialog, obsługa różnicy między Qt5 (exec_) a Qt6 (exec)."""
-        if hasattr(dialog, 'exec'):
-            return dialog.exec()
-        return dialog.exec_()
-
+    
     @staticmethod
     def getMessageBoxIcon(icon='Information'):
         """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""
@@ -220,7 +213,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushMessageBoxInfo(parent, title: str, message: str) -> None:
@@ -231,7 +224,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushMessageBoxWarning(parent, title: str, message: str) -> None:
@@ -242,7 +235,7 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
         
     @staticmethod
     def pushMessageBoxCritical(parent, title: str, message: str) -> None:
@@ -253,81 +246,89 @@ class MessageUtils:
         msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        QtCompat.execDialog(msg_box)
+        msg_box.exec()
 
     @staticmethod
     def pushSuccess(iface, message: str) -> None:
+        success = QtCompat.enum(Qgis, 'MessageLevel', 'Success')
         iface.messageBar().pushMessage(
             "Sukces:",
             message,
-            level=Qgis.Success,
+            level=success,
             duration=10
         )
 
 
     @staticmethod
     def pushInfo(iface, message: str) -> None:
+        info = QtCompat.getEnum(Qgis, 'MessageLevel', 'Info')
         iface.messageBar().pushMessage(
             "Informacja:",
             message,
-            level=Qgis.Info,
+            level=info,
             duration=10
         )
 
 
     @staticmethod
     def pushWarning(iface, message: str) -> None:
+        warning = QtCompat.getEnum(Qgis, 'MessageLevel', 'Warning')
         iface.messageBar().pushMessage(
             "Ostrzeżenie:",
             message,
-            level=Qgis.Warning,
+            level=warning,
             duration=10
         )
 
 
     @staticmethod
     def pushCritical(iface, message: str) -> None:
+        critical = QtCompat.getEnum(Qgis, 'MessageLevel', 'Critical')
         iface.messageBar().pushMessage(
             "Błąd:",
             message,
-            level=Qgis.Critical,
+            level=critical,
             duration=10
         )
 
 
     @staticmethod
     def logSuccess(message: str) -> None:
+        success = QtCompat.getEnum(Qgis, 'MessageLevel', 'Success')
         QgsMessageLog.logMessage(
             message,
             tag=PLUGIN_NAME,
-            level=Qgis.Success
+            level=success
         )
 
 
     @staticmethod
     def logInfo(message: str) -> None:
+        info = QtCompat.getEnum(Qgis, 'MessageLevel', 'Info')
         QgsMessageLog.logMessage(
             message,
             tag=PLUGIN_NAME,
-            level=Qgis.Info
+            level=info
         )
 
 
     @staticmethod
     def logWarning(message: str) -> None:
+        warning = QtCompat.getEnum(Qgis, 'MessageLevel', 'Warning')
         QgsMessageLog.logMessage(
             message,
             tag=PLUGIN_NAME,
-            level=Qgis.Warning
+            level=warning
         )
 
 
     @staticmethod
     def logCritical(message: str) -> None:
+        critical = QtCompat.getEnum(Qgis, 'MessageLevel', 'Critical')
         QgsMessageLog.logMessage(
             message,
             tag=PLUGIN_NAME,
-            level=Qgis.Critical
+            level=critical
         )
 
 
@@ -422,7 +423,8 @@ class NetworkUtils:
         reply_content = blocking_request.reply()
         
         # Fallback: każda nieudana próba Qt skutkuje próbą przez requests
-        if error_code != QgsBlockingNetworkRequest.NoError:
+        no_error = QtCompat.getEnum(QgsBlockingNetworkRequest, 'ErrorCode', 'NoError')
+        if error_code != no_error:
             return self._fetchContentWithRequests(url, params, timeout_ms)
 
         raw_data = reply_content.content()

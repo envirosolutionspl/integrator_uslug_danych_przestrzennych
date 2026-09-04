@@ -7,7 +7,7 @@ name=Integrator usług danych przestrzennych
 qgisMinimumVersion=3.28
 qgisMaximumVersion=4.99
 description=Wtyczka umożliwia prezentację danych z serwisów WMS, WMTS, WFS i WCS w postaci warstw w QGIS. Wtyczka wykorzystuje dane z Ewidencji Zbiorów i Usług oraz strony geoportal.gov.pl
-version=1.0.0
+version=1.1.0
 
 author=EnviroSolutions Sp. z o.o.
 email=gis@envirosolutions.pl
@@ -34,15 +34,17 @@ repository=https://github.com/envirosolutionspl/integrator_uslug_danych_przestrz
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
-  Wersja 1.0.0
-  * Obsługa QGIS 4.0
-  * Usprawnienie wyszukiwania usług WMS oraz WFS
-  * Podział usług na 4 kategorie WMS WMTS WFS WCS
-  * Od teraz wszystkie wyświetlane usługi są uprzednio filtrowane pod względem poprawności działania
-  * Dodanie okna dialogowego z postępem dodawania usług
-  * Poprawa błędów bezpieczeństwa
-  * Poprawa działania i estetyki okna wtyczki
-  * Zapewnienie kompatybilności zarówno z modułem Qt5 jak i Qt6
+  Wersja 1.1.0
+  * Dodanie możliwości pobierania wskazanych warstw serwowanych przez wybrane usługi OGC
+#  Wersja 1.0.0
+#  * Obsługa QGIS 4.0
+#  * Usprawnienie wyszukiwania usług WMS oraz WFS
+#  * Podział usług na 4 kategorie WMS WMTS WFS WCS
+#  * Od teraz wszystkie wyświetlane usługi są uprzednio filtrowane pod względem poprawności działania
+#  * Dodanie okna dialogowego z postępem dodawania usług
+#  * Poprawa błędów bezpieczeństwa
+#  * Poprawa działania i estetyki okna wtyczki
+#  * Zapewnienie kompatybilności zarówno z modułem Qt5 jak i Qt6
 #  Wersja 0.1.3
 #  * Dodanie informacji o qgisMaximumVersion
 #  Wersja 0.1.2

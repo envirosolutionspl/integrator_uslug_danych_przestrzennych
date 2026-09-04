@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 /***************************************************************************
  * Integrator Uslug Danych Przestrzennych                                  *
@@ -72,13 +72,28 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         h_header.setSectionResizeMode(1, resize_interactive)
         h_header.setSortIndicator(0, ascending)
 
+        resize_stretch = self.qt_compat.getEnum(
+            QtWidgets.QHeaderView,
+            'ResizeMode',
+            'Stretch',
+        )
+
+        align_center = self.qt_compat.getEnum(
+            Qt,
+            'AlignmentFlag',
+            'AlignCenter',
+        )
+
+        h_header = self.services_table.horizontalHeader()
+        h_header.setSectionResizeMode(0, resize_stretch)
+        h_header.setSectionResizeMode(1, resize_stretch)
+        h_header.setDefaultAlignment(align_center)
+
         # Ustawienia pionowe
         v_header = self.services_table.verticalHeader()
         v_header.setDefaultSectionSize(14)
         v_header.setDefaultAlignment(align_center)
 
-        self.services_table.setColumnWidth(0, 400)
-        self.services_table.setColumnWidth(1, 500)
         self.services_table.setSortingEnabled(True)
         self.services_table.setSelectionBehavior(self.qt_compat.getEnum(QTableView, 'SelectionBehavior', 'SelectRows'))
         self.services_table.setSelectionMode(self.qt_compat.getEnum(QTableView, 'SelectionMode', 'MultiSelection'))
@@ -155,25 +170,26 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setEnabledTable(False)
 
         # Sprawdzanie połaczenia internetowego
-        if ServiceAPI().checkInternetConnection():
+        try:
+            if ServiceAPI().checkInternetConnection():
 
-            # Pobranie danych z tabeli i dodanie usług do mapy
-            proxy_model = self.services_table.model()
-            selected_indexes = self.services_table.selectionModel().selectedRows()
-            selected_service_type = self.getSelectedServiceType()
-            self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
-
-        else:
-            MessageUtils.pushMessageBoxWarning(
-                self,
-                'Ostrzeżenie',
-                'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie.\nNie można dodać usług.',
-            )
-
-        # Odblokowanie elementów okna 
-        self.setEnabledRadiobuttons(True)
-        self.setEnabledTable(True)
-   
+                # Pobranie danych z tabeli i dodanie usług do mapy
+                proxy_model = self.services_table.model()
+                selected_indexes = self.services_table.selectionModel().selectedRows()
+                selected_service_type = self.getSelectedServiceType()
+                self.content_manager.addServiceFromSelection(proxy_model, selected_indexes, selected_service_type)
+                
+            else:
+                MessageUtils.pushMessageBoxWarning(
+                    self,
+                    'Ostrzeżenie',
+                    'Brak połączenia internetowego.\nWtyczka nie będzie funkcjonować poprawnie.\nNie można dodać usług.',
+                )
+        finally:
+            # Odblokowanie elementów okna 
+            self.setEnabledRadiobuttons(True)
+            self.setEnabledTable(True)
+            
     # =============================
     # Fukcje obsługujące elementy okna
 

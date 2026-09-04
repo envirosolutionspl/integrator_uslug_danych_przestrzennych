@@ -106,7 +106,6 @@ SERVICE_TYPES = (
     "wcs",
 )
 
-
 # =============================
 # Parametry do klasy AddService
 
