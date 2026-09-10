@@ -35,7 +35,12 @@ hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
   Wersja 1.1.0
-  * Dodanie możliwości pobierania wskazanych warstw serwowanych przez wybrane usługi OGC
+  * Dodanie okna wyboru warstw dodawanych do projektu z wybranej usługi
+  * Naprawa dodawania usług WFS
+  * Obsługa usług WMS i WMTS serwujących dane w formatach innych niż PNG
+  * Pobieranie stylu warstwy z GetCapabilities zamiast wartości domyślnej
+  * Pominięcie warstw grupowych WMS, których nie można wyświetlić
+  * Poprawa stabilności okna wtyczki po nieudanym dodaniu usługi
 #  Wersja 1.0.0
 #  * Obsługa QGIS 4.0
 #  * Usprawnienie wyszukiwania usług WMS oraz WFS
