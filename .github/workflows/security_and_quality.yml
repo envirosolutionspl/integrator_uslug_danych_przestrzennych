@@ -32,6 +32,10 @@ jobs:
           name: flake8-report
           path: ${{ runner.temp }}/flake8.txt
 
+      - name: Show report
+        if: always()
+        run: cat "$RUNNER_TEMP/flake8.txt" >> "$GITHUB_STEP_SUMMARY"
+
   bandit:
     runs-on: ubuntu-latest
     steps:
@@ -54,6 +58,10 @@ jobs:
           name: bandit-report
           path: ${{ runner.temp }}/bandit.txt
 
+      - name: Show report
+        if: always()
+        run: cat "$RUNNER_TEMP/bandit.txt" >> "$GITHUB_STEP_SUMMARY"
+
   detect-secrets:
     runs-on: ubuntu-latest
     steps:
@@ -75,3 +83,7 @@ jobs:
         with:
           name: secrets-report
           path: ${{ runner.temp }}/secrets.txt
+
+      - name: Show report
+        if: always()
+        run: cat "$RUNNER_TEMP/secrets.txt" >> "$GITHUB_STEP_SUMMARY"
