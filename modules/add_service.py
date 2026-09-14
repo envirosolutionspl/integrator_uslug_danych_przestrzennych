@@ -33,9 +33,6 @@ from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
 
 class legacyWebCoverageService:
     """Klasa dla QGIS w wersji 3.28 i 3.34, gdzie występują problemy z SSL"""
-    def __init__(self):
-        self.service_api = ServiceAPI()
-        self.contents = []
 
     def __init__(self, url: str):
         self.service_api = ServiceAPI()
