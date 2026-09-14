@@ -37,6 +37,7 @@ import os.path
 from . import PLUGIN_NAME as plugin_name
 from . import PLUGIN_VERSION as plugin_version
 
+
 class IntegratorUslugPrzestrzennych:
     def __init__(self, iface):
         """Constructor.
@@ -52,7 +53,7 @@ class IntegratorUslugPrzestrzennych:
         self.selected_industry = None
         self.feed = None
         self.setupFeed()
-        
+
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(self.plugin_dir, 'i18n', 'IntegratorUslugPrzestrzennych_{}.qm'.format(locale))
 
@@ -147,4 +148,3 @@ class IntegratorUslugPrzestrzennych:
     def run(self):
         self.dlg.show()
         self.dlg.exec()
-

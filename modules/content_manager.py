@@ -25,6 +25,7 @@ from ..integrator_uslug_danych_przestrzennych_dialog_which_layers import ChooseL
 from ..utils import QtCompat, MessageUtils
 from ..constants import SERVICE_TYPES
 
+
 class ContentManager(QObject):
 
     def __init__(self, dialog_parent):
@@ -35,23 +36,28 @@ class ContentManager(QObject):
         # Sekcja API
         self.country_urls_fetcher = CountryUrlsFetcher()
         self.country_services_cache: List[Dict[str, str]] = []
-    
+
     def getCountryServicesCache(self):
         """Zwraca listę z usługami na poziomie krajowym"""
         return self.country_services_cache
-    
+
     def getCountryUrlsByServiceType(self, service_type: str) -> List[Dict[str, str]]:
         """Zwraca listę z usługami na poziomie krajowym, według wybranego typu usługi"""
         normalized_type = service_type.strip().upper()
         return [row for row in self.country_services_cache if row.get('service_type') == normalized_type]
 
     def servicesCacheInit(self) -> bool:
-        """Pobieranie danych krajowych z API. Pobiera tylko gdy cache jest pusty. Zwraca False, gdy cache jest dalej pusty."""
+        (
+            'Pobieranie danych krajowych z API. Pobiera tylko gdy cache jest pusty. Zwraca False, '
+            'gdy cache jest dalej pusty.'
+        )
         # Próba pobrania danych z serwera API
         if len(self.country_services_cache) == 0:
             self.country_services_cache = []
             for service_type in SERVICE_TYPES:
-                self.country_services_cache.extend(self.country_urls_fetcher.fetchCountryUrls('PL', service_type.upper()))
+                self.country_services_cache.extend(
+                    self.country_urls_fetcher.fetchCountryUrls('PL', service_type.upper())
+                )
             if len(self.country_services_cache) > 0:
                 MessageUtils.logInfo(
                     f"Pobrano dane o usługach z zewnętrznego API. "
@@ -60,7 +66,7 @@ class ContentManager(QObject):
                 return True
             return False
         return True
-    
+
     def addServiceFromSelection(self, table_proxy_model, selected_table_indexes, selected_service_type: str):
         """Dodaje usługi do mapy według podanych: tabeli i zaznaczenia"""
         # Pobranie wyboru usług z tabeli
@@ -77,7 +83,7 @@ class ContentManager(QObject):
                 'Nie wybrano żadnej usługi z listy.'
             )
             return
-        
+
         progress = self._createProgressWindow(len(selected_table_indexes))
 
         if not self._createSkeletInMemory(selected_services, selected_service_type, progress):
@@ -97,10 +103,17 @@ class ContentManager(QObject):
         successfully_add = self.ogc_service.addServices(selected_layers)
 
         if successfully_add:
-            MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja',
-                '\n'.join(f'Dodano usługę {value} - ilość warstw: {len(selected_layers.get(key, []))}' if len(selected_layers.get(key, [])) else f'Nie dodano usługi {value}'
-                for key, value in selected_services.items()
-            ))
+            MessageUtils.pushMessageBoxInfo(
+                self.dialog_parent,
+                'Informacja',
+                '\n'.join(
+                    f'Dodano usługę {value} - ilość warstw: '
+                    f'{len(selected_layers.get(key, []))}'
+                    if len(selected_layers.get(key, []))
+                    else f'Nie dodano usługi {value}'
+                    for key, value in selected_services.items()
+                )
+            )
         else:
             MessageUtils.pushMessageBoxInfo(self.dialog_parent, 'Informacja', 'Nie dodano żadnych usług')
 
@@ -108,7 +121,9 @@ class ContentManager(QObject):
 
     def _createProgressWindow(self, selected_services_count):
         # Utworzenie okna progresu
-        progress = QProgressDialog("Pobieranie i dodawanie usług. Proces może potrwać kilka minut..", "Anuluj", 0, selected_services_count+1, self.dialog_parent)
+        progress = QProgressDialog(
+            "Pobieranie i dodawanie usług. Proces może potrwać kilka minut..",
+            "Anuluj", 0, selected_services_count+1, self.dialog_parent)
         self._appendDefaultProgressDialogSettings(progress)
         progress.show()
         return progress
@@ -167,9 +182,9 @@ class ContentManager(QObject):
 
         def _cancelProgressDialog():
             """Obsługuje przycik Anuluj"""
-            self.ogc_service.cancelTasks() # wysyła sygnał do klasy dodającej 
+            self.ogc_service.cancelTasks()  # wysyła sygnał do klasy dodającej
             progress_dialog.setLabelText("Przerywanie operacji. Proszę czekać...")
-            progress_dialog.show() # zapobiega chowaniu się okna
+            progress_dialog.show()  # zapobiega chowaniu się okna
 
         progress_dialog.canceled.connect(_cancelProgressDialog)
 

@@ -16,7 +16,7 @@
 import requests
 from dataclasses import dataclass
 import lxml
-from xml.etree import ElementTree as ET # nosec B405
+from xml.etree import ElementTree as ET  # nosec B405
 
 from owslib.util import ServiceException
 from owslib.wcs import WebCoverageService
@@ -30,6 +30,7 @@ from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS, SERVICES_NAMESPACES
 from ..utils import ServiceAPI, MessageUtils
 
 from qgis.PyQt.QtCore import QEventLoop, QObject, QTimer
+
 
 class legacyWebCoverageService:
     """Klasa dla QGIS w wersji 3.28 i 3.34, gdzie występują problemy z SSL"""
@@ -46,7 +47,7 @@ class legacyWebCoverageService:
             no_network=True,         # Disable network access
             recover=False            # Avoid silent error recovery
         )
-        
+
         try:
             is_ok, capabilities_xml = self.service_api.getRequest(url)
             if not is_ok:
@@ -54,9 +55,9 @@ class legacyWebCoverageService:
             capabilities_root = lxml.etree.fromstring(capabilities_xml.encode('utf-8'), parser=parser)
         except ET.ParseError:
             return False
-        except Exception as e:
+        except Exception:
             return False
-        
+
         ns = SERVICES_NAMESPACES.get("WCS")
         for node in capabilities_root.findall('.//wcs:CoverageSummary', ns):
             cid = node.find('wcs:CoverageId', ns)
@@ -68,7 +69,8 @@ class legacyWebCoverageService:
 
     def getContents(self):
         return self.contents
-        
+
+
 @dataclass
 class _LayerDefinition:
     uri: str
@@ -78,6 +80,7 @@ class _LayerDefinition:
     layer_id: str
     title: str
 
+
 class AddOGCService(QObject):
 
     def __init__(self):
@@ -86,14 +89,13 @@ class AddOGCService(QObject):
         self.loop = QEventLoop()
         self.cancel_tasks = False
 
-
     def _addMapLayer(self, layer) -> bool:
         """Dodaje poprawna warstwe do projektu QGIS."""
         if not layer.isValid():
             return False
         QgsProject.instance().addMapLayer(layer)
         return True
-    
+
     def cancelTasks(self):
         """Wystawia flagę wymuszającą zatrzymanie dodwania usług"""
         self.cancel_tasks = True
@@ -128,7 +130,7 @@ class AddOGCService(QObject):
                 descriptions_dict['title'] = layer_data['title']
                 descriptions.append(descriptions_dict)
         return descriptions
-    
+
     def downloadServices(self, name: str, url: str, service_type: str) -> bool:
         """Pobiera GetCapabilities dla wybranego endpointu i dodaje znalezione warstwy do QGIS."""
         self.cancel_tasks = False
@@ -206,7 +208,7 @@ class AddOGCService(QObject):
                     }
                 )
         return ok
-    
+
     def _processWmsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WMS z nazw i tytulow warstw w GetCapabilities."""
         service = None
@@ -221,7 +223,7 @@ class AddOGCService(QObject):
             except ServiceException as error:
                 MessageUtils.logWarning(
                     f'WMS {url}, wersja {version}: błąd usługi OGC: {error}.'
-                ) 
+                )
             except Exception as error:
                 MessageUtils.logWarning(
                     f'Wms {url}, wersja {version}: błąd {error}.'
@@ -229,7 +231,7 @@ class AddOGCService(QObject):
 
         if service is None:
             return False
-        
+
         definitions = []
         for layer_name, layer_info in service.contents.items():
             if layer_info.children:
@@ -256,19 +258,26 @@ class AddOGCService(QObject):
             service_type='WMS',
             definitions=definitions,
         )
+
     def _processWmtsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy kafelkowe WMTS z identyfikatora warstwy i TileMatrixSet."""
         service = WebMapTileService(url, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
         encoded_url = url.replace('&', '%26')
         definitions = []
         for layer_name, layer_info in service.contents.items():
-            tile_matrix_set_link = next(iter(layer_info.tilematrixsetlinks), None) if layer_info.tilematrixsetlinks else None
+            tile_matrix_set_link = (
+                next(iter(layer_info.tilematrixsetlinks), None)
+                if layer_info.tilematrixsetlinks else None
+            )
             tile_matrix_set = getattr(tile_matrix_set_link, 'tilematrixset', tile_matrix_set_link)
             if not tile_matrix_set:
                 continue
             format_name = layer_info.formats[0]
             style_name = list(layer_info.styles.keys())[0]
-            uri = f'format={format_name}&layers={layer_name}&styles={style_name}&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
+            uri = (
+                f'format={format_name}&layers={layer_name}&styles={style_name}'
+                f'&tileMatrixSet={tile_matrix_set}&url={encoded_url}'
+            )
             title = getattr(layer_info, 'title', None) or layer_name
             definitions.append(
                 _LayerDefinition(
@@ -286,7 +295,7 @@ class AddOGCService(QObject):
             service_type='WMTS',
             definitions=definitions,
         )
-    
+
     def _processWfsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy wektorowe WFS z elementow FeatureType."""
         service = WebFeatureService(url, version='2.0.0', timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
@@ -313,7 +322,7 @@ class AddOGCService(QObject):
             service_type='WFS',
             definitions=definitions,
         )
-    
+
     def _processWcsLayer(self, name: str, url: str) -> bool:
         """Tworzy warstwy rastrowe WCS z elementow CoverageSummary."""
         source_not_parsed = True
@@ -324,7 +333,7 @@ class AddOGCService(QObject):
                 source_not_parsed = False
                 break
             except Exception:
-                source_not_parsed = True         
+                source_not_parsed = True
 
         if source_not_parsed:
             service = legacyWebCoverageService(url)

@@ -20,9 +20,7 @@ import unicodedata
 from qgis.core import (
     QgsNewsFeedParser,
     QgsSettings,
-    QgsNewsFeedModel,    
-    QgsMessageLog, 
-    QgsApplication,
+    QgsMessageLog,
 
 )
 from qgis.PyQt.QtCore import QUrl
@@ -30,6 +28,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QComboBox, QPushButton
 
 from .constants import INDUSTRIES, FEED_URL
+
 
 class QgisFeed:
     def __init__(self, selected_industry, plugin_name):
@@ -40,7 +39,8 @@ class QgisFeed:
         self.plugin_name_slug = self.create_slug(plugin_name)
 
         self.es_url = (
-            f"{FEED_URL}?industry={self.industry_decoded[0]}&plugin={self.plugin_name_slug}" if self.industry_decoded else FEED_URL
+            f"{FEED_URL}?industry={self.industry_decoded[0]}&plugin={self.plugin_name_slug}"
+            if self.industry_decoded else FEED_URL
         )
         self.parser = QgsNewsFeedParser(
             feedUrl=QUrl(self.es_url)
@@ -88,7 +88,8 @@ class QgisFeed:
 
             if 'cache' in key:
                 check_fetch = self.checkIsFetchTime()
-                if check_fetch is True: self.s.remove(key)
+                if check_fetch is True:
+                    self.s.remove(key)
 
         self.s.sync()
         self.s.beginGroup(f"app/news-feed/items/{self.industry_url_short}")
@@ -124,7 +125,8 @@ class QgisFeed:
         """
 
         check_fetch = self.checkIsFetchTime()
-        if check_fetch is True: self.removeDismissed()
+        if check_fetch is True:
+            self.removeDismissed()
         self.parser.fetch()
 
 
