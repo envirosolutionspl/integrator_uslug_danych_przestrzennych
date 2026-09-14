@@ -51,8 +51,8 @@ class WebServicePluginDialogTest(unittest.TestCase):
         rejected = QtCompat.getEnum(QDialog, 'DialogCode', 'Rejected')
         self.assertEqual(result, rejected)
 
+
 if __name__ == "__main__":
     suite = unittest.makeSuite(WebServicePluginDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
-

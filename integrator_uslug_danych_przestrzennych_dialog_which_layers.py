@@ -15,7 +15,6 @@
 """
 import os
 import sys
-from typing import Dict, List
 
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
@@ -29,13 +28,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'integrator_uslug_danych_przestrzennych_dialog_which_layers.ui'))
 
+
 class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def __init__(self,
                  service_name: str,
                  available_layers: list[dict],
                  parent=None,
-    ):
+                 ):
         super().__init__(parent)
         self.setupUi(self)
         self.qt_compat = QtCompat()
@@ -74,7 +74,7 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         selected_ids = [index.data(self.user_role) for index in selected_rows]
 
         return selected_ids
-    
+
     def applySearchFilter(self, text) -> None:
         case_insensitive = self.qt_compat.getEnum(Qt, 'CaseSensitivity', 'CaseInsensitive')
 
@@ -93,7 +93,6 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
         self.proxy_model.setSourceModel(self.model)
         self.proxy_model.setFilterKeyColumn(0)
         self.layers_table.setModel(self.proxy_model)
-
 
         h_header = self.layers_table.horizontalHeader()
         resize_stretch = self.qt_compat.getEnum(

@@ -51,7 +51,7 @@ class TestInit(unittest.TestCase):
         parser.optionxform = str
         parser.read(file_path)
         message = 'Cannot find a section named "general" in %s' % file_path
-        assert parser.has_section('general'), message #nosec B101
+        assert parser.has_section('general'), message  # nosec B101
         metadata.extend(parser.items('general'))
 
         for expectation in required_metadata:
@@ -59,6 +59,7 @@ class TestInit(unittest.TestCase):
                 expectation, file_path))
 
             self.assertIn(expectation, dict(metadata), message)
+
 
 if __name__ == '__main__':
     unittest.main()
