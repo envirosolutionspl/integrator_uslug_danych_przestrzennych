@@ -25,7 +25,7 @@ jobs:
       - name: Run flake8
         run: flake8 --config=.flake8 . > "$RUNNER_TEMP/flake8.txt"
       
-      - name: Create flake8's raport
+      - name: Create flake8's report
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -51,7 +51,7 @@ jobs:
       - name: Run Bandit
         run: bandit -r . > "$RUNNER_TEMP/bandit.txt"
       
-      - name: Create Bandit's raport
+      - name: Create Bandit's report
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -77,7 +77,7 @@ jobs:
       - name: Detect secrets
         run: detect-secrets scan . > "$RUNNER_TEMP/secrets.txt"
       
-      - name: Create secrets raport
+      - name: Create secrets report
         uses: actions/upload-artifact@v4
         if: always()
         with:
