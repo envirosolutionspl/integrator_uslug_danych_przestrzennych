@@ -24,9 +24,9 @@ import urllib3
 
 from qgis.core import (
     Qgis,
-    QgsMessageLog, 
-    QgsNetworkAccessManager, 
-    QgsBlockingNetworkRequest, 
+    QgsMessageLog,
+    QgsNetworkAccessManager,
+    QgsBlockingNetworkRequest,
     QgsTask,
     QgsApplication,
 )
@@ -67,17 +67,18 @@ from .constants import (
     DEFAULT_REDIRECT_POLICY,
     MAX_ATTEMPTS,
     MSG_NO_CONNECTION,
-    MSG_FILE_WRITE_ERROR, 
-    MSG_DOWNLOAD_CANCELED, 
-    MSG_EMPTY_CONTENT, 
-    MSG_JSON_DECODE_ERROR, 
-    MSG_HTTP_ERROR, 
-    MSG_TIMEOUT, 
+    MSG_FILE_WRITE_ERROR,
+    MSG_DOWNLOAD_CANCELED,
+    MSG_EMPTY_CONTENT,
+    MSG_JSON_DECODE_ERROR,
+    MSG_HTTP_ERROR,
+    MSG_TIMEOUT,
     MSG_NETWORK_ERROR,
     EZIUDP_BASE_URL,
     USER_AGENT_HEADER,
     CONNECTION_HEADER,
 )
+
 
 class QtCompat:
     @staticmethod
@@ -87,7 +88,7 @@ class QtCompat:
         if scoped is not None:
             return getattr(scoped, value)
         return getattr(parent, value)
-    
+
     @staticmethod
     def getMessageBoxIcon(icon='Information'):
         """Zwraca ikonę QMessageBox (Qt5/Qt6 compatible)."""
@@ -104,7 +105,7 @@ class SingleTaskManager:
         """
         :param main_func: Funkcja zadania, która zostanie wyzwolona w poleceniu run()
         :type nazwa_pliku: function
-        
+
         :param on_finish_func: Funkcja, która zostanie wyzwolona po zakończeniu głównego zadania
         :type nazwa_pliku: function
 
@@ -126,10 +127,10 @@ class SingleTaskManager:
         if self.on_finish_func is not None:
             self.on_finish_func()
 
-    def connectMainFunction(self, main_func : Callable) -> bool:
+    def connectMainFunction(self, main_func: Callable) -> bool:
         """
         Podpina funkcję, która będzie uruchamiana w zadaniu.
-        
+
         :param main_func: Funkcja zadania, która zostanie wyzwolona w poleceniu run()
         :type nazwa_pliku: function
 
@@ -141,13 +142,13 @@ class SingleTaskManager:
         self.task_func = main_func
         return True
 
-    def connectOnFinishFunction(self, on_finish_func : Callable) -> bool:
+    def connectOnFinishFunction(self, on_finish_func: Callable) -> bool:
         """
         Podpina funkcję, która będzie uruchamiana w zadaniu.
-        
+
         :param on_finish_func: Funkcja, która zostanie wyzwolona po zakończeniu głównego zadania
         :type nazwa_pliku: function
-        
+
         :returns: False, gdy funkcja jest w użyciu. True jeśli pomyślnie podmieniono.
         :rtype: bool
         """
@@ -157,7 +158,7 @@ class SingleTaskManager:
         self.on_finish_func = on_finish_func
         return True
 
-    def run(self, main_func : Callable = None, on_finish_func : Callable = None) -> bool:
+    def run(self, main_func: Callable = None, on_finish_func: Callable = None) -> bool:
         """
         Rozpoczyna zadanie na podstawie ustawionych funkcji wykonawczych.
         Jeśli nie podano deklaracjifunkcji w parametrze,
@@ -165,7 +166,7 @@ class SingleTaskManager:
 
         :param main_func: Funkcja zadania, która zostanie wyzwolona w poleceniu run()
         :type nazwa_pliku: function
-        
+
         :param on_finish_func: Funkcja, która zostanie wyzwolona po zakończeniu głównego zadania
         :type nazwa_pliku: function
 
@@ -174,7 +175,7 @@ class SingleTaskManager:
         """
         if self.isRunning():
             return False
-        
+
         # Aktualizujemy podpięte funckje
         self.task_func = main_func if main_func is not None else self.task_func
         self.on_finish_func = on_finish_func if on_finish_func is not None else self.on_finish_func
@@ -189,7 +190,6 @@ class SingleTaskManager:
         )
         QgsApplication.taskManager().addTask(self.task_instance)
         return True
-    
 
     def isRunning(self):
         """
@@ -204,16 +204,6 @@ class SingleTaskManager:
 
 
 class MessageUtils:
-    @staticmethod
-    def pushMessageBoxCritical(parent, title: str, message: str) -> None:
-        msg_box = QMessageBox(parent)
-        msg_box.setIcon(QtCompat.getMessageBoxIcon('Critical'))
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        msg_box.setStandardButtons(QtCompat.getEnum(QMessageBox, 'StandardButton', 'Ok'))
-        if hasattr(parent, 'plugin_icon'):
-            msg_box.setWindowIcon(QIcon(parent.plugin_icon))
-        msg_box.exec()
 
     @staticmethod
     def pushMessageBoxInfo(parent, title: str, message: str) -> None:
@@ -236,7 +226,7 @@ class MessageUtils:
         if hasattr(parent, 'plugin_icon'):
             msg_box.setWindowIcon(QIcon(parent.plugin_icon))
         msg_box.exec()
-        
+
     @staticmethod
     def pushMessageBoxCritical(parent, title: str, message: str) -> None:
         msg_box = QMessageBox(parent)
@@ -258,7 +248,6 @@ class MessageUtils:
             duration=10
         )
 
-
     @staticmethod
     def pushInfo(iface, message: str) -> None:
         info = QtCompat.getEnum(Qgis, 'MessageLevel', 'Info')
@@ -268,7 +257,6 @@ class MessageUtils:
             level=info,
             duration=10
         )
-
 
     @staticmethod
     def pushWarning(iface, message: str) -> None:
@@ -280,7 +268,6 @@ class MessageUtils:
             duration=10
         )
 
-
     @staticmethod
     def pushCritical(iface, message: str) -> None:
         critical = QtCompat.getEnum(Qgis, 'MessageLevel', 'Critical')
@@ -291,7 +278,6 @@ class MessageUtils:
             duration=10
         )
 
-
     @staticmethod
     def logSuccess(message: str) -> None:
         success = QtCompat.getEnum(Qgis, 'MessageLevel', 'Success')
@@ -300,7 +286,6 @@ class MessageUtils:
             tag=PLUGIN_NAME,
             level=success
         )
-
 
     @staticmethod
     def logInfo(message: str) -> None:
@@ -311,7 +296,6 @@ class MessageUtils:
             level=info
         )
 
-
     @staticmethod
     def logWarning(message: str) -> None:
         warning = QtCompat.getEnum(Qgis, 'MessageLevel', 'Warning')
@@ -320,7 +304,6 @@ class MessageUtils:
             tag=PLUGIN_NAME,
             level=warning
         )
-
 
     @staticmethod
     def logCritical(message: str) -> None:
@@ -342,34 +325,35 @@ class LegacySslAdapter(requests.adapters.HTTPAdapter):
         kwargs['ssl_context'] = ctx
         return super().init_poolmanager(*args, **kwargs)
 
+
 class NetworkUtils:
 
     def __init__(self):
         self.manager = QNetworkAccessManager()
         self.manager.setProxy(QgsNetworkAccessManager.instance().proxy())
-        
+
         # Wyciszenie ostrzeżeń o braku weryfikacji SSL (InsecureRequestWarning)
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def _handleReplyError(self, reply, url_str):
         """Centralna obsługa błędów sieciowych i HTTP"""
-        
+
         error_code = reply.error()
         error_str = reply.errorString()
-        
+
         status_attr = self._getAttributeEnum(NETWORK_ATTRS['HTTP_STATUS'])
         reason_attr = self._getAttributeEnum(NETWORK_ATTRS['HTTP_REASON'])
         timeout_err = self._getErrorEnum(ERR_TIMEOUT)
 
         http_status = reply.attribute(status_attr)
         http_reason = reply.attribute(reason_attr)
-        
+
         if http_status and http_status >= HTTP_ERROR_THRESHOLD:
             return False, MSG_HTTP_ERROR.format(http_status, http_reason)
-        
+
         if error_code == timeout_err:
             return False, MSG_TIMEOUT.format(url_str)
-            
+
         return False, MSG_NETWORK_ERROR.format(error_str, url_str)
 
     def _hasErrorOccurred(self, reply):
@@ -402,11 +386,11 @@ class NetworkUtils:
             redirect_policy_class = getattr(QNetworkRequest, REDIRECT_POLICY_NAME, QNetworkRequest)
             redirect_policy = getattr(redirect_policy_class, REDIRECT_POLICY_NO_LESS_SAFE, DEFAULT_REDIRECT_POLICY)
             request.setAttribute(redirect_attr, redirect_policy)
-        
+
         timeout_attr = self._getAttributeEnum(NETWORK_ATTRS['TIMEOUT'])
         if timeout_attr is not None:
             request.setAttribute(timeout_attr, timeout_ms)
-            
+
     def fetchContent(self, url, params=None, timeout_ms=TIMEOUT_MS):
         q_url = QUrl(url)
         if params:
@@ -414,14 +398,14 @@ class NetworkUtils:
             for key, value in params.items():
                 query.addQueryItem(str(key), str(value))
             q_url.setQuery(query)
-            
+
         request = QNetworkRequest(q_url)
         self._setAttributes(request, timeout_ms)
-        
+
         blocking_request = QgsBlockingNetworkRequest()
         error_code = blocking_request.get(request)
         reply_content = blocking_request.reply()
-        
+
         # Fallback: każda nieudana próba Qt skutkuje próbą przez requests
         no_error = QtCompat.getEnum(QgsBlockingNetworkRequest, 'ErrorCode', 'NoError')
         if error_code != no_error:
@@ -430,7 +414,7 @@ class NetworkUtils:
         raw_data = reply_content.content()
         if len(raw_data) == 0:
             return False, MSG_EMPTY_CONTENT.format(url)
-            
+
         try:
             data = bytes(raw_data).decode(ENCODING_SYSTEM)
             return True, data
@@ -445,7 +429,7 @@ class NetworkUtils:
             return True, json.loads(result)
         except json.JSONDecodeError as e:
             return False, MSG_JSON_DECODE_ERROR.format(str(e))
-  
+
     def downloadFile(self, url, dest_path, obj=None, timeout_ms=TIMEOUT_MS):
         request = QNetworkRequest(QUrl(url))
         self._setAttributes(request, timeout_ms)
@@ -467,13 +451,13 @@ class NetworkUtils:
                     f.write(reply.readAll().data())
         except IOError as e:
             return False, MSG_FILE_WRITE_ERROR.format(str(e))
-            
+
         status, message = self._finilizeDownload(reply, url)
-        
+
         # Fallback: każda nieudana próba Qt skutkuje próbą przez requests
         if not status:
             return self._downloadFileWithRequests(url, dest_path, obj, timeout_ms)
-            
+
         return status, message
 
     def _handleReadyRead(self, reply, file):
@@ -484,18 +468,18 @@ class NetworkUtils:
         cancel_timer = QTimer()
         cancel_timer.timeout.connect(lambda: reply.abort() if (obj and obj.isCanceled()) else None)
         cancel_timer.start(CANCEL_CHECK_MS)
-        
+
         event_loop.exec()
 
         cancel_timer.stop()
-    
+
     def _finilizeDownload(self, reply, url):
         if self._hasErrorOccurred(reply):
             canceled_error = self._getErrorEnum(ERR_CANCELED)
             if reply.error() == canceled_error:
                 reply.deleteLater()
                 return False, MSG_DOWNLOAD_CANCELED
-            
+
             error_res = self._handleReplyError(reply, url)
             reply.deleteLater()
             return error_res
@@ -518,11 +502,13 @@ class NetworkUtils:
         # Przekazanie proxy z QGIS
         proxy = self.manager.proxy()
         if proxy.hostName():
-            proxy_url = f"http://{proxy.user()}:{proxy.password()}@{proxy.hostName()}:{proxy.port()}" if proxy.user() else f"http://{proxy.hostName()}:{proxy.port()}"
+            proxy_url = (
+                f"http://{proxy.user()}:{proxy.password()}@{proxy.hostName()}:{proxy.port()}"
+                if proxy.user() else f"http://{proxy.hostName()}:{proxy.port()}"
+            )
             session.proxies = {"http": proxy_url, "https": proxy_url}
-            
-        return session
 
+        return session
 
     def _downloadFileWithRequests(self, url, dest_path, obj=None, timeout_ms=TIMEOUT_MS):
         try:
@@ -542,7 +528,7 @@ class NetworkUtils:
             return True, True
 
         except Exception as e:
-            return self._handleRequestsError(e)   
+            return self._handleRequestsError(e)
 
     def _fetchContentWithRequests(self, url, params=None, timeout_ms=TIMEOUT_MS):
         try:
@@ -567,7 +553,7 @@ class NetworkUtils:
         )
 
         return response
-    
+
     def _handleRequestsError(self, e):
 
         if isinstance(e, requests.exceptions.Timeout):
@@ -586,7 +572,8 @@ class NetworkUtils:
             return False, f"Błąd systemu plików: {str(e)}"
 
         return False, f"Nieoczekiwany błąd requests: {str(e)}"
-   
+
+
 class ServiceAPI:
     def __init__(self, parent=None):
         if parent:
@@ -594,7 +581,6 @@ class ServiceAPI:
         else:
             self.iface = None
         self.network_utils = NetworkUtils()
-
 
     def getRequest(self, url, params=None):
         attempt = 0
@@ -605,7 +591,6 @@ class ServiceAPI:
                 return True, result
             time.sleep(2)
         return False, "Nieudana próba połączenia"
-    
 
     def checkInternetConnection(self, url=EZIUDP_BASE_URL):
         # próba połączenia z serwerem np. gugik
@@ -613,6 +598,7 @@ class ServiceAPI:
         if not is_success and self.iface:
             MessageUtils.pushWarning(self.iface, MSG_NO_CONNECTION)
         return is_success
+
 
 class VersionUtils:
 

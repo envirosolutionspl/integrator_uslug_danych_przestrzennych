@@ -21,13 +21,14 @@ from ..utils import NetworkUtils
 
 from ..constants import SERVICES_REQUEST_TIMEOUT_SECONDS
 
+
 class CountryUrlsFetcher:
     def __init__(self, manager=None):
         pass
 
     def fetchCountryUrls(self, teryt: str, service_type: str) -> List[Dict[str, str]]:
         url = "/".join([REST_API_BASE_URL.rstrip("/"), REST_ENDPOINT_COUNTRY.lstrip("/"), teryt, service_type])
-        is_success, result = NetworkUtils().fetchContent(url, timeout_ms= SERVICES_REQUEST_TIMEOUT_SECONDS * 1000)
+        is_success, result = NetworkUtils().fetchContent(url, timeout_ms=SERVICES_REQUEST_TIMEOUT_SECONDS * 1000)
         if not result or not is_success:
             return []
         try:
@@ -62,6 +63,8 @@ class CountryUrlsFetcher:
             )
         return rows
 
-    def getCountryUrlsByServiceType(self, country_rows: List[Dict[str, str]], service_type: str) -> List[Dict[str, str]]:
+    def getCountryUrlsByServiceType(
+            self, country_rows: List[Dict[str, str]], service_type: str
+    ) -> List[Dict[str, str]]:
         normalized_type = service_type.strip().upper()
         return [row for row in country_rows if row.get('service_type') == normalized_type]
