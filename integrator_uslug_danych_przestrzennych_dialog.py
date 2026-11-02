@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import QTableView
 from qgis.PyQt.QtCore import QSortFilterProxyModel, Qt
 from qgis.PyQt.QtGui import QShowEvent, QStandardItem, QStandardItemModel
 from .modules.content_manager import ContentManager
-from .constants import RADIOBUTTONS_SERVICES, REST_API_CONNECTION_CHECK_URL
+from .constants import RADIOBUTTONS_SERVICES, TABLE_CONNECTIONS_CHECK, ADD_SERVICE_CONNECTIONS_CHECK, MSG_SERVICES_UNAVAILABLE
 from .utils import QtCompat, SingleTaskManager, MessageUtils, ServiceAPI
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -136,15 +136,13 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Ponowna próba pobrania danych z API, jeśli poprzednia się nie powiodła
         if len(self.content_manager.getCountryServicesCache()) == 0:
-            if not ServiceAPI().checkInternetConnection(REST_API_CONNECTION_CHECK_URL):
-                self.pushMessageOverTable(" Brak dostęu do usług...", "Błąd połączenia internetowego")
+            if not self.content_manager.servicesCacheInit():
+                error_message = ServiceAPI().checkServicesConnection(TABLE_CONNECTIONS_CHECK)
+                if error_message is None:
+                    error_message = MSG_SERVICES_UNAVAILABLE
+                self.pushMessageOverTable("Brak dostępu do usług.", error_message)
                 self.setEnabledRadiobuttons(True)
                 return
-            else:
-                if not self.content_manager.servicesCacheInit():
-                    self.setEnabledRadiobuttons(True)
-                    return
-
         if not self.table_setup_task.run():  # SingleTaskManager(self.fetchServices, self.finishTableSetup)
             self.pushMessageOverTable(" Aktualizacja usług...", "Nieoczekiwany błąd.")
 
@@ -169,11 +167,11 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         # Blokowanie elementów okna
         self.setEnabledRadiobuttons(False)
         self.setEnabledTable(False)
-
+    
         # Sprawdzanie połaczenia internetowego
         try:
-            if ServiceAPI().checkInternetConnection():
-
+            error_message = ServiceAPI().checkServicesConnection(ADD_SERVICE_CONNECTIONS_CHECK)
+            if error_message is None:
                 # Pobranie danych z tabeli i dodanie usług do mapy
                 proxy_model = self.services_table.model()
                 selected_indexes = self.services_table.selectionModel().selectedRows()
@@ -184,9 +182,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
                 MessageUtils.pushMessageBoxWarning(
                     self,
                     'Ostrzeżenie',
-                    'Brak połączenia internetowego.\n'
-                    'Wtyczka nie będzie funkcjonować poprawnie.'
-                    '\nNie można dodać usług.',
+                    f'{error_message}\nNie można dodać usług.',
                 )
         finally:
             # Odblokowanie elementów okna
@@ -260,11 +256,13 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDialog, FORM_CLASS):
         super().showEvent(event)
         if not self.is_window_shown:
             if not self.content_manager.servicesCacheInit():
+                error_message = ServiceAPI().checkServicesConnection(TABLE_CONNECTIONS_CHECK)
+                if error_message is None:
+                    error_message = MSG_SERVICES_UNAVAILABLE
                 MessageUtils.pushMessageBoxWarning(
                     self,
                     'Ostrzeżenie',
-                    'Brak połączenia internetowego.\n'
-                    'Wtyczka nie będzie funkcjonować poprawnie\nNie można pobrać usług.',
+                    f'{error_message}\nNie można pobrać usług.',
                 )
             self.is_window_shown = True
         self.setupTable()
