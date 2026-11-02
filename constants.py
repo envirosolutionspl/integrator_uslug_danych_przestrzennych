@@ -93,9 +93,19 @@ MSG_EMPTY_CONTENT = "Serwer zwrócił pustą zawartość dla: {}"
 MSG_TIMEOUT = "Przekroczono czas oczekiwania dla: {}"
 MSG_FILE_WRITE_ERROR = "Błąd zapisu do pliku: {}"
 MSG_JSON_DECODE_ERROR = "Błąd JSON: {}"
-MSG_NO_CONNECTION = "Brak połączenia z internetem."
 
+MSG_NO_CONNECTION = "Brak połączenia z internetem."
+MSG_SERVICES_UNAVAILABLE = "Usługi EnviroSolutions są chwilowo niedostępne. Przepraszamy za utrudnienia."
+MSG_GUGIK_SERVICES_UNAVAILABLE = "Usługi GUGiK są chwilowo niedostępne. Przepraszamy za utrudnienia."
 EZIUDP_BASE_URL = "https://integracja.gugik.gov.pl/eziudp/index.php"
+INTERNET_CHECK_URL = "https://www.google.com"
+
+TABLE_CONNECTIONS_CHECK = {MSG_NO_CONNECTION: INTERNET_CHECK_URL,}
+ADD_SERVICE_CONNECTIONS_CHECK = {MSG_NO_CONNECTION: INTERNET_CHECK_URL, 
+                    MSG_GUGIK_SERVICES_UNAVAILABLE: EZIUDP_BASE_URL,
+                    }
+
+
 
 # =============================
 # Parametry do klasy ContentManager

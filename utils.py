@@ -74,7 +74,6 @@ from .constants import (
     MSG_HTTP_ERROR,
     MSG_TIMEOUT,
     MSG_NETWORK_ERROR,
-    EZIUDP_BASE_URL,
     USER_AGENT_HEADER,
     CONNECTION_HEADER,
 )
@@ -591,14 +590,14 @@ class ServiceAPI:
                 return True, result
             time.sleep(2)
         return False, "Nieudana próba połączenia"
-
-    def checkInternetConnection(self, url=EZIUDP_BASE_URL):
-        # próba połączenia z serwerem np. gugik
-        is_success, _ = self.network_utils.fetchContent(url, timeout_ms=TIMEOUT_MS)
-        if not is_success and self.iface:
-            MessageUtils.pushWarning(self.iface, MSG_NO_CONNECTION)
-        return is_success
-
+    
+    def checkServicesConnection(self, connections_check: dict):
+        # Próba połączenia z adresami po kolei. Zwraca komunikat pierwszego niedostępnego adresu.
+        for message, url in connections_check.items():
+            is_success, _ = self.network_utils.fetchContent(url, timeout_ms=TIMEOUT_MS)
+            if not is_success:
+                return message
+        return None
 
 class VersionUtils:
 
