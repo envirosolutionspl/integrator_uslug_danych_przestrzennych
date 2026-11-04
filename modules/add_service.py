@@ -217,15 +217,15 @@ class AddOGCService(QObject):
                 service = WebMapService(url, version=version, timeout=SERVICES_REQUEST_TIMEOUT_SECONDS)
                 break
             except requests.exceptions.Timeout:
-                MessageUtils.logWarning(
+                MessageUtils.pushLogWarning(
                     f'WMS {url}, wersja {version}: przekroczono czas połączenia.'
                 )
             except ServiceException as error:
-                MessageUtils.logWarning(
+                MessageUtils.pushLogWarning(
                     f'WMS {url}, wersja {version}: błąd usługi OGC: {error}.'
                 )
             except Exception as error:
-                MessageUtils.logWarning(
+                MessageUtils.pushLogWarning(
                     f'Wms {url}, wersja {version}: błąd {error}.'
                 )
 

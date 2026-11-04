@@ -7,6 +7,17 @@ ENCODING_SYSTEM = "utf-8"
 
 FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
 
+HOME_LINK = 'https://envirosolutions.pl/wtyczki-qgis/integrator-uslug-danych-przestrzennych/'
+
+FOOTER_LINK_COLORS = {'light': '#4a5250', 'dark': '#b8c0bc'}
+
+# Logo w stopce zależne od motywu (pliki w images/).
+FOOTER_LOGOS = {'light': 'es_logo_h.png', 'dark': 'es_logo_white.png'}
+
+# Szerokość panelu przy pierwszym zadokowaniu (px) i jej limit jako część szerokości okna QGIS.
+DOCK_START_WIDTH = 700
+DOCK_START_MAX_RATIO = 0.45
+
 INDUSTRIES = {
     "999": 'Nie wybrano',
     "e": 'Energetyka/OZE',

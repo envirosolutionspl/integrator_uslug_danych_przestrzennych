@@ -24,14 +24,15 @@
  Ten skrypt dodaje wtyczkę do paska narzędziowego.
 """
 
-from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
+from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator, Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QDialog, QToolBar
+from qgis.PyQt.QtWidgets import QAction, QToolBar
 from qgis.core import Qgis, QgsSettings
 
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 from .utils import QtCompat
 from .qgis_feed import QgisFeed, QgisFeedDialog
+from .constants import DOCK_START_MAX_RATIO, DOCK_START_WIDTH, INDUSTRIES
 import os.path
 
 from . import PLUGIN_NAME as plugin_name
@@ -74,24 +75,27 @@ class IntegratorUslugPrzestrzennych:
         if Qgis.QGIS_VERSION_INT < 31000:
             return
 
-        self.selected_industry = self.settings.value('selected_industry')
+        self.selected_industry = self.settings.value('selected_industry', None)
         show_dialog = self.settings.value('showDialog', True, type=bool)
-        if self.selected_industry is None and show_dialog:
-            self.selected_industry = self.showBranchSelectionDialog()
 
-        self.feed = QgisFeed(selected_industry=self.selected_industry, plugin_name=plugin_name)
+        # wczytywanie branży jeżeli nie jest zgodna z aktualnym słownikiem
+        if self.selected_industry not in INDUSTRIES.values():
+            self.selected_industry = None
+            show_dialog = True
+
+        if self.selected_industry is None and show_dialog:
+            self.showBranchSelectionDialog()
+
+        select_indust_session = self.settings.value('selected_industry')
+
+        self.feed = QgisFeed(selected_industry=select_indust_session, plugin_name=plugin_name)
         self.feed.initFeed()
 
     def showBranchSelectionDialog(self):
-        dialog = QgisFeedDialog()
-        accepted = QtCompat.getEnum(QDialog, 'DialogCode', 'Accepted')
-        if dialog.exec() != accepted:
-            return None
-
-        selected_industry = dialog.comboBox.currentText()
-        self.settings.setValue('selected_industry', selected_industry)
-        self.settings.setValue('showDialog', False)
-        return selected_industry
+        """Wyświetla dialog wyboru branży dla QGIS Feed."""
+        dialog = QgisFeedDialog(self.iface.mainWindow())
+        dialog.exec()
+        self.selected_industry = self.settings.value('selected_industry', None)
 
     def tr(self, message):
         return QCoreApplication.translate('IntegratorUslugPrzestrzennych', message)
@@ -144,7 +148,19 @@ class IntegratorUslugPrzestrzennych:
         for action in self.actions:
             self.iface.removePluginMenu(self.tr(u'&EnviroSolutions'), action)
             self.toolbar.removeAction(action)
+        self.iface.removeDockWidget(self.dlg)
 
     def run(self):
+        """Pokazuje panel wtyczki - przy pierwszym uruchomieniu dokuje go po prawej stronie okna QGIS."""
+        main_window = self.iface.mainWindow()
+        first_dock = self.dlg.parentWidget() is not main_window
+        if first_dock:
+            right_area = QtCompat.getEnum(Qt, 'DockWidgetArea', 'RightDockWidgetArea')
+            self.iface.addDockWidget(right_area, self.dlg)
         self.dlg.show()
-        self.dlg.exec()
+        self.dlg.raise_()
+        if first_dock:
+            # szerokość startowa - nie więcej niż część okna QGIS, żeby na małym ekranie nie zabrać mapy
+            width = min(DOCK_START_WIDTH, int(main_window.width() * DOCK_START_MAX_RATIO))
+            horizontal = QtCompat.getEnum(Qt, 'Orientation', 'Horizontal')
+            main_window.resizeDocks([self.dlg], [width], horizontal)
