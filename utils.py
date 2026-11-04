@@ -593,7 +593,7 @@ class ServiceAPI:
     
     def checkServicesConnection(self, connections_check: dict):
         # Próba połączenia z adresami po kolei. Zwraca komunikat pierwszego niedostępnego adresu.
-        for message, url in connections_check.items():
+        for url, message in connections_check.items():
             is_success, _ = self.network_utils.fetchContent(url, timeout_ms=TIMEOUT_MS)
             if not is_success:
                 return message
