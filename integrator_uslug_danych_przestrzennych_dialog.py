@@ -26,11 +26,13 @@ from qgis.PyQt.QtCore import QDir, QEvent, QSortFilterProxyModel, Qt, QTimer, QU
 from qgis.PyQt.QtGui import QDesktopServices, QShowEvent, QStandardItem, QStandardItemModel
 from .modules.content_manager import ContentManager
 from .constants import (
+    ADD_SERVICE_CONNECTIONS_CHECK,
     FOOTER_LINK_COLORS,
     FOOTER_LOGOS,
     HOME_LINK,
+    MSG_SERVICES_UNAVAILABLE,
     RADIOBUTTONS_SERVICES,
-    REST_API_CONNECTION_CHECK_URL,
+    TABLE_CONNECTIONS_CHECK,
 )
 from .utils import QtCompat, SingleTaskManager, MessageUtils, ServiceAPI, ThemeUtils
 
