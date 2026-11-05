@@ -66,7 +66,6 @@ from .constants import (
     REDIRECT_POLICY_NO_LESS_SAFE,
     DEFAULT_REDIRECT_POLICY,
     MAX_ATTEMPTS,
-    MSG_NO_CONNECTION,
     MSG_FILE_WRITE_ERROR,
     MSG_DOWNLOAD_CANCELED,
     MSG_EMPTY_CONTENT,
@@ -315,7 +314,8 @@ class MessageUtils:
 
 
 class ThemeUtils:
-    """Wspólne dla okien wtyczki (panel, okno wyboru warstw, okno wyboru branży QGIS Feed): motyw jasny/ciemny i logo."""
+    """Wspólne dla okien wtyczki (panel, okno wyboru warstw, okno wyboru branży QGIS Feed):
+    motyw jasny/ciemny i logo."""
 
     PLUGIN_DIR = os.path.dirname(__file__)
 
@@ -638,7 +638,7 @@ class ServiceAPI:
                 return True, result
             time.sleep(2)
         return False, "Nieudana próba połączenia"
-    
+
     def checkServicesConnection(self, connections_check: dict):
         # Próba połączenia z adresami po kolei. Zwraca komunikat pierwszego niedostępnego adresu.
         for url, message in connections_check.items():
@@ -646,6 +646,7 @@ class ServiceAPI:
             if not is_success:
                 return message
         return None
+
 
 class VersionUtils:
 
