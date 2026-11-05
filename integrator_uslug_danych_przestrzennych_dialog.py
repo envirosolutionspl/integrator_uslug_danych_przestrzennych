@@ -64,6 +64,8 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDockWidget, FORM_CLASS):
         self.serv_rows = []
         self.table_setup_task = SingleTaskManager(self._fetchServices, self._finishTableSetup)
         self.plugin_name = ''
+        # True, gdy tabela pokazuje komunikat (pushMessageOverTable) zamiast listy usług
+        self._is_message_shown = False
 
         self.setupSignals()
 
@@ -138,9 +140,8 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDockWidget, FORM_CLASS):
 
     def updateSelectedCount(self, *args) -> None:
         """Wpisuje liczbę usług w tabeli i zaznaczonych; bez zaznaczenia "Dodaj zaznaczone" jest nieaktywny"""
-        header_item = self.model.horizontalHeaderItem(0)
         # w trybie komunikatu (pushMessageOverTable) jedyny wiersz tabeli nie jest usługą
-        is_message = header_item is not None and header_item.text() == 'Komunikat'
+        is_message = self._is_message_shown
         total = 0 if is_message else self.proxy_model.rowCount()
         count = 0 if is_message else len(self.services_table.selectionModel().selectedRows())
         self.lbl_services_count.setText('%d %s' % (total, self._servicesWord(total)))
@@ -329,6 +330,8 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDockWidget, FORM_CLASS):
 
     def fillServicesTable(self, service_rows: List = []) -> None:
         """Czyści tabelę i wypełnia na nowo danymi"""
+        # przed zmianą wierszy - sygnały modelu od razu przeliczają licznik usług
+        self._is_message_shown = False
         # Oczyszczenie tablicy
         row_count = self.model.rowCount()
         if row_count > 0:
@@ -347,6 +350,8 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDockWidget, FORM_CLASS):
 
     def pushMessageOverTable(self, message: str, status: str = '') -> None:
         """Czyści tabelę i wykorzysuje pierwsze pole jako miejsce na komunikat i opcjonalnie status"""
+        # przed zmianą wierszy - sygnały modelu od razu przeliczają licznik usług
+        self._is_message_shown = True
         # Oczyszczenie tablicy
         row_count = self.model.rowCount()
         if row_count > 0:
