@@ -19,14 +19,20 @@ import sys
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QTableView
-from qgis.PyQt.QtCore import QSortFilterProxyModel, Qt
+from qgis.PyQt.QtCore import QDir, QEvent, QSortFilterProxyModel, Qt
 from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
-from .utils import QtCompat
+from .utils import QtCompat, ThemeUtils
+
+PLUGIN_DIR = os.path.dirname(__file__)
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# Prefiks "iudpimg:" używany w url(...) arkusza stylów w pliku .ui.
+# Musi być zarejestrowany PRZED setupUi, inaczej QSS nie znajdzie ikon.
+QDir.addSearchPath('iudpimg', os.path.join(PLUGIN_DIR, 'images'))
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'integrator_uslug_danych_przestrzennych_dialog_which_layers.ui'))
+    PLUGIN_DIR, 'ui', 'integrator_uslug_danych_przestrzennych_dialog_which_layers.ui'))
 
 
 class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -38,6 +44,8 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
                  ):
         super().__init__(parent)
         self.setupUi(self)
+        self._theme = None
+        self._applyTheme()
         self.qt_compat = QtCompat()
         self.model = QStandardItemModel()
         self.available_layers = available_layers
@@ -51,8 +59,45 @@ class ChooseLayersDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.confiureServicesTable()
         self.layers_table.selectionModel().selectionChanged.connect(self.updateSelectAllCheckbox)
+        self.layers_table.selectionModel().selectionChanged.connect(self.updateSelectedCount)
         self.addLayersToTable()
         self.add_btn.clicked.connect(self.accept)
+        self.updateSelectedCount()
+
+    def updateSelectedCount(self, *args) -> None:
+        """Wpisuje liczbę zaznaczonych warstw; bez zaznaczenia "Dodaj zaznaczone" jest nieaktywny"""
+        count = len(self.layers_table.selectionModel().selectedRows())
+        self.lbl_selected_count.setText('Zaznaczono: %d %s' % (count, self._layersWord(count)))
+        self.add_btn.setEnabled(count > 0)
+
+    @staticmethod
+    def _layersWord(count: int) -> str:
+        """Odmiana słowa "warstwa" przez liczbę"""
+        if count == 1:
+            return 'warstwa'
+        if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+            return 'warstwy'
+        return 'warstw'
+
+    def _applyTheme(self, force=False) -> None:
+        """Ustawia właściwość "theme" - kolory zdefiniowane w arkuszu stylów w pliku .ui."""
+        theme = 'dark' if ThemeUtils.isDarkTheme() else 'light'
+        if theme == self._theme and not force:
+            return
+        self._theme = theme
+        self.setProperty('theme', theme)
+        ThemeUtils.repolishAll(self)
+
+    def showEvent(self, event) -> None:
+        self._applyTheme()
+        super().showEvent(event)
+
+    def changeEvent(self, event) -> None:
+        # changeEvent przychodzi już w trakcie setupUi - wtedy _theme jeszcze nie istnieje
+        if (event.type() in (QEvent.Type.PaletteChange, QEvent.Type.StyleChange)
+                and getattr(self, '_theme', None) is not None):
+            self._applyTheme()
+        super().changeEvent(event)
 
     def addLayersToTable(self) -> None:
         for layer in self.available_layers:
