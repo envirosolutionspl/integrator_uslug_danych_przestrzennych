@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IntegratorUslugPrzestrzennychDialogBase</class>
+ <widget class="QDockWidget" name="IntegratorUslugPrzestrzennychDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>770</width>
+    <height>560</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../images/icon.svg</normaloff>../images/icon.svg</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">* { font-family: "DejaVu Sans"; }
+QScrollArea#scrollArea { border: none; background: transparent; }
+QLabel#lbl_title { font-size: 14px; font-weight: bold; }
+QLabel#lbl_subtitle, QLabel#lbl_pluginVersion { font-size: 10px; }
+QToolButton#btn_help, QToolButton#btn_close { border: none; border-radius: 6px; padding: 3px; }
+QLabel#lbl_email, QLabel#lbl_szkolenia { font-size: 10px; }
+QLabel#lbl_logo { background: transparent; padding: 0px; }
+
+QFrame#card_service, QFrame#card_services { border-radius: 6px; background-repeat: repeat-x; background-position: top left; background-origin: border; }
+QLabel[role="card-title"] { font-size: 11px; font-weight: bold; padding: 0px 8px; background: transparent; }
+QLabel[role="count"] { font-size: 10px; font-weight: bold; }
+QLabel[role="caption"] { font-size: 10px; padding: 4px 8px; }
+
+QRadioButton[role="pill"] { font-size: 10px; font-weight: bold; border-radius: 13px; padding: 0px 14px; spacing: 0px; }
+QRadioButton[role="pill"]::indicator { width: 0px; height: 0px; border: none; image: none; }
+
+QLineEdit { border-radius: 4px; padding: 0px 6px; font-size: 12px; }
+QLineEdit#search_lineedit { padding-left: 28px; background-repeat: no-repeat; background-position: left center; background-origin: border; }
+
+QTableView { border: none; padding: 0px; font-size: 12px; }
+QTableView::item { padding: 0px 6px; border: none; }
+QHeaderView::section { font-size: 12px; font-weight: bold; padding: 4px 6px; margin: 0px; border: none; }
+QHeaderView::down-arrow, QHeaderView::up-arrow { width: 10px; height: 10px; subcontrol-position: center right; subcontrol-origin: padding; }
+
+QPushButton { border-radius: 4px; padding: 4px 12px; font-size: 11px; }
+QPushButton[role="primary"] { font-size: 12px; font-weight: bold; padding: 4px 14px; border: none; }
+
+QPushButton:focus, QToolButton:focus, QRadioButton:focus, QTableView:focus { outline: none; }
+
+QDockWidget[theme="light"] QWidget#dockWidgetContents, QDockWidget[theme="light"] QWidget#content_widget { background: #ffffff; }
+QDockWidget[theme="light"] QLabel { color: #23282a; }
+QDockWidget[theme="light"] QFrame#header_frame { background: #ffffff; border: none; border-bottom: 2px solid #4c6e4f; }
+QDockWidget[theme="light"] QLabel#lbl_title { color: #3b5a3e; }
+QDockWidget[theme="light"] QLabel#lbl_subtitle, QDockWidget[theme="light"] QLabel#lbl_pluginVersion { color: #6b7572; }
+QDockWidget[theme="light"] QToolButton#btn_help:hover, QDockWidget[theme="light"] QToolButton#btn_close:hover { background: #e8efe8; }
+QDockWidget[theme="light"] QToolButton#btn_help { qproperty-icon: url(iudpimg:help.svg); }
+QDockWidget[theme="light"] QToolButton#btn_close { qproperty-icon: url(iudpimg:close.svg); }
+QDockWidget[theme="light"] QFrame#footer_frame { background: #f6f8f6; border: none; border-top: 1px solid #d6ded6; }
+
+QDockWidget[theme="light"] QFrame#card_service { background-color: #ffffff; background-image: url(iudpimg:bar_service_light.svg); border: 1px solid #b9c7ba; }
+QDockWidget[theme="light"] QFrame#card_services { background-color: #ffffff; background-image: url(iudpimg:bar_list_light.svg); border: 1px solid #d6ded6; }
+QDockWidget[theme="light"] QLabel[role="card-title"] { color: #23282a; }
+QDockWidget[theme="light"] QFrame#services_title_bar { background: transparent; border: none; }
+QDockWidget[theme="light"] QLabel#lbl_services_title { background: transparent; color: #3b5a3e; }
+QDockWidget[theme="light"] QLabel[role="caption"] { color: #6b7572; }
+QDockWidget[theme="light"] QLabel[role="count"] { color: #3b5a3e; }
+
+QDockWidget[theme="light"] QRadioButton[role="pill"] { background: #ffffff; color: #23282a; border: 1px solid #b9c7ba; }
+QDockWidget[theme="light"] QRadioButton[role="pill"]:hover { border-color: #4c6e4f; color: #3b5a3e; }
+QDockWidget[theme="light"] QRadioButton[role="pill"]:checked { background: #4c6e4f; color: #ffffff; border-color: #4c6e4f; }
+QDockWidget[theme="light"] QRadioButton[role="pill"]:disabled { color: #9aa39e; border-color: #d6ded6; }
+QDockWidget[theme="light"] QRadioButton[role="pill"]:checked:disabled { background: #c9d3ca; color: #f4f6f4; border-color: #c9d3ca; }
+
+QDockWidget[theme="light"] QLineEdit { background: #ffffff; color: #23282a; border: 1px solid #b9c7ba; selection-background-color: #4c6e4f; selection-color: #ffffff; }
+QDockWidget[theme="light"] QLineEdit:focus { border: 1px solid #4c6e4f; }
+QDockWidget[theme="light"] QLineEdit#search_lineedit { background-image: url(iudpimg:search.svg); }
+
+QDockWidget[theme="light"] QTableView { background: #ffffff; alternate-background-color: #f6f8f6; color: #23282a; selection-background-color: #4c6e4f; selection-color: #ffffff; }
+QDockWidget[theme="light"] QTableView::item:selected { background: #4c6e4f; color: #ffffff; }
+QDockWidget[theme="light"] QHeaderView { background: #e8efe8; }
+QDockWidget[theme="light"] QHeaderView::section { background: #e8efe8; color: #3b5a3e; border-top: 1px solid #e8efe8; border-left: none; border-bottom: 1px solid #d6ded6; border-right: 1px solid #d6ded6; }
+QDockWidget[theme="light"] QHeaderView::up-arrow { image: url(iudpimg:sort_down.svg); }
+QDockWidget[theme="light"] QHeaderView::down-arrow { image: url(iudpimg:sort_up.svg); }
+
+QDockWidget[theme="light"] QPushButton { background: #ffffff; color: #23282a; border: 1px solid #b9c7ba; }
+QDockWidget[theme="light"] QPushButton:hover { border-color: #4c6e4f; color: #3b5a3e; }
+QDockWidget[theme="light"] QPushButton:pressed { background: #eef3ee; }
+QDockWidget[theme="light"] QPushButton:disabled { color: #9aa39e; border-color: #d6ded6; }
+QDockWidget[theme="light"] QPushButton#reject_btn { qproperty-icon: url(iudpimg:clear.svg); }
+QDockWidget[theme="light"] QPushButton[role="primary"] { background: #4c6e4f; color: #ffffff; border: none; }
+QDockWidget[theme="light"] QPushButton[role="primary"]:hover { background: #5b8260; color: #ffffff; }
+QDockWidget[theme="light"] QPushButton[role="primary"]:pressed { background: #3d5a40; }
+QDockWidget[theme="light"] QPushButton[role="primary"]:disabled { background: #c9d3ca; color: #f4f6f4; }
+
+QDockWidget[theme="dark"] QWidget#dockWidgetContents, QDockWidget[theme="dark"] QWidget#content_widget { background: #2b2d2e; }
+QDockWidget[theme="dark"] QLabel { color: #e6e9e7; }
+QDockWidget[theme="dark"] QFrame#header_frame { background: #303334; border: none; border-bottom: 2px solid #6f9c73; }
+QDockWidget[theme="dark"] QLabel#lbl_title { color: #a9cfac; }
+QDockWidget[theme="dark"] QLabel#lbl_subtitle, QDockWidget[theme="dark"] QLabel#lbl_pluginVersion { color: #9aa4a0; }
+QDockWidget[theme="dark"] QToolButton#btn_help:hover, QDockWidget[theme="dark"] QToolButton#btn_close:hover { background: #2c3a2d; }
+QDockWidget[theme="dark"] QToolButton#btn_help { qproperty-icon: url(iudpimg:help_dark.svg); }
+QDockWidget[theme="dark"] QToolButton#btn_close { qproperty-icon: url(iudpimg:close_dark.svg); }
+QDockWidget[theme="dark"] QFrame#footer_frame { background: #303334; border: none; border-top: 1px solid #44494a; }
+
+QDockWidget[theme="dark"] QFrame#card_service { background-color: #262829; background-image: url(iudpimg:bar_service_dark.svg); border: 1px solid #6f9c73; }
+QDockWidget[theme="dark"] QFrame#card_services { background-color: #262829; background-image: url(iudpimg:bar_list_dark.svg); border: 1px solid #44494a; }
+QDockWidget[theme="dark"] QLabel[role="card-title"] { color: #ffffff; }
+QDockWidget[theme="dark"] QFrame#services_title_bar { background: transparent; border: none; }
+QDockWidget[theme="dark"] QLabel#lbl_services_title { background: transparent; color: #a9cfac; }
+QDockWidget[theme="dark"] QLabel[role="caption"] { color: #9aa4a0; }
+QDockWidget[theme="dark"] QLabel[role="count"] { color: #a9cfac; }
+
+QDockWidget[theme="dark"] QRadioButton[role="pill"] { background: #262829; color: #e6e9e7; border: 1px solid #5a6162; }
+QDockWidget[theme="dark"] QRadioButton[role="pill"]:hover { border-color: #6f9c73; color: #a9cfac; }
+QDockWidget[theme="dark"] QRadioButton[role="pill"]:checked { background: #6f9c73; color: #ffffff; border-color: #6f9c73; }
+QDockWidget[theme="dark"] QRadioButton[role="pill"]:disabled { color: #6f7773; border-color: #44494a; }
+QDockWidget[theme="dark"] QRadioButton[role="pill"]:checked:disabled { background: #3e4442; color: #8a918e; border-color: #3e4442; }
+
+QDockWidget[theme="dark"] QLineEdit { background: #1f2122; color: #e6e9e7; border: 1px solid #5a6162; selection-background-color: #6f9c73; selection-color: #ffffff; }
+QDockWidget[theme="dark"] QLineEdit:focus { border: 1px solid #6f9c73; }
+QDockWidget[theme="dark"] QLineEdit#search_lineedit { background-image: url(iudpimg:search_dark.svg); }
+
+QDockWidget[theme="dark"] QTableView { background: #262829; alternate-background-color: #2b2d2e; color: #e6e9e7; selection-background-color: #6f9c73; selection-color: #ffffff; }
+QDockWidget[theme="dark"] QTableView::item:selected { background: #6f9c73; color: #ffffff; }
+QDockWidget[theme="dark"] QHeaderView { background: #2c3a2d; }
+QDockWidget[theme="dark"] QHeaderView::section { background: #2c3a2d; color: #a9cfac; border-top: 1px solid #2c3a2d; border-left: none; border-bottom: 1px solid #44494a; border-right: 1px solid #44494a; }
+QDockWidget[theme="dark"] QHeaderView::up-arrow { image: url(iudpimg:sort_down_dark.svg); }
+QDockWidget[theme="dark"] QHeaderView::down-arrow { image: url(iudpimg:sort_up_dark.svg); }
+
+QDockWidget[theme="dark"] QPushButton { background: #2b2d2e; color: #e6e9e7; border: 1px solid #5a6162; }
+QDockWidget[theme="dark"] QPushButton:hover { border-color: #6f9c73; color: #a9cfac; }
+QDockWidget[theme="dark"] QPushButton:pressed { background: #2c3a2d; }
+QDockWidget[theme="dark"] QPushButton:disabled { color: #6f7773; border-color: #44494a; }
+QDockWidget[theme="dark"] QPushButton#reject_btn { qproperty-icon: url(iudpimg:clear_dark.svg); }
+QDockWidget[theme="dark"] QPushButton[role="primary"] { background: #6f9c73; color: #ffffff; border: none; }
+QDockWidget[theme="dark"] QPushButton[role="primary"]:hover { background: #7fae83; color: #ffffff; }
+QDockWidget[theme="dark"] QPushButton[role="primary"]:pressed { background: #5b8260; }
+QDockWidget[theme="dark"] QPushButton[role="primary"]:disabled { background: #3e4442; color: #8a918e; }
+</string>
+  </property>
+  <property name="theme" stdset="0">
+   <string notr="true">light</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout_main">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="header_frame">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_header" stretch="0,1,0,0">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>8</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="img_main">
+         <property name="minimumSize">
+          <size>
+           <width>34</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>34</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../images/icon.svg</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="margin">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_title">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="lbl_title">
+           <property name="text">
+            <string>Integrator usług danych przestrzennych</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_subtitle">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="lbl_subtitle">
+             <property name="text">
+              <string>Usługi WMS, WMTS, WFS i WCS z Ewidencji Zbiorów i Usług ·</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_pluginVersion">
+             <property name="text">
+              <string>v</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_subtitle">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>10</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btn_help">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Pomoc – strona wtyczki</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../images/help.svg</normaloff>../images/help.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>18</width>
+           <height>18</height>
+          </size>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btn_close">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Zamknij wtyczkę</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../images/close.svg</normaloff>../images/close.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>18</width>
+           <height>18</height>
+          </size>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="content_widget">
+       <layout class="QVBoxLayout" name="verticalLayout_content" stretch="0,1,0">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QFrame" name="card_service">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_card_service">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="lbl_service_title">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Wybór usługi</string>
+             </property>
+             <property name="role" stdset="0">
+              <string notr="true">card-title</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_service" stretch="0,0,0,0,1">
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <property name="leftMargin">
+              <number>8</number>
+             </property>
+             <property name="topMargin">
+              <number>8</number>
+             </property>
+             <property name="rightMargin">
+              <number>8</number>
+             </property>
+             <property name="bottomMargin">
+              <number>8</number>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="wms_rdbtn">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>WMS</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="role" stdset="0">
+                <string notr="true">pill</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="wmts_rdbtn">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>WMTS</string>
+               </property>
+               <property name="role" stdset="0">
+                <string notr="true">pill</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="wfs_rdbtn">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>WFS</string>
+               </property>
+               <property name="role" stdset="0">
+                <string notr="true">pill</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="wcs_rdbtn">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="cursor">
+                <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>WCS</string>
+               </property>
+               <property name="role" stdset="0">
+                <string notr="true">pill</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="search_lineedit">
+               <property name="minimumSize">
+                <size>
+                 <width>140</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="placeholderText">
+                <string>Wyszukaj po nazwie usługi…</string>
+               </property>
+               <property name="clearButtonEnabled">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="card_services">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_card_services">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>5</number>
+           </property>
+           <item>
+            <widget class="QFrame" name="services_title_bar">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_services_title" stretch="1,0">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="lbl_services_title">
+                <property name="text">
+                 <string>Usługi</string>
+                </property>
+                <property name="role" stdset="0">
+                 <string notr="true">card-title</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lbl_services_count">
+                <property name="text">
+                 <string>0 usług</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignVCenter</set>
+                </property>
+                <property name="role" stdset="0">
+                 <string notr="true">caption</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTableView" name="services_table">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>150</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="showGrid">
+              <bool>false</bool>
+             </property>
+             <property name="wordWrap">
+              <bool>false</bool>
+             </property>
+             <attribute name="horizontalHeaderHighlightSections">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_actions">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="lbl_selected_count">
+            <property name="text">
+             <string>Zaznaczono: 0 usług</string>
+            </property>
+            <property name="role" stdset="0">
+             <string notr="true">count</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_actions">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="reject_btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Czyści zaznaczone wiersze tabeli</string>
+            </property>
+            <property name="text">
+             <string>Odznacz wybór</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../images/clear.svg</normaloff>../images/clear.svg</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>10</width>
+              <height>10</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="add_btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>28</height>
+             </size>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="toolTip">
+             <string>Dodaje usługę do projektu</string>
+            </property>
+            <property name="text">
+             <string>Dodaj zaznaczone</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>../images/plus.svg</normaloff>../images/plus.svg</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>12</width>
+              <height>12</height>
+             </size>
+            </property>
+            <property name="role" stdset="0">
+             <string notr="true">primary</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="footer_frame">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_footer">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lbl_email">
+         <property name="text">
+          <string>&lt;a href="https://envirosolutions.pl/?utm_source=plugins&amp;utm_medium=referral&amp;utm_campaign=integrator_uslug_danych&amp;utm_content=systemy_wsparcie#uslugi" style="text-decoration:underline;"&gt;SYSTEMY I WSPARCIE GIS&lt;/a&gt;</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::RichText</enum>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::TextBrowserInteraction</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_footerL">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>4</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbl_logo">
+         <property name="minimumSize">
+          <size>
+           <width>120</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../images/es_logo_h.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_footerR">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>4</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbl_szkolenia">
+         <property name="text">
+          <string>&lt;a href="https://envirosolutions.pl/oferta-szkoleniowa/?utm_source=plugins&amp;utm_medium=referral&amp;utm_campaign=integrator_uslug_danych&amp;utm_content=szkolenia_gis" style="text-decoration:underline;"&gt;SZKOLENIA GIS&lt;/a&gt;</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::RichText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignVCenter</set>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::TextBrowserInteraction</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>wms_rdbtn</tabstop>
+  <tabstop>wmts_rdbtn</tabstop>
+  <tabstop>wfs_rdbtn</tabstop>
+  <tabstop>wcs_rdbtn</tabstop>
+  <tabstop>search_lineedit</tabstop>
+  <tabstop>services_table</tabstop>
+  <tabstop>reject_btn</tabstop>
+  <tabstop>add_btn</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>reject_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>services_table</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
