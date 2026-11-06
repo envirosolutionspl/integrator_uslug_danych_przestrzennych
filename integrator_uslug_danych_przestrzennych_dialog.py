@@ -303,7 +303,7 @@ class IntegratorUslugPrzestrzennychDialog(QtWidgets.QDockWidget, FORM_CLASS):
         # Blokowanie elementów okna
         self.setEnabledRadiobuttons(False)
         self.setEnabledTable(False)
-    
+
         # Sprawdzanie połaczenia internetowego
         try:
             error_message = ServiceAPI().checkServicesConnection(ADD_SERVICE_CONNECTIONS_CHECK)
