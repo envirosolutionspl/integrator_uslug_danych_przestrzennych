@@ -295,6 +295,15 @@ class MessageUtils:
         )
 
     @staticmethod
+    def pushLogInfo(message: str) -> None:
+        info = QtCompat.getEnum(Qgis, 'MessageLevel', 'Info')
+        QgsMessageLog.logMessage(
+            message,
+            tag=PLUGIN_NAME,
+            level=info
+        )
+
+    @staticmethod
     def pushLogWarning(message: str) -> None:
         warning = QtCompat.getEnum(Qgis, 'MessageLevel', 'Warning')
         QgsMessageLog.logMessage(
