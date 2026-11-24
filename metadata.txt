@@ -35,6 +35,7 @@ hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
   Wersja 2.1.0
+  * Zautomatyzowanie procesu publikacji wtyczek w repozytorium QGIS
   * Zmiana działania qgisfeeda
 #  Wersja 2.0.0
 #  * Zmiana wyglądu wtyczki
