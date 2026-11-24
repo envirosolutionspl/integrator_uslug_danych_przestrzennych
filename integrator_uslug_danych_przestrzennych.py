@@ -31,8 +31,9 @@ from qgis.core import Qgis, QgsSettings
 
 from .integrator_uslug_danych_przestrzennych_dialog import IntegratorUslugPrzestrzennychDialog
 from .utils import QtCompat
-from .qgis_feed import QgisFeed, QgisFeedDialog
-from .constants import DOCK_START_MAX_RATIO, DOCK_START_WIDTH, INDUSTRIES
+from .qgis_feed import EnviroFeedManager
+from .qgis_feed_dialog import QgisFeedDialog
+from .constants import DOCK_START_MAX_RATIO, DOCK_START_WIDTH
 import os.path
 
 from . import PLUGIN_NAME as plugin_name
@@ -51,8 +52,7 @@ class IntegratorUslugPrzestrzennych:
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
         self.settings = QgsSettings()
-        self.selected_industry = None
-        self.feed = None
+        self.feed_manager = None
         self.setupFeed()
 
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -75,27 +75,8 @@ class IntegratorUslugPrzestrzennych:
         if Qgis.QGIS_VERSION_INT < 31000:
             return
 
-        self.selected_industry = self.settings.value('selected_industry', None)
-        show_dialog = self.settings.value('showDialog', True, type=bool)
-
-        # wczytywanie branży jeżeli nie jest zgodna z aktualnym słownikiem
-        if self.selected_industry not in INDUSTRIES.values():
-            self.selected_industry = None
-            show_dialog = True
-
-        if self.selected_industry is None and show_dialog:
-            self.showBranchSelectionDialog()
-
-        select_indust_session = self.settings.value('selected_industry')
-
-        self.feed = QgisFeed(selected_industry=select_indust_session, plugin_name=plugin_name)
-        self.feed.initFeed()
-
-    def showBranchSelectionDialog(self):
-        """Wyświetla dialog wyboru branży dla QGIS Feed."""
-        dialog = QgisFeedDialog(self.iface.mainWindow())
-        dialog.exec()
-        self.selected_industry = self.settings.value('selected_industry', None)
+        self.feed_manager = EnviroFeedManager(self.iface, plugin_name, QgisFeedDialog)
+        self.feed_manager.start()
 
     def tr(self, message):
         return QCoreApplication.translate('IntegratorUslugPrzestrzennych', message)
@@ -145,6 +126,10 @@ class IntegratorUslugPrzestrzennych:
         )
 
     def unload(self):
+        if self.feed_manager is not None:
+            self.feed_manager.unload()
+            self.feed_manager = None
+
         for action in self.actions:
             self.iface.removePluginMenu(self.tr(u'&EnviroSolutions'), action)
             self.toolbar.removeAction(action)

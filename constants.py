@@ -6,6 +6,13 @@ RESULT_SERVICE_TAG = 'Service'
 ENCODING_SYSTEM = "utf-8"
 
 FEED_URL = 'https://qgisfeed.envirosolutions.pl/'
+INDUSTRIES_URL = 'https://qgisfeed.enviro-dev.pl/industries/'
+INDUSTRIES_TIMEOUT_MS = 3000
+
+# Klucze QgsSettings wspólne dla wszystkich wtyczek EnviroSolutions w profilu QGIS
+FEED_KEY_USER_ID = 'anonymous_user_id'
+FEED_KEY_INDUSTRY = 'selected_industry'
+FEED_APP_PROPERTY_DIALOG_HANDLED = 'envirosolutions_industry_dialog_handled'
 
 HOME_LINK = 'https://envirosolutions.pl/wtyczki-qgis/integrator-uslug-danych-przestrzennych/'
 
@@ -17,22 +24,6 @@ FOOTER_LOGOS = {'light': 'es_logo_h.png', 'dark': 'es_logo_white.png'}
 # Szerokość panelu przy pierwszym zadokowaniu (px) i jej limit jako część szerokości okna QGIS.
 DOCK_START_WIDTH = 700
 DOCK_START_MAX_RATIO = 0.45
-
-INDUSTRIES = {
-    "999": 'Nie wybrano',
-    "e": 'Energetyka/OZE',
-    "u": 'Urząd',
-    "td": 'Transport/Drogi',
-    "pg": 'Planowanie/Geodezja',
-    "wk": 'WodKan',
-    "s": 'Środowisko',
-    "rl": 'Rolnictwo/Leśnictwo',
-    "tk": 'Telkom',
-    "edu": 'Edukacja',
-    "i": 'Inne',
-    "it": 'IT',
-    "n": 'Nieruchomości'
-}
 
 RADIOBUTTONS_SERVICES = [
     'wms_rdbtn',
