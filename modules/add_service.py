@@ -239,8 +239,9 @@ class AddOGCService(QObject):
 
             get_map = service.getOperationByName('GetMap')
             format_name = get_map.formatOptions[0]
-            style_name = list(layer_info.styles.keys())[0] if layer_info.styles else ''
-            uri = f'url={service.url}&layers={layer_name}&styles={style_name}&format={format_name}'
+            # style_name = list(layer_info.styles.keys())[0] if layer_info.styles else ''
+            # poprawka dla WMS, gdzie usługa odrzuca GetMap ze stylem, np. WMS GDOŚ - geoserwis
+            uri = f'url={service.url}&layers={layer_name}&styles=&format={format_name}'
             title = layer_info.title or layer_name
             definitions.append(
                 _LayerDefinition(
